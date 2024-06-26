@@ -3158,7 +3158,7 @@ StackInterpreter >> bytecodePrimIdenticalSistaV1 [
 	rcvr := self stackValue: 1.
 	arg := self stackValue: 0.
 
-	messageSelector := self specialSelector: 8.
+	messageSelector := self specialSelector: 22.
 	argumentCount := 1.
 
 	(objectMemory isOopForwarded: rcvr) ifTrue:
@@ -3470,7 +3470,7 @@ StackInterpreter >> bytecodePrimNotIdenticalSistaV1 [
 	rcvr := self stackValue: 1.
 	arg := self stackValue: 0.
 	
-	messageSelector := self specialSelector: 9.
+	messageSelector := self specialSelector: 24.
 	argumentCount := 1.
 
 	(objectMemory isOopForwarded: rcvr) ifTrue:
