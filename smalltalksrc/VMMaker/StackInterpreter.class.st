@@ -2648,7 +2648,10 @@ StackInterpreter >> booleanCheatFalseV4 [
 StackInterpreter >> booleanCheatSistaV1: cond [
 	"cheat the interpreter out of the pleasure of handling the next bytecode IFF it is a jump-on-boolean. Which it is, often enough when the current bytecode is something like bytecodePrimEqual"
 	<inline: true>
-
+	
+	lkupClassTag := 1. "Integer"
+	self print: '(boolean cheat)'.
+	self doRecordSendTrace.
 	cond
 		ifTrue: [self booleanCheatTrueSistaV1]
 		ifFalse: [self booleanCheatFalseSistaV1]
@@ -2984,14 +2987,16 @@ StackInterpreter >> bytecodePrimEqualSistaV1 [
 	| rcvr arg aBool |
 	rcvr := self stackValue: 1.
 	arg := self stackValue: 0.
+
+	messageSelector := self specialSelector: 6.
+	argumentCount := 1.
+
 	(objectMemory areIntegers: rcvr and: arg) ifTrue: [^self booleanCheatSistaV1: rcvr = arg].
 
 	self initPrimCall.
 	aBool := self primitiveFloatEqual: rcvr toArg: arg.
 	self successful ifTrue: [^self booleanCheatSistaV1: aBool].
 
-	messageSelector := self specialSelector: 6.
-	argumentCount := 1.
 	self normalSend
 ]
 
@@ -3036,6 +3041,10 @@ StackInterpreter >> bytecodePrimGreaterOrEqualSistaV1 [
 	| rcvr arg aBool |
 	rcvr := self stackValue: 1.
 	arg := self stackValue: 0.
+
+	messageSelector := self specialSelector: 5.
+	argumentCount := 1.
+
 	(objectMemory areIntegers: rcvr and: arg) ifTrue:
 		["The C code can avoid detagging since tagged integers are still signed.
 		 But this means the simulator must override to do detagging."
@@ -3046,8 +3055,6 @@ StackInterpreter >> bytecodePrimGreaterOrEqualSistaV1 [
 	aBool := self primitiveFloatGreaterOrEqual: rcvr toArg: arg.
 	self successful ifTrue: [^self booleanCheatSistaV1: aBool].
 
-	messageSelector := self specialSelector: 5.
-	argumentCount := 1.
 	self normalSend
 ]
 
@@ -3096,6 +3103,10 @@ StackInterpreter >> bytecodePrimGreaterThanSistaV1 [
 	| rcvr arg aBool |
 	rcvr := self stackValue: 1.
 	arg := self stackValue: 0.
+
+	messageSelector := self specialSelector: 3.
+	argumentCount := 1.
+
 	(objectMemory areIntegers: rcvr and: arg) ifTrue:
 		["The C code can avoid detagging since tagged integers are still signed.
 		 But this means the simulator must override to do detagging."
@@ -3106,8 +3117,6 @@ StackInterpreter >> bytecodePrimGreaterThanSistaV1 [
 	aBool := self primitiveFloatGreater: rcvr thanArg: arg.
 	self successful ifTrue: [^self booleanCheatSistaV1: aBool].
 
-	messageSelector := self specialSelector: 3.
-	argumentCount := 1.
 	self normalSend
 ]
 
@@ -3148,6 +3157,10 @@ StackInterpreter >> bytecodePrimIdenticalSistaV1 [
 	| rcvr arg |
 	rcvr := self stackValue: 1.
 	arg := self stackValue: 0.
+
+	messageSelector := self specialSelector: 8.
+	argumentCount := 1.
+
 	(objectMemory isOopForwarded: rcvr) ifTrue:
 		[rcvr := self handleSpecialSelectorSendFaultFor: rcvr].
 	(objectMemory isOopForwarded: arg) ifTrue:
@@ -3192,6 +3205,10 @@ StackInterpreter >> bytecodePrimLessOrEqualSistaV1 [
 	| rcvr arg aBool |
 	rcvr := self stackValue: 1.
 	arg := self stackValue: 0.
+
+	messageSelector := self specialSelector: 4.
+	argumentCount := 1.
+
 	(objectMemory areIntegers: rcvr and: arg) ifTrue:
 		["The C code can avoid detagging since tagged integers are still signed.
 		 But this means the simulator must override to do detagging."
@@ -3202,8 +3219,6 @@ StackInterpreter >> bytecodePrimLessOrEqualSistaV1 [
 	aBool := self primitiveFloatLessOrEqual: rcvr toArg: arg.
 	self successful ifTrue: [^self booleanCheatSistaV1: aBool].
 
-	messageSelector := self specialSelector: 4.
-	argumentCount := 1.
 	self normalSend
 ]
 
@@ -3252,6 +3267,10 @@ StackInterpreter >> bytecodePrimLessThanSistaV1 [
 	| rcvr arg aBool |
 	rcvr := self stackValue: 1.
 	arg := self stackValue: 0.
+
+	messageSelector := self specialSelector: 2.
+	argumentCount := 1.
+
 	(objectMemory areIntegers: rcvr and: arg) ifTrue:
 		["The C code can avoid detagging since tagged integers are still signed.
 		 But this means the simulator must override to do detagging."
@@ -3262,8 +3281,6 @@ StackInterpreter >> bytecodePrimLessThanSistaV1 [
 	aBool := self primitiveFloatLess: rcvr thanArg: arg.
 	self successful ifTrue: [^ self booleanCheatSistaV1: aBool].
 
-	messageSelector := self specialSelector: 2.
-	argumentCount := 1.
 	self normalSend
 ]
 
@@ -3406,14 +3423,16 @@ StackInterpreter >> bytecodePrimNotEqualSistaV1 [
 	| rcvr arg aBool |
 	rcvr := self stackValue: 1.
 	arg := self stackValue: 0.
+	
+	messageSelector := self specialSelector: 7.
+	argumentCount := 1.
+
 	(objectMemory areIntegers: rcvr and: arg) ifTrue: [^self booleanCheatSistaV1: rcvr ~= arg].
 
 	self initPrimCall.
 	aBool := self primitiveFloatEqual: rcvr toArg: arg.
 	self successful ifTrue: [^self booleanCheatSistaV1: aBool not].
 
-	messageSelector := self specialSelector: 7.
-	argumentCount := 1.
 	self normalSend
 ]
 
@@ -3450,6 +3469,10 @@ StackInterpreter >> bytecodePrimNotIdenticalSistaV1 [
 	| rcvr arg |
 	rcvr := self stackValue: 1.
 	arg := self stackValue: 0.
+	
+	messageSelector := self specialSelector: 9.
+	argumentCount := 1.
+
 	(objectMemory isOopForwarded: rcvr) ifTrue:
 		[rcvr := self handleSpecialSelectorSendFaultFor: rcvr].
 	(objectMemory isOopForwarded: arg) ifTrue:
