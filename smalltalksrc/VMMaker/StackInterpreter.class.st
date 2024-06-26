@@ -12302,7 +12302,11 @@ StackInterpreter >> printProcsOnList: procList [
 
 { #category : #'debug printing' }
 StackInterpreter >> printSends [
-	^false
+
+	^ self
+		  cppIf: #PROFILE_CURRENT_BYTECODE
+		  ifTrue: [ true ]
+		  ifFalse: [ false ]
 ]
 
 { #category : #'debug printing' }
