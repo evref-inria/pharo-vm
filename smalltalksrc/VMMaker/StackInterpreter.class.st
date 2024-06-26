@@ -12550,7 +12550,8 @@ StackInterpreter >> profileCurrentBytecode [
 	<inline: true>
 	self cppIf: #PROFILE_CURRENT_BYTECODE ifTrue: [
 		self printNum: currentBytecode.
-		self cr ]
+		self cr.
+		self flush ]
 ]
 
 { #category : #'as yet unclassified' }
