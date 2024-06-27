@@ -1872,7 +1872,7 @@ StackInterpreter >> activateNewMethod [
 StackInterpreter >> activeProcess [
 	"Answer the current activeProcess."
 	<api> "useful for VM debugging"
-	^objectMemory memoryActiveProcess
+	^objectMemory memoryActiveProcess 
 ]
 
 { #category : #'process primitive support' }
@@ -2601,7 +2601,7 @@ StackInterpreter >> booleanCheatFalse [
 		^ self jump: offset ].
 
 	"not followed by a jumpIfFalse; (un)do instruction fetch and push boolean result"
-	currentBytecode := bytecode.
+	self currentBytecode: bytecode.
 	self push: objectMemory falseObject
 ]
 
@@ -2622,7 +2622,7 @@ StackInterpreter >> booleanCheatFalseSistaV1 [
 		^ self jump: offset ].
 
 	"not followed by a jumpIfFalse; (un)do instruction fetch and push boolean result"
-	currentBytecode := bytecode.
+	self currentBytecode: bytecode.
 	self push: objectMemory falseObject
 ]
 
@@ -2643,7 +2643,7 @@ StackInterpreter >> booleanCheatFalseV4 [
 		^ self jump: offset ].
 
 	"not followed by a jumpIfFalse; (un)do instruction fetch and push boolean result"
-	currentBytecode := bytecode.
+	self currentBytecode: bytecode.
 	self push: objectMemory falseObject
 ]
 
@@ -2651,7 +2651,10 @@ StackInterpreter >> booleanCheatFalseV4 [
 StackInterpreter >> booleanCheatSistaV1: cond [
 	"cheat the interpreter out of the pleasure of handling the next bytecode IFF it is a jump-on-boolean. Which it is, often enough when the current bytecode is something like bytecodePrimEqual"
 	<inline: true>
-
+	
+	lkupClassTag := 1. "Integer"
+	self print: '(boolean cheat)'.
+	self doRecordSendTrace.
 	cond
 		ifTrue: [self booleanCheatTrueSistaV1]
 		ifFalse: [self booleanCheatFalseSistaV1]
@@ -2677,7 +2680,7 @@ StackInterpreter >> booleanCheatTrue [
 			^ self jump: offset ] ].
 
 	"not followed by a jumpIfFalse; (un)do instruction fetch and push boolean result"
-	currentBytecode := bytecode.
+	self currentBytecode: bytecode.
 	self push: objectMemory trueObject
 ]
 
@@ -2701,7 +2704,7 @@ StackInterpreter >> booleanCheatTrueSistaV1 [
 			^ self jump: offset ] ].
 
 	"not followed by a jumpIfFalse; (un)do instruction fetch and push boolean result"
-	currentBytecode := bytecode.
+	self currentBytecode: bytecode.
 	self push: objectMemory trueObject
 ]
 
@@ -2725,7 +2728,7 @@ StackInterpreter >> booleanCheatTrueV4 [
 			^ self jump: offset ] ].
 
 	"not followed by a jumpIfFalse; (un)do instruction fetch and push boolean result"
-	currentBytecode := bytecode.
+	self currentBytecode: bytecode.
 	self push: objectMemory trueObject
 ]
 
@@ -2987,14 +2990,16 @@ StackInterpreter >> bytecodePrimEqualSistaV1 [
 	| rcvr arg aBool |
 	rcvr := self stackValue: 1.
 	arg := self stackValue: 0.
+
+	messageSelector := self specialSelector: 6.
+	argumentCount := 1.
+
 	(objectMemory areIntegers: rcvr and: arg) ifTrue: [^self booleanCheatSistaV1: rcvr = arg].
 
 	self initPrimCall.
 	aBool := self primitiveFloatEqual: rcvr toArg: arg.
 	self successful ifTrue: [^self booleanCheatSistaV1: aBool].
 
-	messageSelector := self specialSelector: 6.
-	argumentCount := 1.
 	self normalSend
 ]
 
@@ -3039,6 +3044,10 @@ StackInterpreter >> bytecodePrimGreaterOrEqualSistaV1 [
 	| rcvr arg aBool |
 	rcvr := self stackValue: 1.
 	arg := self stackValue: 0.
+
+	messageSelector := self specialSelector: 5.
+	argumentCount := 1.
+
 	(objectMemory areIntegers: rcvr and: arg) ifTrue:
 		["The C code can avoid detagging since tagged integers are still signed.
 		 But this means the simulator must override to do detagging."
@@ -3049,8 +3058,6 @@ StackInterpreter >> bytecodePrimGreaterOrEqualSistaV1 [
 	aBool := self primitiveFloatGreaterOrEqual: rcvr toArg: arg.
 	self successful ifTrue: [^self booleanCheatSistaV1: aBool].
 
-	messageSelector := self specialSelector: 5.
-	argumentCount := 1.
 	self normalSend
 ]
 
@@ -3099,6 +3106,10 @@ StackInterpreter >> bytecodePrimGreaterThanSistaV1 [
 	| rcvr arg aBool |
 	rcvr := self stackValue: 1.
 	arg := self stackValue: 0.
+
+	messageSelector := self specialSelector: 3.
+	argumentCount := 1.
+
 	(objectMemory areIntegers: rcvr and: arg) ifTrue:
 		["The C code can avoid detagging since tagged integers are still signed.
 		 But this means the simulator must override to do detagging."
@@ -3109,8 +3120,6 @@ StackInterpreter >> bytecodePrimGreaterThanSistaV1 [
 	aBool := self primitiveFloatGreater: rcvr thanArg: arg.
 	self successful ifTrue: [^self booleanCheatSistaV1: aBool].
 
-	messageSelector := self specialSelector: 3.
-	argumentCount := 1.
 	self normalSend
 ]
 
@@ -3151,6 +3160,10 @@ StackInterpreter >> bytecodePrimIdenticalSistaV1 [
 	| rcvr arg |
 	rcvr := self stackValue: 1.
 	arg := self stackValue: 0.
+
+	messageSelector := self specialSelector: 22.
+	argumentCount := 1.
+
 	(objectMemory isOopForwarded: rcvr) ifTrue:
 		[rcvr := self handleSpecialSelectorSendFaultFor: rcvr].
 	(objectMemory isOopForwarded: arg) ifTrue:
@@ -3195,6 +3208,10 @@ StackInterpreter >> bytecodePrimLessOrEqualSistaV1 [
 	| rcvr arg aBool |
 	rcvr := self stackValue: 1.
 	arg := self stackValue: 0.
+
+	messageSelector := self specialSelector: 4.
+	argumentCount := 1.
+
 	(objectMemory areIntegers: rcvr and: arg) ifTrue:
 		["The C code can avoid detagging since tagged integers are still signed.
 		 But this means the simulator must override to do detagging."
@@ -3205,8 +3222,6 @@ StackInterpreter >> bytecodePrimLessOrEqualSistaV1 [
 	aBool := self primitiveFloatLessOrEqual: rcvr toArg: arg.
 	self successful ifTrue: [^self booleanCheatSistaV1: aBool].
 
-	messageSelector := self specialSelector: 4.
-	argumentCount := 1.
 	self normalSend
 ]
 
@@ -3255,6 +3270,10 @@ StackInterpreter >> bytecodePrimLessThanSistaV1 [
 	| rcvr arg aBool |
 	rcvr := self stackValue: 1.
 	arg := self stackValue: 0.
+
+	messageSelector := self specialSelector: 2.
+	argumentCount := 1.
+
 	(objectMemory areIntegers: rcvr and: arg) ifTrue:
 		["The C code can avoid detagging since tagged integers are still signed.
 		 But this means the simulator must override to do detagging."
@@ -3265,8 +3284,6 @@ StackInterpreter >> bytecodePrimLessThanSistaV1 [
 	aBool := self primitiveFloatLess: rcvr thanArg: arg.
 	self successful ifTrue: [^ self booleanCheatSistaV1: aBool].
 
-	messageSelector := self specialSelector: 2.
-	argumentCount := 1.
 	self normalSend
 ]
 
@@ -3409,14 +3426,16 @@ StackInterpreter >> bytecodePrimNotEqualSistaV1 [
 	| rcvr arg aBool |
 	rcvr := self stackValue: 1.
 	arg := self stackValue: 0.
+	
+	messageSelector := self specialSelector: 7.
+	argumentCount := 1.
+
 	(objectMemory areIntegers: rcvr and: arg) ifTrue: [^self booleanCheatSistaV1: rcvr ~= arg].
 
 	self initPrimCall.
 	aBool := self primitiveFloatEqual: rcvr toArg: arg.
 	self successful ifTrue: [^self booleanCheatSistaV1: aBool not].
 
-	messageSelector := self specialSelector: 7.
-	argumentCount := 1.
 	self normalSend
 ]
 
@@ -3453,6 +3472,10 @@ StackInterpreter >> bytecodePrimNotIdenticalSistaV1 [
 	| rcvr arg |
 	rcvr := self stackValue: 1.
 	arg := self stackValue: 0.
+	
+	messageSelector := self specialSelector: 24.
+	argumentCount := 1.
+
 	(objectMemory isOopForwarded: rcvr) ifTrue:
 		[rcvr := self handleSpecialSelectorSendFaultFor: rcvr].
 	(objectMemory isOopForwarded: arg) ifTrue:
@@ -4889,6 +4912,17 @@ StackInterpreter >> currentBytecode [
 	^ currentBytecode
 ]
 
+{ #category : #accessing }
+StackInterpreter >> currentBytecode: anInteger [
+	"Use this setter to change the current bytecode, so we can profile."
+
+	<inline: true>
+	currentBytecode := anInteger.
+	
+	self profileCurrentBytecode
+
+]
+
 { #category : #initialization }
 StackInterpreter >> defaultNumStackPages [
 	"Return the default number of stack pages allocate at startup.
@@ -5796,7 +5830,7 @@ StackInterpreter >> fetchNextBytecode [
 
 	"This method fetches the next instruction (bytecode). Each bytecode method is responsible for fetching the next bytecode, preferably as early as possible to allow the memory system time to process the request before the next dispatch."
 
-	currentBytecode := self fetchByte
+	self currentBytecode: self fetchByte
 ]
 
 { #category : #'frame access' }
@@ -5876,19 +5910,21 @@ StackInterpreter >> findClassContainingMethod: meth startingAt: classObj [
 StackInterpreter >> findClassForSelector: aSelector lookupClass: startClass do: unaryBlock [
 	"Search startClass' class hierarchy looking for aSelector and if found, evaluate unaryBlock
 	 with the class where the selector is found.  Otherwise evaluate unaryBlock with nil."
+
 	| currClass classDict classDictSize i |
 	currClass := startClass.
-	[classDict := objectMemory fetchPointer: MethodDictionaryIndex ofObject: currClass.
-	 classDictSize := objectMemory numSlotsOf: classDict.
-	 i := SelectorStart.
-	 [i < classDictSize] whileTrue:
-		[aSelector = (objectMemory fetchPointer: i ofObject: classDict) ifTrue:
-			[^unaryBlock value: currClass].
-			i := i + 1].
-	 currClass := self superclassOf: currClass.
-	 currClass = objectMemory nilObject] whileFalse.
-	^unaryBlock value: nil    "selector not found in superclass chain"
-		
+	[ currClass = objectMemory nilObject ] whileFalse: [
+		classDict := objectMemory
+			             fetchPointer: MethodDictionaryIndex
+			             ofObject: currClass.
+		classDictSize := objectMemory numSlotsOf: classDict.
+		i := SelectorStart.
+		[ i < classDictSize ] whileTrue: [
+			aSelector = (objectMemory fetchPointer: i ofObject: classDict)
+				ifTrue: [ ^ unaryBlock value: currClass ].
+			i := i + 1 ].
+		currClass := self superclassOf: currClass ].
+	^ unaryBlock value: nil "selector not found in superclass chain"
 ]
 
 { #category : #'debug support' }
@@ -8390,7 +8426,7 @@ StackInterpreter >> itemporary: offset in: theFP put: valueOop [
 StackInterpreter >> jump: offset [
 
 	instructionPointer := instructionPointer + offset + 1.
-	currentBytecode := objectMemory byteAtPointer: instructionPointer
+	self currentBytecode: (objectMemory byteAtPointer: instructionPointer)
 ]
 
 { #category : #'sista bytecodes' }
@@ -12294,7 +12330,11 @@ StackInterpreter >> printProcsOnList: procList [
 
 { #category : #'debug printing' }
 StackInterpreter >> printSends [
-	^false
+
+	^ self
+		  cppIf: #PROFILE_CURRENT_BYTECODE
+		  ifTrue: [ true ]
+		  ifFalse: [ false ]
 ]
 
 { #category : #'debug printing' }
@@ -12530,6 +12570,16 @@ StackInterpreter >> processesInProcessListDo: aBlock [
 					        withInitialValue: ctxt ].
 			(self isLiveContext: ctxt) ifTrue: [ aBlock value: proc ].
 			proc := objectMemory fetchPointer: NextLinkIndex ofObject: proc ] ]
+]
+
+{ #category : #accessing }
+StackInterpreter >> profileCurrentBytecode [
+
+	<inline: true>
+	self cppIf: #PROFILE_CURRENT_BYTECODE ifTrue: [
+		self printNum: currentBytecode.
+		self cr.
+		self flush ]
 ]
 
 { #category : #'as yet unclassified' }
