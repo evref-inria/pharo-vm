@@ -445,6 +445,12 @@ TStatementListNode >> isEmptyStmtListNode [
 ]
 
 { #category : 'testing' }
+TStatementListNode >> isExpression [
+
+	^ true
+]
+
+{ #category : 'testing' }
 TStatementListNode >> isNilStmtListNode [
 
 	|stmt|

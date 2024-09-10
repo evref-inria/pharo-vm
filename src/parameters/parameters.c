@@ -76,6 +76,7 @@ static VMErrorCode processMaxCodeSpaceSizeOption(const char *argument, VMParamet
 static VMErrorCode processEdenSizeOption(const char *argument, VMParameters * params);
 static VMErrorCode processWorkerOption(const char *argument, VMParameters * params);
 static VMErrorCode processMinPermSpaceSizeOption(const char *argument, VMParameters * params);
+static VMErrorCode processStackPageSizeOption(const char *argument, VMParameters * params);
 static VMErrorCode processAvoidSearchingSegmentsWithPinnedObjects(const char *argument, VMParameters * params);
 
 static const VMParameterSpec vm_parameters_spec[] =
@@ -90,6 +91,7 @@ static const VMParameterSpec vm_parameters_spec[] =
   {.name = "h", .hasArgument = false, .function = processHelpOption},
   {.name = "version", .hasArgument = false, .function = processPrintVersionOption},
   {.name = "logLevel", .hasArgument = true, .function = processLogLevelOption},
+  {.name = "stackPageSize", .hasArgument = true, .function = processStackPageSizeOption},
   {.name = "maxFramesToLog", .hasArgument = true, .function = processMaxFramesToPrintOption},
   {.name = "maxOldSpaceSize", .hasArgument = true, .function = processMaxOldSpaceSizeOption},
   {.name = "codeSize", .hasArgument = true, .function = processMaxCodeSpaceSizeOption},
@@ -439,6 +441,8 @@ vm_printUsageTo(FILE *out)
 "                                       It is possible to use k(kB), M(MB) and G(GB).\n"
 "  --minPermSpaceSize=<size>[mk]        Sets the size of eden\n"
 "                                       It is possible to use k(kB), M(MB) and G(GB).\n"
+"  --stackPageSize=<size>[mk]           Sets the size of each stack page\n"
+"                                       It is possible to use k(kB), M(MB) and G(GB).\n"
 "\n"
 "  --avoidSearchingSegmentsWithPinnedObjects\n"
 "                                       When pinning young objects, the objects are clonned into the old space.\n"
@@ -468,6 +472,25 @@ processLogLevelOption(const char* value, VMParameters * params)
 	}
 
 	logLevel(intValue);
+	return VM_SUCCESS;
+}
+
+static VMErrorCode
+processStackPageSizeOption(const char* value, VMParameters * params)
+{
+	int intValue = 0;
+
+    intValue = parseByteSize(value);
+
+	if(intValue < 0)
+	{
+		logError("Invalid option for stackPageSize: %s\n", value);
+	    vm_printUsageTo(stderr);
+		return VM_ERROR_INVALID_PARAMETER_VALUE;
+	}
+
+	params->stackPageSize = intValue;
+
 	return VM_SUCCESS;
 }
 
@@ -735,6 +758,7 @@ vm_parameters_init(VMParameters *parameters){
 	parameters->maxOldSpaceSize = 0;
 	parameters->edenSize = 0;
 	parameters->minPermSpaceSize = 0;
+    parameters->stackPageSize = 0;
 	parameters->imageFileName = NULL;
 	parameters->isDefaultImage = false;
 	parameters->defaultImageFound = false;
