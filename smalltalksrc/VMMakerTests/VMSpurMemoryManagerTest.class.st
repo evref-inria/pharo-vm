@@ -462,7 +462,7 @@ VMSpurMemoryManagerTest >> newClassInOldSpaceWithSlots: numberOfSlots instSpec: 
 	| newClass formatWithSlots |
 
 	newClass := memory
-		allocateSlotsInOldSpace: 3
+		allocateSlotsInOldSpace: 6
 		format: memory nonIndexablePointerFormat
 		classIndex: memory arrayClassIndexPun.
 	

@@ -135,6 +135,16 @@ VMByteCodesTest >> setUp [
 	self installFloat64RegisterClass
 ]
 
+{ #category : 'initialization' }
+VMByteCodesTest >> setUpVTableIn: aClass [
+	"The VTable is an array in the 4th entry of the class"
+
+	| array |
+	array := self newArrayWithSlots: 10.
+	memory storePointer: VTableIndex ofObject: aClass withValue: array.
+	^ array
+]
+
 { #category : 'tests-push-simple' }
 VMByteCodesTest >> storeAndPopTemporaryIntoTempTest: index [
 	
@@ -744,4 +754,36 @@ VMByteCodesTest >> testSubVectorBytecode [
 	self assert: (memory fetchFloat64: 0 ofObject: result) equals: 3.0.
 	self assert: (memory fetchFloat64: 1 ofObject: result) equals: 2.0.
 	
+]
+
+{ #category : 'tests-send' }
+VMByteCodesTest >> testVTableCall [
+
+	| aMethod aMethodToActivate receiver receiverClass vTable |
+	aMethod := methodBuilder
+		           bytecodes: #[ 246 0 ];
+		           buildMethod. "send VTable" "index"
+	aMethodToActivate := methodBuilder newMethod
+		                     numberOfArguments: 0;
+		                     buildMethod.
+	receiver := memory integerObjectOf: 41.
+	receiverClass := self setSmallIntegerClassIntoClassTable.
+
+	vTable := self setUpVTableIn: receiverClass.
+
+	memory storePointer: 0 ofObject: vTable withValue: aMethodToActivate.
+
+	stackBuilder addNewFrame
+		method: aMethod;
+		stack: { receiver }.
+	stackBuilder buildStack.
+
+	interpreter setBreakSelector: nil.
+	interpreter method: aMethod.
+	interpreter currentBytecode: 246.
+
+	interpreter fetchByte.
+	self interpret: [ interpreter sendVTableMessage ].
+
+	self assert: interpreter stackTop equals: receiver
 ]
