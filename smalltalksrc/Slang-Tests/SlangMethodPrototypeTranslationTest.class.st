@@ -1,14 +1,13 @@
 Class {
-	#name : 'SlangMethodPrototypeTranslationTest',
-	#superclass : 'TestCase',
+	#name : #SlangMethodPrototypeTranslationTest,
+	#superclass : #TestCase,
 	#instVars : [
 		'generator'
 	],
-	#category : 'Slang-Tests',
-	#package : 'Slang-Tests'
+	#category : #'Slang-Tests'
 }
 
-{ #category : 'helpers' }
+{ #category : #helpers }
 SlangMethodPrototypeTranslationTest >> astTranslate: tMethod inStream: aWriteStream [
 
 	| cAST prettyPrinter |
@@ -18,7 +17,7 @@ SlangMethodPrototypeTranslationTest >> astTranslate: tMethod inStream: aWriteStr
 	cAST acceptVisitor: prettyPrinter
 ]
 
-{ #category : 'test-prototype' }
+{ #category : #'test-prototype' }
 SlangMethodPrototypeTranslationTest >> testMethodPrototype [
 	
 	| tMethod translation |
@@ -28,7 +27,7 @@ SlangMethodPrototypeTranslationTest >> testMethodPrototype [
 	self assert: translation trimBoth equals: 'static sqInt firstsecond(sqInt param1, sqInt param2);'
 ]
 
-{ #category : 'helpers' }
+{ #category : #helpers }
 SlangMethodPrototypeTranslationTest >> translate: tast [
 
 	^ String streamContents: [ :str | 

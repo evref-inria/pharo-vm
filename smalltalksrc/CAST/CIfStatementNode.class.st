@@ -1,17 +1,15 @@
 Class {
-	#name : 'CIfStatementNode',
-	#superclass : 'CGLRAbstractNode',
+	#name : #CIfStatementNode,
+	#superclass : #CGLRAbstractNode,
 	#instVars : [
 		'then',
 		'else',
 		'if'
 	],
-	#category : 'CAST-Nodes',
-	#package : 'CAST',
-	#tag : 'Nodes'
+	#category : #'CAST-Nodes'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 CIfStatementNode class >> if: aCondition then: anExpression [
 
 	^ self new
@@ -20,7 +18,7 @@ CIfStatementNode class >> if: aCondition then: anExpression [
 		  yourself
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 CIfStatementNode class >> if: aCondition then: anExpression else: anOtherExpression [
 
 	^ self new
@@ -30,17 +28,17 @@ CIfStatementNode class >> if: aCondition then: anExpression else: anOtherExpress
 		  yourself
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CIfStatementNode >> acceptVisitor: anAbstractVisitor [
 	^ anAbstractVisitor visitIfStatement: self
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CIfStatementNode >> else [
 	^ else
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CIfStatementNode >> else: aCGLRAbstractNode [
 	self else notNil
 		ifTrue: [ self else parent: nil ].
@@ -49,12 +47,12 @@ CIfStatementNode >> else: aCGLRAbstractNode [
 		ifTrue: [ self else parent: self ]
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CIfStatementNode >> if [
 	^ if
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CIfStatementNode >> if: aCGLRExpressionNode [
 	self assertExpression: aCGLRExpressionNode.
 	
@@ -65,30 +63,30 @@ CIfStatementNode >> if: aCGLRExpressionNode [
 		ifTrue: [ self if parent: self ]
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 CIfStatementNode >> isIf [
 	
 	^ true
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 CIfStatementNode >> needsSeparator [
 
 	^ false
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 CIfStatementNode >> needsTrailingSemicolon [
 
 	^ false
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CIfStatementNode >> then [
 	^ then
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CIfStatementNode >> then: aCGLRAbstractNode [
 	self then notNil
 		ifTrue: [ self then parent: nil ].

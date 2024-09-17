@@ -7,9 +7,8 @@
 extern void setMaxStacksToPrint(sqInt anInteger);
 extern sqInt setMaxOldSpaceSize(usqInt limit);
 extern void setDesiredCogCodeSize(sqInt anInteger);
-extern void setDesiredEdenBytes(sqLong anInteger);
+extern sqInt setDesiredEdenBytes(usqLong bytes);
 extern void setMinimalPermSpaceSize(sqInt min);
-extern void setDesiredStackPageBytes(sqLong anInteger);
 
 #if defined(__GNUC__) && ( defined(i386) || defined(__i386) || defined(__i386__)  \
 			|| defined(i486) || defined(__i486) || defined (__i486__) \
@@ -33,7 +32,7 @@ void mtfsfi(unsigned long long fpscr)
 #   define mtfsfi(fpscr)
 #endif
 
-static int loadPharoImage(char* fileName);
+static int loadPharoImage(const char* fileName);
 static void* runVMThread(void* p);
 static int runOnMainThread(VMParameters *parameters);
 #ifdef PHARO_VM_IN_WORKER_THREAD
@@ -70,7 +69,6 @@ EXPORT(int) vm_init(VMParameters* parameters)
 	setMaxOldSpaceSize(parameters->maxOldSpaceSize);
 	setDesiredEdenBytes(parameters->edenSize);
 	setMinimalPermSpaceSize(parameters->minPermSpaceSize);
-	setDesiredStackPageBytes(parameters->stackPageSize);
 
 	if(parameters->maxCodeSize > 0) {
 #ifndef COGVM
@@ -206,8 +204,10 @@ vm_main(int argc, const char** argv, const char** env)
 }
 
 static int
-loadPharoImage(char* fileName)
+loadPharoImage(const char* fileName)
 {
+    struct stat sb;
+
     /* Check image exists */
     if (!sqImageFileExists(fileName)) {
         logErrorFromErrno("Image file not found");

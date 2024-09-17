@@ -1,15 +1,13 @@
 Class {
-	#name : 'MLLinerarisedStatement',
-	#superclass : 'Object',
+	#name : #MLLinerarisedStatement,
+	#superclass : #Object,
 	#instVars : [
 		'expressionToLinearise'
 	],
-	#category : 'Slang-Optimizations',
-	#package : 'Slang',
-	#tag : 'Optimizations'
+	#category : #'Slang-Optimizations'
 }
 
-{ #category : 'building' }
+{ #category : #building }
 MLLinerarisedStatement >> asExpressionIn: aMLStatementListBuider [ 
 	
 	"Expression value is used:
@@ -17,20 +15,20 @@ MLLinerarisedStatement >> asExpressionIn: aMLStatementListBuider [
 	^ aMLStatementListBuider addLinearisedStatement: expressionToLinearise
 ]
 
-{ #category : 'building' }
+{ #category : #building }
 MLLinerarisedStatement >> asStatementIn: aMLStatementListBuider [ 
 	
 	"Expression value is not used"
 	^ expressionToLinearise
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 MLLinerarisedStatement >> expressionToLinearise [
 
 	^ expressionToLinearise
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 MLLinerarisedStatement >> expressionToLinearise: anObject [
 
 	expressionToLinearise := anObject

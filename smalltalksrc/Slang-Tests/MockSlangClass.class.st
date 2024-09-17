@@ -1,61 +1,52 @@
 Class {
-	#name : 'MockSlangClass',
-	#superclass : 'SlangClass',
+	#name : #MockSlangClass,
+	#superclass : #SlangClass,
 	#instVars : [
 		'mockConstantClass',
 		'cogitClass',
 		'objectMemoryClass',
 		'initializationOptions'
 	],
-	#category : 'Slang-Tests',
-	#package : 'Slang-Tests'
+	#category : #'Slang-Tests'
 }
 
-{ #category : 'testing' }
-MockSlangClass >> bindingOf: aString [ 
-	
-	"For compatibility, used by the code generator to lookup for constants"
-	
-	^ nil
-]
-
-{ #category : 'accessing' }
+{ #category : #accessing }
 MockSlangClass >> cogitClass [
 	
 	^ cogitClass
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 MockSlangClass >> cogitClass: aClass [ 
 	cogitClass := aClass
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 MockSlangClass >> constantClass [
 	
 	^ mockConstantClass
 ]
 
-{ #category : 'compatibility' }
+{ #category : #compatibility }
 MockSlangClass >> defineAtCompileTime: aString [ 
 	
 	^ self class defineAtCompileTime: aString 
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 MockSlangClass >> initializationOptions [
 	
 	^ initializationOptions
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 MockSlangClass >> initialize [
 
 	super initialize.
 	initializationOptions := Dictionary new
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 MockSlangClass >> innerBindingOf: aString [ 
 	
 	"For compatibility, used by the code generator to lookup for constants"
@@ -63,40 +54,40 @@ MockSlangClass >> innerBindingOf: aString [
 	^ nil
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 MockSlangClass >> interpreterClass [
 	
 	^ nil
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 MockSlangClass >> mockConstantClass [
 	^ mockConstantClass
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 MockSlangClass >> mockConstantClass: anObject [
 	mockConstantClass := anObject
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 MockSlangClass >> objectMemoryClass [
 	
 	^ objectMemoryClass
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 MockSlangClass >> objectMemoryClass: aClass [ 
 	objectMemoryClass := aClass
 ]
 
-{ #category : 'options' }
+{ #category : #options }
 MockSlangClass >> optionsAt: aKey put: aValue [
 	
 	initializationOptions at: aKey put: aValue
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 MockSlangClass >> shouldGenerateDeadCode [
 	
 	^ false

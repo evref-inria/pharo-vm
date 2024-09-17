@@ -1,18 +1,16 @@
 Class {
-	#name : 'CFunctionDeclaratorNode',
-	#superclass : 'CAbstractDeclaratorNode',
+	#name : #CFunctionDeclaratorNode,
+	#superclass : #CAbstractDeclaratorNode,
 	#instVars : [
 		'identifiers',
 		'parameters',
 		'ellipsis',
 		'isPrototype'
 	],
-	#category : 'CAST-Nodes',
-	#package : 'CAST',
-	#tag : 'Nodes'
+	#category : #'CAST-Nodes'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 CFunctionDeclaratorNode class >> declarator: aDeclarator parameters: parameters [
 
 	^ self new
@@ -21,7 +19,7 @@ CFunctionDeclaratorNode class >> declarator: aDeclarator parameters: parameters 
 		  yourself
 ]
 
-{ #category : 'comparing' }
+{ #category : #comparing }
 CFunctionDeclaratorNode >> = anObject [
 
 	"Answer whether the receiver and anObject represent the same object."
@@ -34,22 +32,22 @@ CFunctionDeclaratorNode >> = anObject [
 				  declarator = anObject declarator ] ] ]
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CFunctionDeclaratorNode >> acceptVisitor: anAbstractVisitor [
 	^ anAbstractVisitor visitFunctionDeclarator: self
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CFunctionDeclaratorNode >> compositeNodeVariables [
 	^ #(#parameters #identifiers)
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CFunctionDeclaratorNode >> declarator [
 	^ declarator
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CFunctionDeclaratorNode >> declarator: aCGLRAbstractNode [
 	self declarator notNil
 		ifTrue: [ self declarator parent: nil ].
@@ -58,17 +56,17 @@ CFunctionDeclaratorNode >> declarator: aCGLRAbstractNode [
 		ifTrue: [ self declarator parent: self ]
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CFunctionDeclaratorNode >> ellipsis [
 	^ ellipsis
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CFunctionDeclaratorNode >> ellipsis: aSmaCCToken [
 	ellipsis := aSmaCCToken
 ]
 
-{ #category : 'comparing' }
+{ #category : #comparing }
 CFunctionDeclaratorNode >> hash [
 
 	"Answer an integer value that is related to the identity of the receiver."
@@ -77,19 +75,19 @@ CFunctionDeclaratorNode >> hash [
 		  (identifiers hash bitXor: (ellipsis hash bitXor: declarator hash))
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CFunctionDeclaratorNode >> identifiers [
 	^ identifiers
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CFunctionDeclaratorNode >> identifiers: anOrderedCollection [
 	self setParents: self identifiers to: nil.
 	identifiers := anOrderedCollection.
 	self setParents: self identifiers to: self
 ]
 
-{ #category : 'generated-initialize-release' }
+{ #category : #'generated-initialize-release' }
 CFunctionDeclaratorNode >> initialize [
 
 	super initialize.
@@ -98,30 +96,30 @@ CFunctionDeclaratorNode >> initialize [
 	isPrototype := false
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 CFunctionDeclaratorNode >> isFunctionDeclarator [
 	
 	^ true
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 CFunctionDeclaratorNode >> isPrototype [
 
 	^ isPrototype
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 CFunctionDeclaratorNode >> isPrototype: aBoolean [
 
 	isPrototype := aBoolean
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CFunctionDeclaratorNode >> parameters [
 	^ parameters
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CFunctionDeclaratorNode >> parameters: anOrderedCollection [
 	self setParents: self parameters to: nil.
 	parameters := anOrderedCollection.

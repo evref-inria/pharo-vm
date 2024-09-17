@@ -1,15 +1,13 @@
 Class {
-	#name : 'CSizeofNode',
-	#superclass : 'CExpressionNode',
+	#name : #CSizeofNode,
+	#superclass : #CExpressionNode,
 	#instVars : [
 		'child'
 	],
-	#category : 'CAST-Nodes',
-	#package : 'CAST',
-	#tag : 'Nodes'
+	#category : #'CAST-Nodes'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 CSizeofNode class >> operator: anOperator expression: anExpression [
 
 	^ self new
@@ -18,25 +16,25 @@ CSizeofNode class >> operator: anOperator expression: anExpression [
 		  yourself
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSizeofNode >> acceptVisitor: anAbstractVisitor [
 	^ anAbstractVisitor visitSizeof: self
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 CSizeofNode >> child [
 
 	^ child
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 CSizeofNode >> child: anObject [
 	self assertExpression: anObject.
 	
 	child := anObject
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 CSizeofNode >> isSizeof [ 
 
 	^ true

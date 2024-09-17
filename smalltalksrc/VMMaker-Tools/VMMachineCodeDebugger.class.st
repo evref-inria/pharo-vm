@@ -184,10 +184,10 @@ VMMachineCodeDebugger >> doInitialDisassemble [
 	^ machineSimulator disassembler
 		printImmediatesInHexa;
 		useAlternatePrinterVariant;
-		disassembleNext: 150
+		disassembleNext: 600
 		instructionsIn: (cogit objectMemory memoryManager
 			copyFrom: self initialInstructionToDisassemble
-			to: self initialInstructionToDisassemble + 600)
+			to: self initialInstructionToDisassemble + 5000)
 		startAddress: self initialInstructionToDisassemble
 		pc: machineSimulator instructionPointerRegisterValue
 ]
@@ -212,7 +212,7 @@ VMMachineCodeDebugger >> highlightMCInstructions: aVMDebuggerIRInstruction [
 VMMachineCodeDebugger >> highlightPCInstruction [
 
 	| index |
-	index :=	(self initialDisassembly collect: [ :e | e address ]) indexOf: machineSimulator instructionPointerValue.
+	index :=	(self initialDisassembly collect: [ :e | e address ]) indexOf: machineSimulator instructionPointerRegisterValue.
 	instructions selection selectIndex: index
 
 ]
@@ -530,4 +530,10 @@ VMMachineCodeDebugger >> step [
 VMMachineCodeDebugger >> title [
    
 	^ 'VM Debugger'
+]
+
+{ #category : #accessing }
+VMMachineCodeDebugger >> x26 [
+	
+	^ machineSimulator x26
 ]

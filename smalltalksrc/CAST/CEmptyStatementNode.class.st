@@ -1,23 +1,21 @@
 Class {
-	#name : 'CEmptyStatementNode',
-	#superclass : 'CGLRAbstractNode',
-	#category : 'CAST-Nodes',
-	#package : 'CAST',
-	#tag : 'Nodes'
+	#name : #CEmptyStatementNode,
+	#superclass : #CGLRAbstractNode,
+	#category : #'CAST-Nodes'
 }
 
-{ #category : 'testing' }
+{ #category : #testing }
 CEmptyStatementNode >> acceptVisitor: anAbstractVisitor [
 	^ anAbstractVisitor visitEmptyStatement: self
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 CEmptyStatementNode >> isEmpty [
 	
 	^ true
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 CEmptyStatementNode >> isEmptyStatement [
 	
 	^ true

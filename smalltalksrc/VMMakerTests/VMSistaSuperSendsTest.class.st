@@ -71,3 +71,49 @@ VMSistaSuperSendsTest >> testSuperSendLiteralZeroWithZeroArgsMovesSelectorIndexC
 	self assert: machineSimulator temporaryRegisterValue equals: binding.
 	self assert: machineSimulator receiverRegisterValue equals: receiver
 ]
+
+{ #category : 'tests - sends/super' }
+VMSistaSuperSendsTest >> testasd [
+
+	| startPC receiver aMethod |
+	cogit methodAbortTrampolines at: 0 put: (self compile: [ cogit RetN: 0 ]).
+	aMethod := methodBuilder
+		           bytecodes: #[ 246 0 ];
+		           buildMethod. "send VTable" "index"
+
+	receiver := self configVTable .
+
+	stackBuilder addNewFrame; buildStack.
+	
+	self createFramefulCallFrom: callerAddress.
+	
+	cogit byte1: 0. "Index = 0 ; numArgs = 0"	
+	self setUpTrampolines.
+	self setUpCogMethodEntry.
+	cogit methodObj: aMethod.
+
+	startPC := interpreter startPCOfMethod: cogit methodObj.
+	sendAddress := self compile: [ 
+		               cogit methodOrBlockNumTemps: 0.
+		               cogit initSimStackForFramelessMethod: startPC.
+		               cogit bytecodePC: startPC.
+		               cogit endPC: (memory numBytesOf: cogit methodObj).
+
+		               "Push receiver and arguments"
+		               cogit ssPushConstant: receiver .
+						   cogit genSendVTableMessage
+		 ].
+
+
+	"Push receiver, arg, then send"
+	self
+		prepareStackForSendReceiver: receiver
+		arguments: { (memory integerObjectOf: 42) }.
+
+
+	"self openMachineDebuggerAt: sendAddress." 1halt.
+
+
+	"self runFrom: sendAddress until: sendTrampolineAddress."
+
+]

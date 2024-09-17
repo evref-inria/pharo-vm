@@ -1,12 +1,10 @@
 Class {
-	#name : 'CCodeGeneratorInlineAsSpecifiedOrQuickStrategy',
-	#superclass : 'CCodeGeneratorInlineAsSpecifiedStrategy',
-	#category : 'Slang-CodeGeneration',
-	#package : 'Slang',
-	#tag : 'CodeGeneration'
+	#name : #CCodeGeneratorInlineAsSpecifiedOrQuickStrategy,
+	#superclass : #CCodeGeneratorInlineAsSpecifiedStrategy,
+	#category : #'Slang-CodeGeneration'
 }
 
-{ #category : 'testing' }
+{ #category : #testing }
 CCodeGeneratorInlineAsSpecifiedOrQuickStrategy >> isQuickCompiledMethod: aCompiledMethod [
 
 	^aCompiledMethod isQuick
@@ -14,7 +12,7 @@ CCodeGeneratorInlineAsSpecifiedOrQuickStrategy >> isQuickCompiledMethod: aCompil
 		and: [(aCompiledMethod abstractBytecodeMessageAt: (InstructionStream on: aCompiledMethod) followingPc) selector == #methodReturnTop]]
 ]
 
-{ #category : 'asserting' }
+{ #category : #asserting }
 CCodeGeneratorInlineAsSpecifiedOrQuickStrategy >> shouldInlineMethod: aMethod [
 
 	^ (super shouldInlineMethod: aMethod)

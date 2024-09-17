@@ -1,23 +1,21 @@
 Class {
-	#name : 'CParameterDeclarationNode',
-	#superclass : 'CGLRAbstractNode',
+	#name : #CParameterDeclarationNode,
+	#superclass : #CGLRAbstractNode,
 	#instVars : [
 		'specifiers',
 		'declarator',
 		'rawDeclaration'
 	],
-	#category : 'CAST-Nodes',
-	#package : 'CAST',
-	#tag : 'Nodes'
+	#category : #'CAST-Nodes'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 CParameterDeclarationNode class >> declarator: aString [
 
 	^ self new declarator: aString
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 CParameterDeclarationNode class >> declarator: aString cDeclaration: cDecleration [
 
 	^ self new
@@ -26,7 +24,7 @@ CParameterDeclarationNode class >> declarator: aString cDeclaration: cDecleratio
 		  yourself
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 CParameterDeclarationNode class >> declarator: aString specifiers: anOrderedCollection [
 
 	^ self new
@@ -35,17 +33,17 @@ CParameterDeclarationNode class >> declarator: aString specifiers: anOrderedColl
 		  yourself
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CParameterDeclarationNode >> acceptVisitor: anAbstractVisitor [
 	^ anAbstractVisitor visitParameterDeclaration: self
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CParameterDeclarationNode >> declarator [
 	^ declarator
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CParameterDeclarationNode >> declarator: aCGLRAbstractNode [
 	self declarator notNil
 		ifTrue: [ self declarator parent: nil ].
@@ -54,30 +52,30 @@ CParameterDeclarationNode >> declarator: aCGLRAbstractNode [
 		ifTrue: [ self declarator parent: self ]
 ]
 
-{ #category : 'generated-initialize-release' }
+{ #category : #'generated-initialize-release' }
 CParameterDeclarationNode >> initialize [
 	super initialize.
 	specifiers := OrderedCollection new: 2.
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 CParameterDeclarationNode >> rawDeclaration [
 
 	^ rawDeclaration
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 CParameterDeclarationNode >> rawDeclaration: anObject [
 
 	rawDeclaration := anObject
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CParameterDeclarationNode >> specifiers [
 	^ specifiers
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CParameterDeclarationNode >> specifiers: anOrderedCollection [
 	specifiers := anOrderedCollection
 ]

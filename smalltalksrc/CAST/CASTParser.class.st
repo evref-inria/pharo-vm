@@ -2,19 +2,17 @@
 I am a C GLR Parser
 "
 Class {
-	#name : 'CASTParser',
-	#superclass : 'SmaCCGLRParser',
-	#category : 'CAST-Parser',
-	#package : 'CAST',
-	#tag : 'Parser'
+	#name : #CASTParser,
+	#superclass : #SmaCCGLRParser,
+	#category : #'CAST-Parser'
 }
 
-{ #category : 'generated-accessing' }
+{ #category : #'generated-accessing' }
 CASTParser class >> cacheId [
 	^'2017-12-13T09:32:38.213967+01:00'
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTParser class >> definitionComment [
 "<H>
 	: [a-fA-F0-9]
@@ -425,17 +423,17 @@ identifier: <IDENTIFIER> 'symbol' {{}};
 typename: <IDENTIFIER> 'symbol' {{}};"
 ]
 
-{ #category : 'generated-accessing' }
+{ #category : #'generated-accessing' }
 CASTParser class >> scannerClass [
 	^CASTScanner
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTParser class >> startingStateFortranslationUnit [
 	^ 1
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTParser >> ambiguousTransitions [
 ^#(
 #[ 0 26 0 30] 
@@ -448,7 +446,7 @@ CASTParser >> ambiguousTransitions [
 	).
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForabstract_declarator1: nodes [
 	| result |
 	result := CGLRAbstractDeclaratorNode new.
@@ -457,7 +455,7 @@ CASTParser >> reduceActionForabstract_declarator1: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForabstract_declarator2: nodes [
 	| result |
 	result := CGLRAbstractDeclaratorNode new.
@@ -465,7 +463,7 @@ CASTParser >> reduceActionForabstract_declarator2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForabstract_declarator3: nodes [
 	| result |
 	result := CGLRAbstractDeclaratorNode new.
@@ -475,7 +473,7 @@ CASTParser >> reduceActionForabstract_declarator3: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForassignment_expression2: nodes [
 	| result |
 	result := CAssignmentNode new.
@@ -485,7 +483,7 @@ CASTParser >> reduceActionForassignment_expression2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForcast_expression2: nodes [
 	| result |
 	result := CCastExpressionNode new.
@@ -494,14 +492,14 @@ CASTParser >> reduceActionForcast_expression2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForcompound_statement1: nodes [
 	| result |
 	result := CCompoundStatementNode new.
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForcompound_statement2: nodes [
 	| result |
 	result := CCompoundStatementNode new.
@@ -509,7 +507,7 @@ CASTParser >> reduceActionForcompound_statement2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForcompound_statement3: nodes [
 	| result |
 	result := CCompoundStatementNode new.
@@ -517,7 +515,7 @@ CASTParser >> reduceActionForcompound_statement3: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForcompound_statement4: nodes [
 	| result |
 	result := CCompoundStatementNode new.
@@ -526,7 +524,7 @@ CASTParser >> reduceActionForcompound_statement4: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForconditional_expression2: nodes [
 	| result |
 	result := CTernaryNode new.
@@ -536,7 +534,7 @@ CASTParser >> reduceActionForconditional_expression2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFordeclaration1: nodes [
 	| result |
 	result := CDeclarationNode new.
@@ -544,7 +542,7 @@ CASTParser >> reduceActionFordeclaration1: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFordeclaration2: nodes [
 	| result |
 	result := CDeclarationNode new.
@@ -553,7 +551,7 @@ CASTParser >> reduceActionFordeclaration2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFordeclaration_specifiers1: nodes [
 	| result |
 	result := OrderedCollection new: 2.
@@ -561,7 +559,7 @@ CASTParser >> reduceActionFordeclaration_specifiers1: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFordeclaration_specifiers2: nodes [
 	| result |
 	result := nodes at: 2.
@@ -569,7 +567,7 @@ CASTParser >> reduceActionFordeclaration_specifiers2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFordeclarator1: nodes [
 	| result |
 	result := CPointerDeclaratorNode new.
@@ -579,20 +577,20 @@ CASTParser >> reduceActionFordeclarator1: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFordeclarator2: nodes [
 
 	^ nodes at: 1
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFordirect_abstract_declarator2: nodes [
 	| result |
 	result := CArrayDeclaratorNode new.
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFordirect_abstract_declarator3: nodes [
 	| result |
 	result := CArrayDeclaratorNode new.
@@ -600,14 +598,14 @@ CASTParser >> reduceActionFordirect_abstract_declarator3: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFordirect_abstract_declarator6: nodes [
 	| result |
 	result := CFunctionDeclaratorNode new.
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFordirect_abstract_declarator7: nodes [
 	| result |
 	result := CFunctionDeclaratorNode new.
@@ -616,13 +614,13 @@ CASTParser >> reduceActionFordirect_abstract_declarator7: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFordirect_declarator3: nodes [
 	
 	^ nodes at: 2
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFordirect_declarator4: nodes [
 	| result |
 	result := CArrayDeclaratorNode new.
@@ -631,7 +629,7 @@ CASTParser >> reduceActionFordirect_declarator4: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFordirect_declarator5: nodes [
 	| result |
 	result := CArrayDeclaratorNode new.
@@ -639,7 +637,7 @@ CASTParser >> reduceActionFordirect_declarator5: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFordirect_declarator6: nodes [
 	| result |
 	result := CFunctionDeclaratorNode new.
@@ -649,7 +647,7 @@ CASTParser >> reduceActionFordirect_declarator6: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFordirect_declarator7: nodes [
 	| result |
 	result := CFunctionDeclaratorNode new.
@@ -658,13 +656,13 @@ CASTParser >> reduceActionFordirect_declarator7: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFordirect_declarator8: nodes [
 	
 	^ nodes at: 1
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForenum_specifier1: nodes [
 	| result |
 	result := CGLREnumNode new.
@@ -672,7 +670,7 @@ CASTParser >> reduceActionForenum_specifier1: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForenum_specifier2: nodes [
 	| result |
 	result := CGLREnumNode new.
@@ -681,7 +679,7 @@ CASTParser >> reduceActionForenum_specifier2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForenum_specifier3: nodes [
 	| result |
 	result := CGLREnumNode new.
@@ -689,7 +687,7 @@ CASTParser >> reduceActionForenum_specifier3: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForenumerator1: nodes [
 	| result |
 	result := CGLREnumeratorNode new.
@@ -697,7 +695,7 @@ CASTParser >> reduceActionForenumerator1: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForenumerator2: nodes [
 	| result |
 	result := CGLREnumeratorNode new.
@@ -706,31 +704,31 @@ CASTParser >> reduceActionForenumerator2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForexpression1: nodes [
 
 	^ nodes at: 1
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForexpression2: nodes [
 	
 	^ (nodes at: 1), (nodes at: 3)
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForexpression_statement1: nodes [
 
 	^ CEmptyStatementNode new
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForexpression_statement2: nodes [
 
 	^ nodes at: 1
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForfunction_definition1: nodes [
 	| result |
 	result := CFunctionDefinitionNode new.
@@ -741,7 +739,7 @@ CASTParser >> reduceActionForfunction_definition1: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForfunction_definition2: nodes [
 	| result |
 	result := CFunctionDefinitionNode new.
@@ -751,7 +749,7 @@ CASTParser >> reduceActionForfunction_definition2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForfunction_definition3: nodes [
 	| result |
 	result := CFunctionDefinitionNode new.
@@ -761,7 +759,7 @@ CASTParser >> reduceActionForfunction_definition3: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForfunction_definition4: nodes [
 	| result |
 	result := CFunctionDefinitionNode new.
@@ -770,7 +768,7 @@ CASTParser >> reduceActionForfunction_definition4: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForidentifier1: nodes [
 	| result |
 	result := CIdentifierNode new.
@@ -778,7 +776,7 @@ CASTParser >> reduceActionForidentifier1: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForinit_declaration1: nodes [
 	| result |
 	result := Array new: 3.
@@ -791,13 +789,13 @@ CASTParser >> reduceActionForinit_declaration1: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForinit_declarator1: nodes [
 	
 	^ nodes at: 1
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForinit_declarator2: nodes [
 	| result |
 	result := CInitDeclaratorNode new.
@@ -806,7 +804,7 @@ CASTParser >> reduceActionForinit_declarator2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForinit_declarator_list2: nodes [
 	| result |
 	result := nodes at: 1.
@@ -815,7 +813,7 @@ CASTParser >> reduceActionForinit_declarator_list2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForinitializer2: nodes [
 	| result |
 	result := CGLRInitializerNode new.
@@ -823,7 +821,7 @@ CASTParser >> reduceActionForinitializer2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForinitializer3: nodes [
 	| result |
 	result := CGLRInitializerNode new.
@@ -831,7 +829,7 @@ CASTParser >> reduceActionForinitializer3: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForiteration_statement1: nodes [
 	| result |
 	result := CWhileStatementNode new.
@@ -840,7 +838,7 @@ CASTParser >> reduceActionForiteration_statement1: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForiteration_statement2: nodes [
 	| result |
 	result := CDoStatementNode new.
@@ -849,7 +847,7 @@ CASTParser >> reduceActionForiteration_statement2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForiteration_statement3: nodes [
 	| result |
 	result := CForStatementNode new.
@@ -859,7 +857,7 @@ CASTParser >> reduceActionForiteration_statement3: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForiteration_statement4: nodes [
 	| result |
 	result := CForStatementNode new.
@@ -870,7 +868,7 @@ CASTParser >> reduceActionForiteration_statement4: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForjump_statement1: nodes [
 	| result |
 	result := CGotoStatementNode new.
@@ -878,28 +876,28 @@ CASTParser >> reduceActionForjump_statement1: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForjump_statement2: nodes [
 	| result |
 	result := CGLRContinueStatementNode new.
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForjump_statement3: nodes [
 	| result |
 	result := CBreakStatementNode new.
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForjump_statement4: nodes [
 	| result |
 	result := CReturnStatementNode new.
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForjump_statement5: nodes [
 	| result |
 	result := CReturnStatementNode new.
@@ -907,7 +905,7 @@ CASTParser >> reduceActionForjump_statement5: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForlabeled_statement1: nodes [
 	| result |
 	result := CLabeledStatementNode new.
@@ -916,7 +914,7 @@ CASTParser >> reduceActionForlabeled_statement1: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForlabeled_statement2: nodes [
 	| result |
 	result := CLabeledStatementNode new.
@@ -925,7 +923,7 @@ CASTParser >> reduceActionForlabeled_statement2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForlabeled_statement3: nodes [
 	| result |
 	result := CLabeledStatementNode new.
@@ -934,7 +932,7 @@ CASTParser >> reduceActionForlabeled_statement3: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFormultiplicative_expression3: nodes [
 	| result |
 	result := CBinaryOperatorNode new.
@@ -944,7 +942,7 @@ CASTParser >> reduceActionFormultiplicative_expression3: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForparameter_declaration1: nodes [
 	| result |
 	result := CParameterDeclarationNode new.
@@ -953,7 +951,7 @@ CASTParser >> reduceActionForparameter_declaration1: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForparameter_declaration3: nodes [
 	| result |
 	result := CParameterDeclarationNode new.
@@ -961,7 +959,7 @@ CASTParser >> reduceActionForparameter_declaration3: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForparameter_type_list1: nodes [
 	| result |
 	result := Array new: 3.
@@ -972,7 +970,7 @@ CASTParser >> reduceActionForparameter_type_list1: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForparameter_type_list2: nodes [
 	| result |
 	result := Array new: 3.
@@ -985,7 +983,7 @@ CASTParser >> reduceActionForparameter_type_list2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForpointer1: nodes [
 	| result |
 	result := Array new: 2.
@@ -995,7 +993,7 @@ CASTParser >> reduceActionForpointer1: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForpointer2: nodes [
 	| result |
 	result := Array new: 2.
@@ -1006,7 +1004,7 @@ CASTParser >> reduceActionForpointer2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForpointer3: nodes [
 	| result |
 	result := nodes at: 2.
@@ -1014,7 +1012,7 @@ CASTParser >> reduceActionForpointer3: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForpointer4: nodes [
 	| result |
 	result := nodes at: 3.
@@ -1023,7 +1021,7 @@ CASTParser >> reduceActionForpointer4: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForpostfix_expression2: nodes [
 	| result |
 	result := CArrayAccessNode new.
@@ -1032,7 +1030,7 @@ CASTParser >> reduceActionForpostfix_expression2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForpostfix_expression3: nodes [
 	| result |
 	result := CCallNode new.
@@ -1040,7 +1038,7 @@ CASTParser >> reduceActionForpostfix_expression3: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForpostfix_expression4: nodes [
 	| result |
 	result := CCallNode new.
@@ -1049,7 +1047,7 @@ CASTParser >> reduceActionForpostfix_expression4: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForpostfix_expression5: nodes [
 	| result |
 	result := CMemberAccessNode new.
@@ -1058,7 +1056,7 @@ CASTParser >> reduceActionForpostfix_expression5: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForpostfix_expression6: nodes [
 	| result |
 	result := CStructurePointerAccessNode new.
@@ -1067,7 +1065,7 @@ CASTParser >> reduceActionForpostfix_expression6: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForpostfix_expression7: nodes [
 	| result |
 	result := CIncrementNode new.
@@ -1076,7 +1074,7 @@ CASTParser >> reduceActionForpostfix_expression7: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForpostfix_expression8: nodes [
 	| result |
 	result := CDecrementNode new.
@@ -1084,13 +1082,13 @@ CASTParser >> reduceActionForpostfix_expression8: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForprimary_expression1: nodes [
 
 	^ nodes at: 1
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForprimary_expression2: nodes [
 	| result |
 	result := CConstantNode new.
@@ -1098,7 +1096,7 @@ CASTParser >> reduceActionForprimary_expression2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForprimary_expression3: nodes [
 	| result |
 	result := CStringLiteralNode new.
@@ -1106,13 +1104,13 @@ CASTParser >> reduceActionForprimary_expression3: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForprimary_expression4: nodes [
 
 	^ nodes at: 2
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForselection_statement1: nodes [
 	| result |
 	result := CIfStatementNode new.
@@ -1121,7 +1119,7 @@ CASTParser >> reduceActionForselection_statement1: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForselection_statement2: nodes [
 	| result |
 	result := CIfStatementNode new.
@@ -1131,7 +1129,7 @@ CASTParser >> reduceActionForselection_statement2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForselection_statement3: nodes [
 	| result |
 	result := CSwitchStatementNode new.
@@ -1140,7 +1138,7 @@ CASTParser >> reduceActionForselection_statement3: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForspecifier_qualifier_list3: nodes [
 	| result |
 	result := nodes at: 2.
@@ -1148,7 +1146,7 @@ CASTParser >> reduceActionForspecifier_qualifier_list3: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForspecifier_qualifier_list4: nodes [
 	| result |
 	result := Array new: 2.
@@ -1158,7 +1156,7 @@ CASTParser >> reduceActionForspecifier_qualifier_list4: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForstruct_declaration1: nodes [
 	| result |
 	result := CGLRStructDeclarationNode new.
@@ -1168,7 +1166,7 @@ CASTParser >> reduceActionForstruct_declaration1: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForstruct_declarator1: nodes [
 	| result |
 	result := CGLRStructDeclaratorNode new.
@@ -1176,7 +1174,7 @@ CASTParser >> reduceActionForstruct_declarator1: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForstruct_declarator2: nodes [
 	| result |
 	result := CGLRStructDeclaratorNode new.
@@ -1184,7 +1182,7 @@ CASTParser >> reduceActionForstruct_declarator2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForstruct_declarator3: nodes [
 	| result |
 	result := CGLRStructDeclaratorNode new.
@@ -1193,7 +1191,7 @@ CASTParser >> reduceActionForstruct_declarator3: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForstruct_or_union_specifier1: nodes [
 	| result |
 	result := CGLRStructOrUnionSpecifierNode new.
@@ -1203,7 +1201,7 @@ CASTParser >> reduceActionForstruct_or_union_specifier1: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForstruct_or_union_specifier2: nodes [
 	| result |
 	result := CGLRStructOrUnionSpecifierNode new.
@@ -1212,7 +1210,7 @@ CASTParser >> reduceActionForstruct_or_union_specifier2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForstruct_or_union_specifier3: nodes [
 	| result |
 	result := CGLRStructOrUnionSpecifierNode new.
@@ -1221,7 +1219,7 @@ CASTParser >> reduceActionForstruct_or_union_specifier3: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFortranslationUnit1: nodes [
 	| result |
 	result := CGLRTranslationUnitNode new.
@@ -1229,7 +1227,7 @@ CASTParser >> reduceActionFortranslationUnit1: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFortranslationUnit2: nodes [
 	| result |
 	result := nodes at: 1.
@@ -1237,7 +1235,7 @@ CASTParser >> reduceActionFortranslationUnit2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFortype_name1: nodes [
 	| result |
 	result := CGLRTypeNode new.
@@ -1246,7 +1244,7 @@ CASTParser >> reduceActionFortype_name1: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFortype_name2: nodes [
 	| result |
 	result := CGLRTypeNode new.
@@ -1256,12 +1254,12 @@ CASTParser >> reduceActionFortype_name2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFortype_qualifier1: nodes [
 	^ nodes at: 1
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFortype_qualifier_list2: nodes [
 	| result |
 	result := nodes at: 1.
@@ -1269,7 +1267,7 @@ CASTParser >> reduceActionFortype_qualifier_list2: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionFortypename1: nodes [
 	| result |
 	result := CTypeNameNode new.
@@ -1277,7 +1275,7 @@ CASTParser >> reduceActionFortypename1: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForunary_expression3: nodes [
 	| result |
 	result := CUnaryOperatorNode new.
@@ -1286,7 +1284,7 @@ CASTParser >> reduceActionForunary_expression3: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForunary_expression5: nodes [
 	| result |
 	result := CSizeofNode new.
@@ -1294,7 +1292,7 @@ CASTParser >> reduceActionForunary_expression5: nodes [
 	^ result
 ]
 
-{ #category : 'generated-reduction actions' }
+{ #category : #'generated-reduction actions' }
 CASTParser >> reduceActionForunary_expression6: nodes [
 	| result |
 	result := CSizeofNode new.
@@ -1302,7 +1300,7 @@ CASTParser >> reduceActionForunary_expression6: nodes [
 	^ result
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTParser >> reduceTable [
 ^#(
 	#(127 1 #reduceActionForpointer1:) 
@@ -1469,17 +1467,17 @@ CASTParser >> reduceTable [
 	).
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTParser >> symbolNames [
 	^ #('"^"' '"|"' '"=="' '"!="' '"&&"' '">"' '"<="' '">="' '"||"' '"%="' '"+="' '"*="' '"return"' '">>"' '"?"' '":"' '"="' '"<"' '"-="' '"--"' '","' '"->"' '"++"' '"sizeof"' '"("' '")"' '"."' '"&"' '"/"' '"%"' '"~"' '"!"' '"<<"' '"*"' '"+"' '"-"' '"/="' '"case"' '"default"' '"const"' '"volatile"' '"if"' '"struct"' '"union"' '"<<="' '"else"' '"continue"' '"break"' '"for"' '"goto"' '"enum"' '"switch"' '"while"' '"do"' '"unsigned"' '"signed"' '"typedef"' '"extern"' '"|="' '"double"' '"static"' '">>="' '"&="' '"^="' '";"' '"long"' '"float"' '"short"' '"int"' '"auto"' '"register"' '"void"' '"char"' '<ELLIPSIS>' '<comment>' '<IDENTIFIER>' '<CONSTANT>' '<STRING_LITERAL>' '<LEFT_BLOCK>' '<RIGHT_BLOCK>' '<LEFT_BRACE>' '<RIGHT_BRACE>' '<whitespace>' 'primary_expression' 'argument_expression_list' 'assignment_expression' 'unary_expression' 'unary_operator' 'cast_expression' 'type_name' 'multiplicative_expression' 'additive_expression' 'shift_expression' 'relational_expression' 'equality_expression' 'and_expression' 'exclusive_or_expression' 'inclusive_or_expression' 'logical_and_expression' 'logical_or_expression' 'conditional_expression' 'assignment_operator' 'constant_expression' 'declaration_specifiers' 'init_declaration' 'declaration' 'init_declarator_list' 'storage_class_specifier' 'type_specifier' 'type_qualifier' 'init_declarator' 'declarator' 'initializer' 'struct_or_union_specifier' 'enum_specifier' 'typename' 'struct_or_union' 'expression' 'struct_declaration_list' 'identifier' 'struct_declaration' 'specifier_qualifier_list' 'struct_declarator_list' 'struct_declarator' 'enumerator_list' 'enumerator' 'pointer' 'direct_declarator' 'parameter_type_list' 'identifier_list' 'type_qualifier_list' 'parameter_list' 'postfix_expression' 'parameter_declaration' 'abstract_declarator' 'direct_abstract_declarator' 'initializer_list' 'labeled_statement' 'compound_statement' 'expression_statement' 'selection_statement' 'iteration_statement' 'jump_statement' 'statement' 'statement_list' 'declaration_list' 'function_definition' 'translationUnit' 'E O F' 'error' 'external_declaration' 'B e g i n')
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTParser >> symbolTypes [
 	^ #(#SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #SmaCCToken #CGLRAbstractNode #OrderedCollection #CGLRAbstractNode #CGLRAbstractNode #SmaCCToken #CGLRAbstractNode #CGLRTypeNode #CGLRAbstractNode #CGLRAbstractNode #CGLRAbstractNode #CGLRAbstractNode #CGLRAbstractNode #CGLRAbstractNode #CGLRAbstractNode #CGLRAbstractNode #CGLRAbstractNode #CGLRAbstractNode #CGLRAbstractNode #SmaCCToken #CGLRAbstractNode #OrderedCollection #OrderedCollection #CDeclarationNode #OrderedCollection #SmaCCToken #Object #SmaCCToken #CInitDeclaratorNode #CPointerDeclaratorNode #CGLRAbstractNode #CGLRStructOrUnionSpecifierNode #CGLREnumNode #CTypeNameNode #SmaCCToken #CExpressionNode #OrderedCollection #CIdentifierNode #CGLRStructDeclarationNode #OrderedCollection #OrderedCollection #CGLRStructDeclaratorNode #OrderedCollection #CGLREnumeratorNode #OrderedCollection #CGLRAbstractNode #OrderedCollection #OrderedCollection #OrderedCollection #OrderedCollection #CGLRAbstractNode #CParameterDeclarationNode #CGLRAbstractDeclaratorNode #CGLRAbstractNode #OrderedCollection #CLabeledStatementNode #CCompoundStatementNode #CGLRExpressionStatementNode #CGLRAbstractNode #CGLRAbstractNode #CGLRAbstractNode #CGLRAbstractNode #OrderedCollection #OrderedCollection #CFunctionDefinitionNode #CGLRTranslationUnitNode #SmaCCToken #SmaCCToken #CGLRAbstractNode #CGLRTranslationUnitNode)
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTParser >> transitionTable [
 ^#(
 #[1 0 9 0 25 0 13 0 34 0 17 0 40 0 21 0 41 0 25 0 43 0 29 0 44 0 33 0 51 0 37 0 55 0 41 0 56 0 45 0 57 0 49 0 58 0 53 0 60 0 57 0 61 0 61 0 66 0 65 0 67 0 69 0 68 0 73 0 69 0 77 0 70 0 81 0 71 0 85 0 72 0 89 0 73 0 93 0 76 0 97 0 104 0 101 0 105 0 105 0 106 0 109 0 108 0 113 0 109 0 117 0 110 0 121 0 112 0 125 0 114 0 129 0 115 0 133 0 116 0 137 0 117 0 141 0 120 0 145 0 127 0 149 0 128 0 153 0 147 0 157 0 148 0 161 0 151] 

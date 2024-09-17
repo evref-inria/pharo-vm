@@ -1,15 +1,13 @@
 Class {
-	#name : 'CRawCodeNode',
-	#superclass : 'CExpressionNode',
+	#name : #CRawCodeNode,
+	#superclass : #CExpressionNode,
 	#instVars : [
 		'code'
 	],
-	#category : 'CAST-Nodes',
-	#package : 'CAST',
-	#tag : 'Nodes'
+	#category : #'CAST-Nodes'
 }
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 CRawCodeNode class >> code: aString [
 
 	^ self new
@@ -17,18 +15,18 @@ CRawCodeNode class >> code: aString [
 		  yourself
 ]
 
-{ #category : 'visiting' }
+{ #category : #visiting }
 CRawCodeNode >> acceptVisitor: anAbstractVisitor [
 	^ anAbstractVisitor visitRawCode: self
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 CRawCodeNode >> code [
 
 	^ code
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 CRawCodeNode >> code: anObject [
 
 	code := anObject

@@ -240,8 +240,6 @@ doSignalExternalSemaphores(sqInt externalSemaphoreTableSize)
 	}
 	sqLowLevelMFence();
 
-	requestMutex->signal(requestMutex);
-
 	/* doing this here saves a bounds check in doSignalSemaphoreWithIndex */
 	if (highTide >= externalSemaphoreTableSize)
 		highTide = externalSemaphoreTableSize - 1;
@@ -253,6 +251,7 @@ doSignalExternalSemaphores(sqInt externalSemaphoreTableSize)
 			signalled = 1;
 		}
 
+	requestMutex->signal(requestMutex);
 #if !defined(_WIN32)
     sigprocmask(SIG_UNBLOCK, &blockedSignalSet, NULL);
 #endif

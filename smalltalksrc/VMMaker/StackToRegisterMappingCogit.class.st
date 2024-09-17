@@ -373,7 +373,8 @@ StackToRegisterMappingCogit class >> initializeBytecodeTableForSistaV1 [
 		(2 244 244 genExtStoreLiteralVariableBytecode isMappedIfImmutability)
 		(2 245 245 genLongStoreTemporaryVariableBytecode)
 
-		(2 246 247	unknownBytecode)
+		(2 246 246	genSendVTableMessage)
+		(2 247 247	unknownBytecode)
 
 		"3 byte bytecodes"
 		(3 248 248 genCallPrimitiveBytecode hasUnsafeJump)
@@ -1068,6 +1069,23 @@ StackToRegisterMappingCogit >> compileTwoPathFramelessInit [
 	"second path. The receiver is old"
 	useTwoPaths := false. "reset because it impacts inst var store compilation"
 	jumpOld jmpTarget: self Label
+]
+
+{ #category : 'bytecode generator support' }
+StackToRegisterMappingCogit >> compileVTableTrampoline: methodReg pushLinkReg: pushLinkReg [
+	
+	<var: #aRoutine type: #'void *'>
+	<inline: false>
+	self genSmalltalkToCStackSwitch: pushLinkReg.
+	self
+		compileCallFor: #ceSendFromVTableInterpreted:
+		numArgs: 1
+		arg: methodReg
+		arg: nil
+		arg: nil
+		arg: nil
+		resultReg: NoReg
+		regsToSave: 0
 ]
 
 { #category : 'simulation only' }
@@ -2499,6 +2517,48 @@ StackToRegisterMappingCogit >> genSendTrampolineFor: aRoutine numArgs: numArgs c
 		resultReg: NoReg
 		appendOpcodes: true.
 	^startAddress
+]
+
+{ #category : 'bytecode generator support' }
+StackToRegisterMappingCogit >> genSendVTableMessage [
+
+	| methodIndex argumentCount jumpInterpret mergeJump |
+	methodIndex := (byte1 >> 3) + (extA << 5).
+	extA := 0.
+	argumentCount := (byte1 bitAnd: 7) + (extB << 3).
+	extB := 0.
+	numExtB := 0.
+
+	"Allocate registers"
+	self voidReceiverResultRegContainsSelf.
+	self ssFlushUpThroughRegister: ClassReg.
+
+	"Fetch receiver and class"	
+	(self ssValue: argumentCount) copyToReg: ReceiverResultReg .
+	objectRepresentation  genGetClassObjectOf: ReceiverResultReg into: ClassReg scratchReg: TempReg instRegIsReceiver: true.
+
+	"Fetch the method from the VTable"	
+	self MoveMw: (VTableIndex + 1) * objectMemory wordSize r: ClassReg R: TempReg.
+	self MoveMw: (methodIndex + 1) * objectMemory wordSize r: TempReg R: TempReg.
+
+	self ssFlushStack.
+	"If the method is compiled, we jump to it, if not we jump to the interpret."
+	objectRepresentation genLoadSlot: HeaderIndex sourceReg: TempReg destReg: ClassReg.
+	jumpInterpret := objectRepresentation genJumpImmediate: ClassReg.
+
+	"Jump to the method's unchecked entry-point."
+	self AddCq: cmNoCheckEntryOffset R: ClassReg.
+	self CallR: ClassReg.
+	mergeJump := self Jump: 0.
+	
+	"Call the trampoline to continue execution in the interpreter"
+	jumpInterpret jmpTarget: self Label.
+	self compileVTableTrampoline: TempReg pushLinkReg: true.
+
+	mergeJump jmpTarget: self Label.
+	self ssPop: argumentCount + 1 popSpilled: false.
+	self ssPush: ReceiverResultReg.
+	^0
 ]
 
 { #category : 'bytecode generators' }

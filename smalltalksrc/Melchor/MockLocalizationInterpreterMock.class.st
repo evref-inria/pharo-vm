@@ -1,6 +1,6 @@
 Class {
-	#name : 'MockLocalizationInterpreterMock',
-	#superclass : 'AbstractInterpreter',
+	#name : #MockLocalizationInterpreterMock,
+	#superclass : #AbstractInterpreter,
 	#instVars : [
 		'variableToLocalize',
 		'sharedVariableToLocalize',
@@ -14,11 +14,10 @@ Class {
 	#classVars : [
 		'BytecodeTable'
 	],
-	#category : 'Melchor',
-	#package : 'Melchor'
+	#category : #Melchor
 }
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 MockLocalizationInterpreterMock class >> initialize [
 
 	BytecodeTable := Array new: 5.
@@ -32,7 +31,7 @@ MockLocalizationInterpreterMock class >> initialize [
 	)
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 MockLocalizationInterpreterMock class >> initializeWithAutoLocalizedVariableOnly [
 
 	BytecodeTable := Array new: 1.
@@ -42,7 +41,7 @@ MockLocalizationInterpreterMock class >> initializeWithAutoLocalizedVariableOnly
 	)
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 MockLocalizationInterpreterMock class >> initializeWithEscapingCall [
 
 	BytecodeTable := Array new: 1.
@@ -52,7 +51,7 @@ MockLocalizationInterpreterMock class >> initializeWithEscapingCall [
 	)
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 MockLocalizationInterpreterMock class >> initializeWithEscapingCallAsArgument [
 
 	BytecodeTable := Array new: 1.
@@ -62,7 +61,7 @@ MockLocalizationInterpreterMock class >> initializeWithEscapingCallAsArgument [
 	)
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 MockLocalizationInterpreterMock class >> initializeWithEscapingCallAsArgumentOfExternalCall [
 
 	BytecodeTable := Array new: 1.
@@ -72,7 +71,7 @@ MockLocalizationInterpreterMock class >> initializeWithEscapingCallAsArgumentOfE
 	)
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 MockLocalizationInterpreterMock class >> initializeWithExternalizedAutoLocalizedVariableInExpressionOnly [
 
 	BytecodeTable := Array new: 1.
@@ -82,7 +81,7 @@ MockLocalizationInterpreterMock class >> initializeWithExternalizedAutoLocalized
 	)
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 MockLocalizationInterpreterMock class >> initializeWithExternalizedAutoLocalizedVariableOnly [
 
 	BytecodeTable := Array new: 1.
@@ -92,7 +91,7 @@ MockLocalizationInterpreterMock class >> initializeWithExternalizedAutoLocalized
 	)
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 MockLocalizationInterpreterMock class >> initializeWithIfStatement [
 
 	BytecodeTable := Array new: 1.
@@ -102,7 +101,7 @@ MockLocalizationInterpreterMock class >> initializeWithIfStatement [
 	)
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 MockLocalizationInterpreterMock class >> initializeWithInlinedMethodCall [
 
 	BytecodeTable := Array new: 1.
@@ -112,7 +111,7 @@ MockLocalizationInterpreterMock class >> initializeWithInlinedMethodCall [
 	)
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 MockLocalizationInterpreterMock class >> initializeWithMacroCall [
 
 	BytecodeTable := Array new: 1.
@@ -122,7 +121,7 @@ MockLocalizationInterpreterMock class >> initializeWithMacroCall [
 	)
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 MockLocalizationInterpreterMock class >> initializeWithPerform [
 
 	BytecodeTable := Array new: 1.
@@ -132,7 +131,7 @@ MockLocalizationInterpreterMock class >> initializeWithPerform [
 	)
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 MockLocalizationInterpreterMock class >> initializeWithSafeEscapingCall [
 
 	BytecodeTable := Array new: 1.
@@ -142,7 +141,7 @@ MockLocalizationInterpreterMock class >> initializeWithSafeEscapingCall [
 	)
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 MockLocalizationInterpreterMock class >> initializeWithoutAutoLocalizedVariable [
 
 	BytecodeTable := Array new: 1.
@@ -152,45 +151,45 @@ MockLocalizationInterpreterMock class >> initializeWithoutAutoLocalizedVariable 
 	)
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeInliningSharedMethod [
 
 	self sharedMethod
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeNotUsingAutoLocalizedVariable [
 
 	"None of these use localized variables"	
 	self nonInlinedMethodNotUsingAutolocalizedVariables: self nonInlinedMethodNotUsingAutolocalizedVariables
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeToInline [
 
 	"Do nothing"
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeUsingAutoLocalizedVariable [
 
 	autoLocalizedVariable := 17
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeUsingComplexAssert [
 
 	self assert: (self foo or: [ self bar and: [ self fum ] ])
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeUsingExternalizedAutoLocalizedVariable [
 
 	autoLocalizedVariable := 17.
 	self nonInlinedMethodUsingAutolocalizedVariable
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeUsingExternalizedAutoLocalizedVariableAsAssignmentWithAnd [
 
 	| var |
@@ -199,13 +198,13 @@ MockLocalizationInterpreterMock >> bytecodeUsingExternalizedAutoLocalizedVariabl
 	var ifTrue: [  ]
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeUsingExternalizedAutoLocalizedVariableAsExpression [
 
 	self foo: self nonInlinedMethodUsingAutolocalizedVariable
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeUsingExternalizedAutoLocalizedVariableAsExpressionInAssignment [
 
 	| foo |
@@ -213,33 +212,33 @@ MockLocalizationInterpreterMock >> bytecodeUsingExternalizedAutoLocalizedVariabl
 	^ foo
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeUsingExternalizedAutoLocalizedVariableAsExpressionInReturn [
 
 	^ self foo: self nonInlinedMethodUsingAutolocalizedVariable
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeUsingExternalizedAutoLocalizedVariableAsIfReceiver [
 
 	self nonInlinedMethodUsingAutolocalizedVariable ifTrue: [  ]
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeUsingExternalizedAutoLocalizedVariableAsIfReceiverWithAnd [
 
 	(self nonInlinedMethodUsingAutolocalizedVariable and: [ 
 		 self nonInlinedMethodUsingAutolocalizedVariable ]) ifTrue: [  ]
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeUsingExternalizedAutoLocalizedVariableAsIfReceiverWithNestedAnd [
 
 	(self nonInlinedMethodUsingAutolocalizedVariable and: [ 
 		 self foo and: [ self bar ] ]) ifTrue: [  ]
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeUsingExternalizedAutoLocalizedVariableAsIfReceiverWithNestedConditional [
 
 	(self nonInlinedMethodUsingAutolocalizedVariable ifTrue: [ 
@@ -247,14 +246,14 @@ MockLocalizationInterpreterMock >> bytecodeUsingExternalizedAutoLocalizedVariabl
 			ifTrue: [  ]
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeUsingExternalizedAutoLocalizedVariableAsIfReceiverWithOr [
 
 	(self nonInlinedMethodUsingAutolocalizedVariable or: [ 
 		 self nonInlinedMethodUsingAutolocalizedVariable ]) ifTrue: [  ]
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeUsingExternalizedAutoLocalizedVariableInNestedLexicalScope [
 
 	true ifTrue: [
@@ -262,25 +261,25 @@ MockLocalizationInterpreterMock >> bytecodeUsingExternalizedAutoLocalizedVariabl
 	]
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeUsingInlinedCall [
 
 	self inlinedMethodUsingExternalCall
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeUsingLocalizedVariable [
 
 	variableToLocalize := 42
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeUsingMacro [
 
 	self macroMethod
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeUsingNestedConditionalValueWithAnd [
 
 	| overflow |
@@ -289,26 +288,26 @@ MockLocalizationInterpreterMock >> bytecodeUsingNestedConditionalValueWithAnd [
 		ifFalse: [ self condition and: [ self condition ] ]
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeUsingSafeExternalCall [
 
 	self nonInlinedMethodNotUsingAutolocalizedVariables: (autoLocalizedVariable := autoLocalizedVariable +1)
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeUsingSharedLocalizedVariable [
 
 	sharedVariableToLocalize := 42
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeUsingSharedLocalizedVariableBeforeInlining [
 
 	sharedVariableToLocalizeBeforeInlining := 42.
 	self methodAlsoSharedLocalizedVariableBeforeInlining
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeUsingTwiceNestedConditionalValueWithAnd [
 
 	| overflow |
@@ -320,31 +319,31 @@ MockLocalizationInterpreterMock >> bytecodeUsingTwiceNestedConditionalValueWithA
 				              ifFalse: [ self condition and: [ self condition ] ] ]
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeWithEscapingCall [
 
 	self foo: (autoLocalizedVariable := autoLocalizedVariable + 1)
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeWithEscapingCallAsArgument [
 
 	1 = self foo2 ifTrue: [ ]
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeWithEscapingCallAsArgumentOfExternalCall [
 
 	self foo: self nonInlinedMethodUsingAutolocalizedVariable1
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> bytecodeWithPerform [
 
 	self perform: #foo
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> foo2 [
 
 	<inline: false>
@@ -353,7 +352,7 @@ MockLocalizationInterpreterMock >> foo2 [
 	^ 1
 ]
 
-{ #category : 'inline' }
+{ #category : #inline }
 MockLocalizationInterpreterMock >> foo: anObject [
 
 	<inline: false>
@@ -361,7 +360,7 @@ MockLocalizationInterpreterMock >> foo: anObject [
 	self foo2
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> inlinedMethodUsingExternalCall [
 
 	<inline: true>
@@ -369,14 +368,14 @@ MockLocalizationInterpreterMock >> inlinedMethodUsingExternalCall [
 	self foo2
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> interpret [
 	<localizedVariable: #autoLocalizedVariable>
 
 	self dispatchOn: 1 in: BytecodeTable
 ]
 
-{ #category : 'inline' }
+{ #category : #inline }
 MockLocalizationInterpreterMock >> interpretWithExternalCallBeforeDispatch [
 	
 	<localizedVariable: #autoLocalizedVariable>
@@ -384,7 +383,7 @@ MockLocalizationInterpreterMock >> interpretWithExternalCallBeforeDispatch [
 	self dispatchOn: 1 in: BytecodeTable
 ]
 
-{ #category : 'inline' }
+{ #category : #inline }
 MockLocalizationInterpreterMock >> interpretWithLocalizedVariableConflict [
 
 	"This method should create a conflict with automatically inlined arguments"
@@ -394,7 +393,7 @@ MockLocalizationInterpreterMock >> interpretWithLocalizedVariableConflict [
 	self dispatchOn: 1 in: BytecodeTable
 ]
 
-{ #category : 'inline' }
+{ #category : #inline }
 MockLocalizationInterpreterMock >> interpretWithReturnExpression [
 
 	<localizedVariable: #autoLocalizedVariable>
@@ -404,7 +403,7 @@ MockLocalizationInterpreterMock >> interpretWithReturnExpression [
 		ifFalse: [ ^ 1 + 1 ]
 ]
 
-{ #category : 'inline' }
+{ #category : #inline }
 MockLocalizationInterpreterMock >> interpretWithReturnExpressionUpdatingAutoLocalizedVariable [
 
 	<localizedVariable: #autoLocalizedVariable>
@@ -414,7 +413,7 @@ MockLocalizationInterpreterMock >> interpretWithReturnExpressionUpdatingAutoLoca
 	^ autoLocalizedVariable := autoLocalizedVariable + 1
 ]
 
-{ #category : 'inline' }
+{ #category : #inline }
 MockLocalizationInterpreterMock >> interpretWithSeveralVariablesToLocalize [
 	
 	<localizedVariable: #autoLocalizedVariable>
@@ -426,30 +425,30 @@ MockLocalizationInterpreterMock >> interpretWithSeveralVariablesToLocalize [
 	self dispatchOn: 1 in: BytecodeTable
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> macroMethod [
 	<cmacro: 'doesnotmatter'>
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> methodAlsoSharedLocalizedVariableBeforeInlining [
 
 	sharedVariableToLocalizeBeforeInlining := 17
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> methodCallingBytecodeUsingLocalizedVariable [
 
 	self bytecodeUsingLocalizedVariable
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> methodCallingBytecodeUsingLocalizedVariable2 [
 
 	self bytecodeUsingLocalizedVariable
 ]
 
-{ #category : 'inline' }
+{ #category : #inline }
 MockLocalizationInterpreterMock >> methodWithDiamond [
 
 	"I call two different methods that eventually call the same method accessing variable x"
@@ -457,41 +456,41 @@ MockLocalizationInterpreterMock >> methodWithDiamond [
 	self methodCallingBytecodeUsingLocalizedVariable2
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> nonBytecodeUsingSharedLocalizedVariable [
 
 	sharedVariableToLocalize := 17
 ]
 
-{ #category : 'inline' }
+{ #category : #inline }
 MockLocalizationInterpreterMock >> nonInlinedMethodNotUsingAutolocalizedVariables [
 
 	<inline:false>
 	^ 10
 ]
 
-{ #category : 'inline' }
+{ #category : #inline }
 MockLocalizationInterpreterMock >> nonInlinedMethodNotUsingAutolocalizedVariables: anObject [
 
 	<inline:false>
 	^ anObject + 10
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> nonInlinedMethodUsingAutolocalizedVariable [
 
 	<inline:false>
 	^ autoLocalizedVariable
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> nonInlinedMethodUsingAutolocalizedVariable1 [
 
 	<inline:false>
 	^ autoLocalizedVariable1
 ]
 
-{ #category : 'interpreter shell' }
+{ #category : #'interpreter shell' }
 MockLocalizationInterpreterMock >> sharedMethod [
 
 	<sharedCodeInCase: #bytecodeInliningSharedMethod>

@@ -1,17 +1,16 @@
 Class {
-	#name : 'SLBasicTestDeclarationClass',
-	#superclass : 'SlangClass',
-	#category : 'Slang-Tests',
-	#package : 'Slang-Tests'
+	#name : #SLBasicTestDeclarationClass,
+	#superclass : #SlangClass,
+	#category : #'Slang-Tests'
 }
 
-{ #category : 'translation' }
+{ #category : #translation }
 SLBasicTestDeclarationClass class >> typeForSelf [
 
 	^#implicit
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : #'as yet unclassified' }
 SLBasicTestDeclarationClass >> methodWithBlockLocalDeclaration [
 
 	"var does not exist"
@@ -19,20 +18,20 @@ SLBasicTestDeclarationClass >> methodWithBlockLocalDeclaration [
 	[ | var | 1+2 ] value
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : #'as yet unclassified' }
 SLBasicTestDeclarationClass >> methodWithLocal [
 
 	| var |
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : #'as yet unclassified' }
 SLBasicTestDeclarationClass >> methodWithLocalWithDeclaration [
 
 	<var: 'var' type: 'toto'>
 	| var |
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : #'as yet unclassified' }
 SLBasicTestDeclarationClass >> methodWithNonExistingLocalDeclaration [
 
 	"var does not exist"

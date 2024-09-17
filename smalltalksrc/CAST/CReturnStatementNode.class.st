@@ -1,15 +1,13 @@
 Class {
-	#name : 'CReturnStatementNode',
-	#superclass : 'CGLRAbstractNode',
+	#name : #CReturnStatementNode,
+	#superclass : #CGLRAbstractNode,
 	#instVars : [
 		'expr'
 	],
-	#category : 'CAST-Nodes',
-	#package : 'CAST',
-	#tag : 'Nodes'
+	#category : #'CAST-Nodes'
 }
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 CReturnStatementNode class >> expression: anExpression [
 
 	^ self new
@@ -17,17 +15,17 @@ CReturnStatementNode class >> expression: anExpression [
 		yourself
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CReturnStatementNode >> acceptVisitor: anAbstractVisitor [
 	^ anAbstractVisitor visitReturnStatement: self
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CReturnStatementNode >> expression [
 	^ expr
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CReturnStatementNode >> expression: aCGLRExpressionNode [
 
 	self assertExpression: aCGLRExpressionNode.
@@ -39,7 +37,7 @@ CReturnStatementNode >> expression: aCGLRExpressionNode [
 		ifTrue: [ self expression parent: self ]
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 CReturnStatementNode >> isReturn [
 	
 	^ true

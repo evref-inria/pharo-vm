@@ -1,14 +1,13 @@
 Class {
-	#name : 'SlangAbstractTestCase',
-	#superclass : 'TestCase',
+	#name : #SlangAbstractTestCase,
+	#superclass : #TestCase,
 	#instVars : [
 		'ccg'
 	],
-	#category : 'Slang-Tests',
-	#package : 'Slang-Tests'
+	#category : #'Slang-Tests'
 }
 
-{ #category : 'asserting' }
+{ #category : #asserting }
 SlangAbstractTestCase >> assertReturnTypeOf: aMethod equalsHarmonized: expectedType [
 
 	"The type inferencer harmonizes return types converting them to the closer sq* integer (either signed or unsigned)"

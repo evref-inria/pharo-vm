@@ -1,17 +1,16 @@
 Class {
-	#name : 'SLTestDeclarations',
-	#superclass : 'SlangAbstractTestCase',
-	#category : 'Slang-Tests',
-	#package : 'Slang-Tests'
+	#name : #SLTestDeclarations,
+	#superclass : #SlangAbstractTestCase,
+	#category : #'Slang-Tests'
 }
 
-{ #category : 'running' }
+{ #category : #running }
 SLTestDeclarations >> setUp [
 	super setUp.
 	ccg addClass: SLBasicTestDeclarationClass
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 SLTestDeclarations >> testAddTypeForSelfWithDeclarationsDoesNotThrowError [
 
 	| method |
@@ -19,7 +18,7 @@ SLTestDeclarations >> testAddTypeForSelfWithDeclarationsDoesNotThrowError [
 	self shouldnt: [ method addTypeForSelf ] raise: TranslationError
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 SLTestDeclarations >> testAllLocalsReturnsBlockLocals [
 
 	self
@@ -27,7 +26,7 @@ SLTestDeclarations >> testAllLocalsReturnsBlockLocals [
 		hasSameElements: #( var )
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 SLTestDeclarations >> testBlockLocalsAreHoisted [
 
 	self
@@ -35,20 +34,20 @@ SLTestDeclarations >> testBlockLocalsAreHoisted [
 		hasSameElements: #(var)
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 SLTestDeclarations >> testDefaultTypeOfVariableNotInScope [
 
 	self assert: (ccg typeOfVariable: #var) isNil
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 SLTestDeclarations >> testDefineGlobalVariable [
 
 	ccg var: 'var' declareC: 'int var'.
 	self assert: (ccg typeOfVariable: #var) equals: 'int'
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 SLTestDeclarations >> testLocalVariableWithDeclaration [
 
 	| type method |
@@ -61,7 +60,7 @@ SLTestDeclarations >> testLocalVariableWithDeclaration [
 	self assert: type equals: 'toto'
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 SLTestDeclarations >> testLocalVariableWithoutDeclaration [
 
 	| type |
@@ -71,7 +70,7 @@ SLTestDeclarations >> testLocalVariableWithoutDeclaration [
 	self assert: type isNil
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 SLTestDeclarations >> testLocalsReturnsDirectLocals [
 
 	self
@@ -79,7 +78,7 @@ SLTestDeclarations >> testLocalsReturnsDirectLocals [
 		hasSameElements: #( 'var' )
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 SLTestDeclarations >> testStructInstanceVariablesWithoutTypeDeclaration [
 
 	ccg
@@ -91,7 +90,7 @@ SLTestDeclarations >> testStructInstanceVariablesWithoutTypeDeclaration [
 		raise: TranslationError
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 SLTestDeclarations >> testUndefinedLocalWithDeclarationsThrowsError [
 
 	| method |

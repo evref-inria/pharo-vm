@@ -1,15 +1,13 @@
 Class {
-	#name : 'CArrayDeclaratorNode',
-	#superclass : 'CAbstractDeclaratorNode',
+	#name : #CArrayDeclaratorNode,
+	#superclass : #CAbstractDeclaratorNode,
 	#instVars : [
 		'size'
 	],
-	#category : 'CAST-Nodes',
-	#package : 'CAST',
-	#tag : 'Nodes'
+	#category : #'CAST-Nodes'
 }
 
-{ #category : 'comparing' }
+{ #category : #comparing }
 CArrayDeclaratorNode >> = anObject [
 
 	"Answer whether the receiver and anObject represent the same object."
@@ -19,12 +17,12 @@ CArrayDeclaratorNode >> = anObject [
 	^ size = anObject size and: [ declarator = anObject declarator ]
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CArrayDeclaratorNode >> acceptVisitor: anAbstractVisitor [
 	^ anAbstractVisitor visitArrayDeclarator: self
 ]
 
-{ #category : 'comparing' }
+{ #category : #comparing }
 CArrayDeclaratorNode >> hash [
 
 	"Answer an integer value that is related to the identity of the receiver."
@@ -32,18 +30,18 @@ CArrayDeclaratorNode >> hash [
 	^ size hash bitXor: declarator hash
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 CArrayDeclaratorNode >> isArrayDeclarator [
 	
 	^ true
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CArrayDeclaratorNode >> size [
 	^ size
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CArrayDeclaratorNode >> size: aCGLRAbstractNode [
 	self size notNil
 		ifTrue: [ self size parent: nil ].

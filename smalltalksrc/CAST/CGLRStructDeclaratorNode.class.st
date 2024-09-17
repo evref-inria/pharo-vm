@@ -1,25 +1,24 @@
 Class {
-	#name : 'CGLRStructDeclaratorNode',
-	#superclass : 'CGLRAbstractNode',
+	#name : #CGLRStructDeclaratorNode,
+	#superclass : #CGLRAbstractNode,
 	#instVars : [
 		'declarator',
 		'_size'
 	],
-	#category : 'CAST',
-	#package : 'CAST'
+	#category : #CAST
 }
 
-{ #category : 'generated' }
+{ #category : #generated }
 CGLRStructDeclaratorNode >> acceptVisitor: anAbstractVisitor [
 	^ anAbstractVisitor visitStructDeclarator: self
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CGLRStructDeclaratorNode >> declarator [
 	^ declarator
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CGLRStructDeclaratorNode >> declarator: aCGLRDeclaratorNode [
 	self declarator notNil
 		ifTrue: [ self declarator parent: nil ].
@@ -28,12 +27,12 @@ CGLRStructDeclaratorNode >> declarator: aCGLRDeclaratorNode [
 		ifTrue: [ self declarator parent: self ]
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CGLRStructDeclaratorNode >> size [
 	^ _size
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CGLRStructDeclaratorNode >> size: aCGLRAbstractNode [
 	self size notNil
 		ifTrue: [ self size parent: nil ].

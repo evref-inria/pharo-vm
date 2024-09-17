@@ -1,16 +1,14 @@
 Class {
-	#name : 'CStructurePointerAccessNode',
-	#superclass : 'CExpressionNode',
+	#name : #CStructurePointerAccessNode,
+	#superclass : #CExpressionNode,
 	#instVars : [
 		'member',
 		'structurePointer'
 	],
-	#category : 'CAST-Nodes',
-	#package : 'CAST',
-	#tag : 'Nodes'
+	#category : #'CAST-Nodes'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 CStructurePointerAccessNode class >> structurePointer: aPointer member: aMember [
 
 	^ self new
@@ -19,23 +17,23 @@ CStructurePointerAccessNode class >> structurePointer: aPointer member: aMember 
 		  yourself
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CStructurePointerAccessNode >> acceptVisitor: anAbstractVisitor [
 	^ anAbstractVisitor visitArrow: self
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 CStructurePointerAccessNode >> isStructPointerAccess [
 	
 	^ true
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CStructurePointerAccessNode >> member [
 	^ member
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CStructurePointerAccessNode >> member: aCGLRIdentifierNode [
 	self member notNil
 		ifTrue: [ self member parent: nil ].
@@ -44,13 +42,13 @@ CStructurePointerAccessNode >> member: aCGLRIdentifierNode [
 		ifTrue: [ self member parent: self ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 CStructurePointerAccessNode >> structurePointer [
 	
 	^ structurePointer
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CStructurePointerAccessNode >> structurePointer: aCGLRAbstractNode [
 	self assertExpression: aCGLRAbstractNode.
 

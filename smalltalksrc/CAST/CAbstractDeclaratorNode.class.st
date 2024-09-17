@@ -1,15 +1,13 @@
 Class {
-	#name : 'CAbstractDeclaratorNode',
-	#superclass : 'CGLRAbstractNode',
+	#name : #CAbstractDeclaratorNode,
+	#superclass : #CGLRAbstractNode,
 	#instVars : [
 		'declarator'
 	],
-	#category : 'CAST-Nodes',
-	#package : 'CAST',
-	#tag : 'Nodes'
+	#category : #'CAST-Nodes'
 }
 
-{ #category : 'generated' }
+{ #category : #generated }
 CAbstractDeclaratorNode class >> declarator: aDeclarator [
 	
 	^ self new
@@ -17,13 +15,13 @@ CAbstractDeclaratorNode class >> declarator: aDeclarator [
 		yourself
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 CAbstractDeclaratorNode class >> identifier: aString [ 
 	
 	^ self declarator: (CIdentifierNode name: aString)
 ]
 
-{ #category : 'comparing' }
+{ #category : #comparing }
 CAbstractDeclaratorNode >> = anObject [
 
 	"Answer whether the receiver and anObject represent the same object."
@@ -33,18 +31,18 @@ CAbstractDeclaratorNode >> = anObject [
 	^ declarator = anObject declarator1
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CAbstractDeclaratorNode >> declarator [
 	^ declarator
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 CAbstractDeclaratorNode >> declarator1 [
 
 	^ declarator
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CAbstractDeclaratorNode >> declarator: aCGLRAbstractNode [
 	self declarator notNil
 		ifTrue: [ self declarator parent: nil ].
@@ -53,7 +51,7 @@ CAbstractDeclaratorNode >> declarator: aCGLRAbstractNode [
 		ifTrue: [ self declarator parent: self ]
 ]
 
-{ #category : 'comparing' }
+{ #category : #comparing }
 CAbstractDeclaratorNode >> hash [
 
 	"Answer an integer value that is related to the identity of the receiver."

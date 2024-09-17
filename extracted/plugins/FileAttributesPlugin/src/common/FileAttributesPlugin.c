@@ -121,14 +121,14 @@ static sqInt (*isKindOf)(sqInt oop, char *aString);
 static sqInt (*isBytes)(sqInt oop);
 static sqInt (*methodReturnValue)(sqInt oop);
 static sqInt (*nilObject)(void);
-static void (*popthenPush)(sqInt nItems, sqInt oop);
+static sqInt (*popthenPush)(sqInt nItems, sqInt oop);
 static sqInt (*popRemappableOop)(void);
 static sqInt (*positive32BitIntegerFor)(unsigned int integerValue);
 static sqInt (*primitiveFail)(void);
 static sqInt (*primitiveFailFor)(sqInt reasonCode);
 static sqInt (*primitiveFailForOSError)(sqLong osError);
 static sqInt (*primitiveFailureCode)(void);
-static void (*pushRemappableOop)(sqInt oop);
+static sqInt (*pushRemappableOop)(sqInt oop);
 static sqInt (*stSizeOf)(sqInt oop);
 static sqInt (*stackIntegerValue)(sqInt offset);
 static sqInt (*stackObjectValue)(sqInt offset);
@@ -147,7 +147,7 @@ extern sqInt isKindOf(sqInt oop, char *aString);
 extern sqInt isBytes(sqInt oop);
 extern sqInt methodReturnValue(sqInt oop);
 extern sqInt nilObject(void);
-extern void popthenPush(sqInt nItems, sqInt oop);
+extern sqInt popthenPush(sqInt nItems, sqInt oop);
 extern sqInt popRemappableOop(void);
 extern sqInt positive32BitIntegerFor(unsigned int integerValue);
 extern sqInt primitiveFail(void);
@@ -158,7 +158,7 @@ extern sqInt primitiveFailForOSError(sqLong osError);
 # define primitiveFailForOSError(osError) 0
 #endif
 extern sqInt primitiveFailureCode(void);
-extern void pushRemappableOop(sqInt oop);
+extern sqInt pushRemappableOop(sqInt oop);
 extern sqInt stSizeOf(sqInt oop);
 extern sqInt stackIntegerValue(sqInt offset);
 extern sqInt stackObjectValue(sqInt offset);
@@ -712,8 +712,7 @@ primitiveLogicalDrives(void)
 #  if defined(_WIN32)
 	mask = GetLogicalDrives();
 	if (mask != 0) {
-		popthenPush(1, positive32BitIntegerFor(mask));
-		return 0;
+		return popthenPush(1, positive32BitIntegerFor(mask));
 	}
 #  endif /* defined(_WIN32) */
 	primitiveFail();
@@ -814,8 +813,7 @@ primitiveOpendir(void)
 EXPORT(sqInt)
 primitivePathMax(void)
 {
-	popthenPush(1, integerObjectOf(FA_PATH_MAX));
-	return 0;
+	return popthenPush(1, integerObjectOf(FA_PATH_MAX));
 }
 
 

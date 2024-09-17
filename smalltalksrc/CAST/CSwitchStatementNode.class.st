@@ -1,16 +1,14 @@
 Class {
-	#name : 'CSwitchStatementNode',
-	#superclass : 'CGLRAbstractNode',
+	#name : #CSwitchStatementNode,
+	#superclass : #CGLRAbstractNode,
 	#instVars : [
 		'statement',
 		'if'
 	],
-	#category : 'CAST-Nodes',
-	#package : 'CAST',
-	#tag : 'Nodes'
+	#category : #'CAST-Nodes'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 CSwitchStatementNode class >> if: anExpression statement: aStatement [
 
 	^ self new
@@ -19,17 +17,17 @@ CSwitchStatementNode class >> if: anExpression statement: aStatement [
 		yourself
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSwitchStatementNode >> acceptVisitor: anAbstractVisitor [
 	^ anAbstractVisitor visitSwitchStatement: self
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSwitchStatementNode >> if [
 	^ if
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSwitchStatementNode >> if: aCGLRExpressionNode [
 	self assertExpression: aCGLRExpressionNode.
 	
@@ -40,24 +38,24 @@ CSwitchStatementNode >> if: aCGLRExpressionNode [
 		ifTrue: [ self if parent: self ]
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 CSwitchStatementNode >> isSwitch [
 	
 	^ true
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 CSwitchStatementNode >> needsSeparator [
 
 	^ false
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSwitchStatementNode >> statement [
 	^ statement
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSwitchStatementNode >> statement: aCGLRAbstractNode [
 	self statement notNil
 		ifTrue: [ self statement parent: nil ].

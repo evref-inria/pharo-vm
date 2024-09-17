@@ -531,3 +531,4 @@ EXPORT(long) aioPoll(long microSeconds){
 EXPORT(void) aioInterruptPoll(){
 	SetEvent(interruptEvent);
 }
+

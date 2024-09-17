@@ -2,8 +2,8 @@
 Main entry point to generate the VM code from the command line.
 "
 Class {
-	#name : 'PharoVMMaker',
-	#superclass : 'Object',
+	#name : #PharoVMMaker,
+	#superclass : #Object,
 	#instVars : [
 		'outputDirectory',
 		'stopOnErrors',
@@ -12,48 +12,46 @@ Class {
 		'imageFormatName',
 		'options'
 	],
-	#category : 'VMMakerCompatibilityForPharo6-CommandLine',
-	#package : 'VMMakerCompatibilityForPharo6',
-	#tag : 'CommandLine'
+	#category : #'VMMakerCompatibilityForPharo6-CommandLine'
 }
 
-{ #category : 'defaults' }
+{ #category : #defaults }
 PharoVMMaker class >> default32BitsMemoryManagerClass [
 
 	^ Spur32BitCoMemoryManager
 ]
 
-{ #category : 'defaults' }
+{ #category : #defaults }
 PharoVMMaker class >> default64BitsMemoryManagerClass [
 
 	^ Spur64BitCoMemoryManager
 ]
 
-{ #category : 'defaults' }
+{ #category : #defaults }
 PharoVMMaker class >> defaultImageFormatName [
 
 	^ #SpurFormat
 ]
 
-{ #category : 'defaults' }
+{ #category : #defaults }
 PharoVMMaker class >> defaultInterpreterClass [
 
 	^ CoInterpreter
 ]
 
-{ #category : 'defaults' }
+{ #category : #defaults }
 PharoVMMaker class >> defaultMemoryManagerClass [
 
 	^ self default64BitsMemoryManagerClass 
 ]
 
-{ #category : 'generation' }
+{ #category : #generation }
 PharoVMMaker class >> defaultOutputDirectory [
 
 	^ FileSystem workingDirectory
 ]
 
-{ #category : 'generation' }
+{ #category : #generation }
 PharoVMMaker class >> generate: anInterpreterClass [
 
 	self
@@ -61,8 +59,14 @@ PharoVMMaker class >> generate: anInterpreterClass [
 		outputDirectory: self defaultOutputDirectory
 ]
 
-{ #category : 'generation' }
+{ #category : #generation }
 PharoVMMaker class >> generate: anInterpreterClass outputDirectory: aDirectory [
+
+	^ self generate: anInterpreterClass outputDirectory: aDirectory options: #()
+]
+
+{ #category : #generation }
+PharoVMMaker class >> generate: anInterpreterClass outputDirectory: aDirectory options: options [
 
 	Transcript
 		nextPutAll: 'Generating ';
@@ -73,13 +77,6 @@ PharoVMMaker class >> generate: anInterpreterClass outputDirectory: aDirectory [
 		newLine;
 		flush.
 
-	self new
-		outputDirectory: aDirectory;
-		perform: #generate , anInterpreterClass asSymbol
-]
-
-{ #category : 'generation' }
-PharoVMMaker class >> generate: anInterpreterClass outputDirectory: aDirectory options: options [
 
 	self new
 		options: options;
@@ -87,7 +84,7 @@ PharoVMMaker class >> generate: anInterpreterClass outputDirectory: aDirectory o
 		perform: #generate , anInterpreterClass asSymbol
 ]
 
-{ #category : 'generation' }
+{ #category : #generation }
 PharoVMMaker class >> on: anInterpreterClass [
 
 	^ self
@@ -95,7 +92,7 @@ PharoVMMaker class >> on: anInterpreterClass [
 		  outputDirectory: self defaultOutputDirectory
 ]
 
-{ #category : 'generation' }
+{ #category : #generation }
 PharoVMMaker class >> on: anInterpreterClass outputDirectory: aDirectory [
 
 	^ self new
@@ -103,34 +100,35 @@ PharoVMMaker class >> on: anInterpreterClass outputDirectory: aDirectory [
 		  vmMakerOn: anInterpreterClass
 ]
 
-{ #category : 'generation' }
+{ #category : #generation }
 PharoVMMaker class >> withCoInterpreter [
 
 	^ self on: CoInterpreter
 ]
 
-{ #category : 'generation' }
+{ #category : #generation }
 PharoVMMaker >> generate: interpreterClass memoryManager: memoryManager [
 
 	self generate: interpreterClass memoryManager: memoryManager compilerClass: StackToRegisterMappingCogit
 ]
 
-{ #category : 'generation' }
+{ #category : #generation }
 PharoVMMaker >> generate: interpreterClass memoryManager: memoryManager compilerClass: compilerClass [
 
-	| platformDirectory vmmaker imageReaderClassName imageWriterClassName |
+	| platformDirectory vmmaker |
 	
 	imageFormatName := (Dictionary newFromPairs: options) at: 'ImageFormat' ifAbsent: [ imageFormatName ].
 	(#(SpurFormat ComposedFormat) includes: imageFormatName asSymbol)
 		ifFalse:[ self error: 'Invalid Image Format: ', imageFormatName].
 	
-	imageFormatName = 'ComposedFormat' 
-		ifTrue: [imageReaderClassName 	:= ComposedImageReader name.
-					imageWriterClassName 	:= ComposedImageWriter name]
-		ifFalse: [imageReaderClassName := SpurImageReader name.
-					imageWriterClassName 	:= SpurImageWriter name].
-	
-	
+	self generate: interpreterClass memoryManager: memoryManager compilerClass: compilerClass options: #()
+]
+
+{ #category : #generation }
+PharoVMMaker >> generate: interpreterClass memoryManager: memoryManager compilerClass: compilerClass options: options [
+
+	| platformDirectory vmmaker |
+			
 	Author useAuthor: 'vmMaker' during: [
 	
 		VMMakerConfiguration initializeForPharo.
@@ -143,9 +141,8 @@ PharoVMMaker >> generate: interpreterClass memoryManager: memoryManager compiler
 			makerFor: interpreterClass
 			and: compilerClass
 			with: {#ObjectMemory. memoryManager name.
-					 #bytecodeTableInitializer. #initializeBytecodeTableForSistaV1.
-					 #ImageReader. imageReaderClassName.
-		  			 #ImageWriter. imageWriterClassName} , options
+					 #bytecodeTableInitializer. #initializeBytecodeTableForSistaV1} 
+					, options
 			to: platformDirectory
 			platformDir:platformDirectory
 			including: #()
@@ -159,7 +156,7 @@ PharoVMMaker >> generate: interpreterClass memoryManager: memoryManager compiler
 		generatePlugins ifTrue: [ vmmaker generateExternalPlugins ]] valueSupplyingAnswer:true.]
 ]
 
-{ #category : 'generation' }
+{ #category : #generation }
 PharoVMMaker >> generateCoInterpreter [
 
 	self generates64Bits ifTrue: [self generate: CoInterpreter memoryManager: Spur64BitCoMemoryManager].
@@ -167,19 +164,99 @@ PharoVMMaker >> generateCoInterpreter [
 
 ]
 
-{ #category : 'accessing' }
+{ #category : #generation }
+PharoVMMaker >> generateDruidMirrorVM [
+
+	self generate: CoInterpreter memoryManager: Spur64BitCoMemoryManager compilerClass: DruidMirrorCogit	
+]
+
+{ #category : #generation }
+PharoVMMaker >> generateDruidVM [
+
+	options := #( PartialCompilation true ).
+
+	self
+		generate: CoInterpreter
+		memoryManager: Spur64BitCoMemoryManager
+		compilerClass: DruidJIT
+]
+
+{ #category : #generation }
+PharoVMMaker >> generateDruidVMFullCompilation [
+
+	options := #( PartialCompilation false ).
+
+	self
+		generate: CoInterpreter
+		memoryManager: Spur64BitCoMemoryManager
+		compilerClass: DruidJIT
+]
+
+{ #category : #generation }
+PharoVMMaker >> generateDruidVMStaticTypePrediction [
+
+	options := #( PartialCompilation false ).
+
+	self
+		generate: CoInterpreter
+		memoryManager: Spur64BitCoMemoryManager
+		compilerClass: DruidStaticTypePredictionJIT
+]
+
+{ #category : #generation }
+PharoVMMaker >> generateDruidVMSuperInstructions [
+
+	options := #( PartialCompilation false ).
+
+	self
+		generate: CoInterpreter
+		memoryManager: Spur64BitCoMemoryManager
+		compilerClass: DruidSuperInstructionsJIT
+]
+
+{ #category : #generation }
+PharoVMMaker >> generateJITVM [
+
+	self generateCoInterpreter
+]
+
+{ #category : #generation }
+PharoVMMaker >> generateJITZeroVM [
+
+	self generate: CoInterpreter memoryManager: Spur64BitCoMemoryManager compilerClass: JITZeroCogit	
+]
+
+{ #category : #accessing }
 PharoVMMaker >> generatePlugins [
 
 	^ generatePlugins
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 PharoVMMaker >> generatePlugins: anObject [
 
 	generatePlugins := anObject
 ]
 
-{ #category : 'generation' }
+{ #category : #generation }
+PharoVMMaker >> generateSimple [
+
+	self
+		generate: CoInterpreter
+		memoryManager: Spur64BitCoMemoryManager
+		compilerClass: SimpleStackBasedCogit
+]
+
+{ #category : #generation }
+PharoVMMaker >> generateSimpleDruid [
+
+	self
+		generate: CoInterpreter
+		memoryManager: Spur64BitCoMemoryManager
+		compilerClass: SimpleDruidJIT
+]
+
+{ #category : #generation }
 PharoVMMaker >> generateStackVM [
 
 	self generates64Bits ifTrue: [self generate: StackInterpreter memoryManager: Spur64BitMemoryManager].
@@ -187,19 +264,19 @@ PharoVMMaker >> generateStackVM [
 
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 PharoVMMaker >> generates32Bits [
 
 	^ wordSizesToGenerate includes: 4
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 PharoVMMaker >> generates64Bits [
 	
 	^ wordSizesToGenerate includes: 8
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 PharoVMMaker >> initialize [
 	super initialize.
 	stopOnErrors := false.
@@ -210,51 +287,51 @@ PharoVMMaker >> initialize [
 	options := #()
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 PharoVMMaker >> initializeOutputDirectory [
 
 	^ outputDirectory := self class defaultOutputDirectory
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 PharoVMMaker >> options [
 
 	^ options
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 PharoVMMaker >> options: anObject [
 
 	options := anObject
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 PharoVMMaker >> outputDirectory [
 	^ outputDirectory ifNil: [ self initializeOutputDirectory ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 PharoVMMaker >> outputDirectory: anObject [
 	outputDirectory := anObject asFileReference
 ]
 
-{ #category : 'utils' }
+{ #category : #utils }
 PharoVMMaker >> platformDirectoryFor: aMemoryManagerClass [ 
 	
 	^ self outputDirectory / 'generated' / (aMemoryManagerClass wordSize * 8) asString
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 PharoVMMaker >> stopOnErrors [
 	^ stopOnErrors
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 PharoVMMaker >> stopOnErrors: anObject [
 	stopOnErrors := anObject
 ]
 
-{ #category : 'generation' }
+{ #category : #generation }
 PharoVMMaker >> vmMakerOn: anInterpreterClass [
 
 	^ self
@@ -262,7 +339,7 @@ PharoVMMaker >> vmMakerOn: anInterpreterClass [
 		  memoryManager: self class defaultMemoryManagerClass
 ]
 
-{ #category : 'generation' }
+{ #category : #generation }
 PharoVMMaker >> vmMakerWith: interpreterClass memoryManager: memoryManager [
 
 	| platformDirectory |
@@ -283,13 +360,13 @@ PharoVMMaker >> vmMakerWith: interpreterClass memoryManager: memoryManager [
 		  yourself
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 PharoVMMaker >> wordSizesToGenerate [
 
 	^ wordSizesToGenerate
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 PharoVMMaker >> wordSizesToGenerate: anObject [
 
 	wordSizesToGenerate := anObject

@@ -1,22 +1,20 @@
 Class {
-	#name : 'CCallNode',
-	#superclass : 'CExpressionNode',
+	#name : #CCallNode,
+	#superclass : #CExpressionNode,
 	#instVars : [
 		'arguments',
 		'identifier'
 	],
-	#category : 'CAST-Nodes',
-	#package : 'CAST',
-	#tag : 'Nodes'
+	#category : #'CAST-Nodes'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 CCallNode class >> identifier: anIndentifier [
 	
 	^ self identifier: anIndentifier arguments: #()
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 CCallNode class >> identifier: anIndentifier arguments: anOrderdList [
 	
 	^ self new
@@ -25,17 +23,17 @@ CCallNode class >> identifier: anIndentifier arguments: anOrderdList [
 		yourself
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CCallNode >> acceptVisitor: anAbstractVisitor [
 	^ anAbstractVisitor visitCall: self
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CCallNode >> arguments [
 	^ arguments
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CCallNode >> arguments: anOrderedCollection [
 	self assertListOfExpressions: anOrderedCollection.
 
@@ -44,12 +42,12 @@ CCallNode >> arguments: anOrderedCollection [
 	self setParents: self arguments to: self
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CCallNode >> identifier [
 	^ identifier
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CCallNode >> identifier: aCGLRAbstractNode [
 	self identifier notNil
 		ifTrue: [ self identifier parent: nil ].
@@ -58,13 +56,13 @@ CCallNode >> identifier: aCGLRAbstractNode [
 		ifTrue: [ self identifier parent: self ]
 ]
 
-{ #category : 'generated-initialize-release' }
+{ #category : #'generated-initialize-release' }
 CCallNode >> initialize [
 	super initialize.
 	arguments := OrderedCollection new: 2.
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 CCallNode >> isFunctionCall [
 	
 	^ true

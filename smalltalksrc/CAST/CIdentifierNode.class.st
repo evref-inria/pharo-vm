@@ -1,15 +1,13 @@
 Class {
-	#name : 'CIdentifierNode',
-	#superclass : 'CExpressionNode',
+	#name : #CIdentifierNode,
+	#superclass : #CExpressionNode,
 	#instVars : [
 		'name'
 	],
-	#category : 'CAST-Nodes',
-	#package : 'CAST',
-	#tag : 'Nodes'
+	#category : #'CAST-Nodes'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 CIdentifierNode class >> name: aString [ 
 	
 	^ self new
@@ -17,7 +15,7 @@ CIdentifierNode class >> name: aString [
 		yourself
 ]
 
-{ #category : 'comparing' }
+{ #category : #comparing }
 CIdentifierNode >> = anObject [
 
 	"Answer whether the receiver and anObject represent the same object."
@@ -27,21 +25,12 @@ CIdentifierNode >> = anObject [
 	^ name = anObject name
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CIdentifierNode >> acceptVisitor: anAbstractVisitor [
 	^ anAbstractVisitor visitIdentifier: self
 ]
 
-{ #category : 'accessing' }
-CIdentifierNode >> hasValidName [
-
-	| cIdentifierRegExp |
-	cIdentifierRegExp := '^[a-zA-Z_][a-zA-Z_0-9]*$' asRegex.
-
-	^ cIdentifierRegExp matches: name
-]
-
-{ #category : 'comparing' }
+{ #category : #comparing }
 CIdentifierNode >> hash [
 
 	"Answer an integer value that is related to the identity of the receiver."
@@ -49,25 +38,25 @@ CIdentifierNode >> hash [
 	^ name hash
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 CIdentifierNode >> isIdentifier [
 	
 	^ true
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 CIdentifierNode >> isLeaf [
 	
 	^ true
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 CIdentifierNode >> name [
 	
 	^ name
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 CIdentifierNode >> name: aName [
 	
 	name := aName

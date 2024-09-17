@@ -1,15 +1,14 @@
 Class {
-	#name : 'SlangOptionTest',
-	#superclass : 'TestCase',
+	#name : #SlangOptionTest,
+	#superclass : #TestCase,
 	#instVars : [
 		'cogitSubclassName',
 		'slang'
 	],
-	#category : 'Slang-Tests',
-	#package : 'Slang-Tests'
+	#category : #'Slang-Tests'
 }
 
-{ #category : 'running' }
+{ #category : #running }
 SlangOptionTest >> setUp [
 	super setUp.
 	slang := MLVMCCodeGenerator new.
@@ -25,7 +24,7 @@ SlangOptionTest >> setUp [
 	slang vmClass mockConstantClass: MockConstantClass new.
 ]
 
-{ #category : 'tests - option - cogit' }
+{ #category : #'tests - option - cogit' }
 SlangOptionTest >> testOptionInSpecifiedCogitShouldBeActive [
 
 	"This is a VM-tied slang test"
@@ -41,7 +40,7 @@ SlangOptionTest >> testOptionInSpecifiedCogitShouldBeActive [
 	self assert: (slang optionIsTrue: optionPragma in: slang vmClass)
 ]
 
-{ #category : 'tests - option - cogit' }
+{ #category : #'tests - option - cogit' }
 SlangOptionTest >> testOptionInSpecifiedCogitSubclassShouldNotBeActive [
 
 	"This is a VM-tied slang test"
@@ -58,7 +57,7 @@ SlangOptionTest >> testOptionInSpecifiedCogitSubclassShouldNotBeActive [
 	self deny: (slang optionIsTrue: optionPragma in: slang vmClass)
 ]
 
-{ #category : 'tests - option - cogit' }
+{ #category : #'tests - option - cogit' }
 SlangOptionTest >> testOptionInSpecifiedCogitSuperclassShouldBeActive [
 
 	"This is a VM-tied slang test"
@@ -75,7 +74,7 @@ SlangOptionTest >> testOptionInSpecifiedCogitSuperclassShouldBeActive [
 	self assert: (slang optionIsTrue: optionPragma in: slang vmClass)
 ]
 
-{ #category : 'tests - option - memory' }
+{ #category : #'tests - option - memory' }
 SlangOptionTest >> testOptionInSpecifiedObjectMemoryShouldBeActive [
 
 	"This is a VM-tied slang test"
@@ -91,7 +90,7 @@ SlangOptionTest >> testOptionInSpecifiedObjectMemoryShouldBeActive [
 	self assert: (slang optionIsTrue: optionPragma in: slang vmClass)
 ]
 
-{ #category : 'tests - option - memory' }
+{ #category : #'tests - option - memory' }
 SlangOptionTest >> testOptionInSpecifiedObjectMemorySubclassShouldNotBeActive [
 
 	"This is a VM-tied slang test"
@@ -111,7 +110,7 @@ SlangOptionTest >> testOptionInSpecifiedObjectMemorySubclassShouldNotBeActive [
 	self deny: (slang optionIsTrue: optionPragma in: slang vmClass)
 ]
 
-{ #category : 'tests - option - memory' }
+{ #category : #'tests - option - memory' }
 SlangOptionTest >> testOptionInSpecifiedObjectMemorySuperclassShouldBeActive [
 
 	"This is a VM-tied slang test"
@@ -128,7 +127,7 @@ SlangOptionTest >> testOptionInSpecifiedObjectMemorySuperclassShouldBeActive [
 	self assert: (slang optionIsTrue: optionPragma in: slang vmClass)
 ]
 
-{ #category : 'tests - option - cogit' }
+{ #category : #'tests - option - cogit' }
 SlangOptionTest >> testOptionWithUnrelatedCogitClassShouldNotBeActive [
 
 	"This is a VM-tied slang test"
@@ -144,7 +143,7 @@ SlangOptionTest >> testOptionWithUnrelatedCogitClassShouldNotBeActive [
 	self deny: (slang optionIsTrue: optionPragma in: slang vmClass)
 ]
 
-{ #category : 'tests - option - memory' }
+{ #category : #'tests - option - memory' }
 SlangOptionTest >> testOptionWithUnrelatedObjectMemoryClassShouldNotBeActive [
 
 	"This is a VM-tied slang test"
@@ -163,7 +162,7 @@ SlangOptionTest >> testOptionWithUnrelatedObjectMemoryClassShouldNotBeActive [
 	self deny: (slang optionIsTrue: optionPragma in: slang vmClass)
 ]
 
-{ #category : 'tests - option - cogit' }
+{ #category : #'tests - option - cogit' }
 SlangOptionTest >> testOptionWithoutCogitShouldNotBeActive [
 
 	"This is a VM-tied slang test"
@@ -179,7 +178,7 @@ SlangOptionTest >> testOptionWithoutCogitShouldNotBeActive [
 	self deny: (slang optionIsTrue: optionPragma in: slang vmClass)
 ]
 
-{ #category : 'tests - option - memory' }
+{ #category : #'tests - option - memory' }
 SlangOptionTest >> testOptionWithoutObjectMemoryShouldNotBeActive [
 
 	"This is a VM-tied slang test"

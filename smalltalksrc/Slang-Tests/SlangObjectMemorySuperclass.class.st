@@ -1,6 +1,5 @@
 Class {
-	#name : 'SlangObjectMemorySuperclass',
-	#superclass : 'SlangClass',
-	#category : 'Slang-Tests',
-	#package : 'Slang-Tests'
+	#name : #SlangObjectMemorySuperclass,
+	#superclass : #SlangClass,
+	#category : #'Slang-Tests'
 }

@@ -1,11 +1,10 @@
 Class {
-	#name : 'SLInterpreterThreadingTest',
-	#superclass : 'TestCase',
-	#category : 'Slang-Tests',
-	#package : 'Slang-Tests'
+	#name : #SLInterpreterThreadingTest,
+	#superclass : #TestCase,
+	#category : #'Slang-Tests'
 }
 
-{ #category : 'helpers' }
+{ #category : #helpers }
 SLInterpreterThreadingTest >> gnuify: aString [
 
 	| fileSystem |
@@ -19,7 +18,7 @@ SLInterpreterThreadingTest >> gnuify: aString [
 	^ (fileSystem / 'gcc3x-testInterpreter') contents
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 SLInterpreterThreadingTest >> testAddJumpTableVariableAtEndOfInterpreterVariables [
 
 	| gnuified |
@@ -32,7 +31,7 @@ interpret(void){
 	self assert: (gnuified lineNumber: 7) equals: '    JUMP_TABLE;'
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 SLInterpreterThreadingTest >> testGnuisationGeneratesNewFile [
 
 	| fileSystem |
@@ -47,7 +46,7 @@ SLInterpreterThreadingTest >> testGnuisationGeneratesNewFile [
 	self assert: (fileSystem / 'gcc3x-testInterpreter') exists
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 SLInterpreterThreadingTest >> testReplaceBreakStatementByBREAKMacro [
 
 	| gnuified |
@@ -61,7 +60,7 @@ interpret(void){
 	self assert: (gnuified lineNumber: 14) equals: '			BREAK;'
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 SLInterpreterThreadingTest >> testReplaceCaseStatementByCASEMacroWithArgument [
 
 	| gnuified |
@@ -75,7 +74,7 @@ interpret(void){
 	self assert: (gnuified lineNumber: 14) equals: '			CASE(1)'
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 SLInterpreterThreadingTest >> testReplaceCurrentBytecodeInterpreterVariablesByItsGnuDefinition [
 
 	| gnuified |
@@ -87,7 +86,7 @@ interpret(void){
 	self assert: (gnuified lineNumber: 6) equals: '	register sqInt currentBytecode CB_REG;'
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 SLInterpreterThreadingTest >> testReplaceFooInterpreterVariablesByItsGnuDefinition [
 
 	| gnuified |
@@ -99,7 +98,7 @@ register struct foo * foo = &fum;
 	self assert: (gnuified lineNumber: 6) equals: 'register struct foo * foo FOO_REG = &fum;'
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 SLInterpreterThreadingTest >> testReplaceGenericHeaderByGnuHeader [
 
 	| gnuified |
@@ -108,7 +107,7 @@ SLInterpreterThreadingTest >> testReplaceGenericHeaderByGnuHeader [
 	self assert: (gnuified lineNumber: 4) equals: '#include "sqGnu.h"'
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 SLInterpreterThreadingTest >> testReplaceLocalFPInterpreterVariablesByItsGnuDefinition [
 
 	| gnuified |
@@ -120,7 +119,7 @@ interpret(void){
 	self assert: (gnuified lineNumber: 6) equals: '	register char* local_framePointer FP_REG;'
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 SLInterpreterThreadingTest >> testReplaceLocalIPInterpreterVariablesByItsGnuDefinition [
 
 	| gnuified |
@@ -132,7 +131,7 @@ interpret(void){
 	self assert: (gnuified lineNumber: 6) equals: '	register char* local_instructionPointer IP_REG;'
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 SLInterpreterThreadingTest >> testReplaceLocalSPInterpreterVariablesByItsGnuDefinition [
 
 	| gnuified |

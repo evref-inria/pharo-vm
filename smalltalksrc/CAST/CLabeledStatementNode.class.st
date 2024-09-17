@@ -1,17 +1,15 @@
 Class {
-	#name : 'CLabeledStatementNode',
-	#superclass : 'CGLRAbstractNode',
+	#name : #CLabeledStatementNode,
+	#superclass : #CGLRAbstractNode,
 	#instVars : [
 		'label',
 		'statement',
 		'case'
 	],
-	#category : 'CAST-Nodes',
-	#package : 'CAST',
-	#tag : 'Nodes'
+	#category : #'CAST-Nodes'
 }
 
-{ #category : 'generated' }
+{ #category : #generated }
 CLabeledStatementNode class >> case: aCase statement: aStatement [
 
 	^ self new
@@ -20,39 +18,39 @@ CLabeledStatementNode class >> case: aCase statement: aStatement [
 		yourself
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CLabeledStatementNode class >> defaultDoing: aCompoundStatement [
 
 	^ self case: 'default' statement: aCompoundStatement
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CLabeledStatementNode >> acceptVisitor: anAbstractVisitor [
 	^ anAbstractVisitor visitLabeledStatement: self
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CLabeledStatementNode >> case [
 	^ case
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CLabeledStatementNode >> case: anObject [
 	case := anObject
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 CLabeledStatementNode >> isLabelledStatement [
 	
 	^ true
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CLabeledStatementNode >> label [
 	^ label
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CLabeledStatementNode >> label: aCGLRIdentifierNode [
 	self label notNil
 		ifTrue: [ self label parent: nil ].
@@ -61,7 +59,7 @@ CLabeledStatementNode >> label: aCGLRIdentifierNode [
 		ifTrue: [ self label parent: self ]
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 CLabeledStatementNode >> needsSeparator [
 
 	"The labeled statement node is a case:.
@@ -70,12 +68,12 @@ CLabeledStatementNode >> needsSeparator [
 	^ false
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CLabeledStatementNode >> statement [
 	^ statement
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CLabeledStatementNode >> statement: aCGLRAbstractNode [
 	self statement notNil
 		ifTrue: [ self statement parent: nil ].

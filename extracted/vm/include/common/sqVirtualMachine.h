@@ -6,7 +6,6 @@
  */
 #include "interp.h"
 
-
 #if SPURVM
 # define VM_VERSION "5.0"
 #else
@@ -30,8 +29,6 @@
 
 #include "sqMemoryAccess.h"
 
-#include "pharovm/semaphores/pSemaphore.h"
-
 #if VM_PROXY_MINOR > 8
 # define PrimNoErr 0
 # define PrimErrGenericFailure 1
@@ -49,6 +46,8 @@
 # define PrimErrNamedInternal 13
 # define PrimErrObjectMayMove 14
 
+/* VMCallbackContext opaque type avoids all including setjmp.h & vmCallback.h */
+typedef struct _VMCallbackContext *vmccp;
 #endif
 
 typedef sqInt (*CompilerHook)();
@@ -62,10 +61,10 @@ typedef struct VirtualMachine {
 	/* InterpreterProxy methodsFor: 'stack access' */
 
 	sqInt  (*pop)(sqInt nItems);
-	void  (*popthenPush)(sqInt nItems, sqInt oop);
-	void  (*push)(sqInt object);
+	sqInt  (*popthenPush)(sqInt nItems, sqInt oop);
+	sqInt  (*push)(sqInt object);
 	sqInt  (*pushBool)(sqInt trueOrFalse);
-	void  (*pushFloat)(double f);
+	sqInt  (*pushFloat)(double f);
 	sqInt  (*pushInteger)(sqInt integerValue);
 	double (*stackFloatValue)(sqInt offset);
 	sqInt  (*stackIntegerValue)(sqInt offset);
@@ -155,7 +154,7 @@ typedef struct VirtualMachine {
 	sqInt (*instantiateClassindexableSize)(sqInt classPointer, sqInt size);
 	sqInt (*makePointwithxValueyValue)(sqInt xValue, sqInt yValue);
 	sqInt (*popRemappableOop)(void);
-	void (*pushRemappableOop)(sqInt oop);
+	sqInt (*pushRemappableOop)(sqInt oop);
 
 	/* InterpreterProxy methodsFor: 'other' */
 
@@ -172,7 +171,7 @@ typedef struct VirtualMachine {
 # if VM_PROXY_MINOR > 13
 	/* Reuse these now that Cog provides a production JIT. */
 	sqInt (*statNumGCs)(void);
-	sqInt (*stringForCString)(const char *nullTerminatedCString);
+	sqInt (*stringForCString)(char *nullTerminatedCString);
 # else
 	/* InterpreterProxy methodsFor: 'compiler' */
 
@@ -202,7 +201,7 @@ typedef struct VirtualMachine {
 
 	sqInt (*classExternalAddress)(void);
 	void *(*ioLoadModuleOfLength)(sqInt modIndex, sqInt modLength);
-	void *(*ioLoadSymbolOfLengthFromModule)(sqInt fnIndex, sqInt fnLength, void* handle);
+	void *(*ioLoadSymbolOfLengthFromModule)(sqInt fnIndex, sqInt fnLength, sqInt handle);
 	sqInt (*isInMemory)(sqInt address);
 
 #endif
@@ -235,7 +234,7 @@ typedef struct VirtualMachine {
 
 #if VM_PROXY_MINOR > 5
 	sqInt (*isArray)(sqInt oop);
-	sqInt (*forceInterruptCheck)(void);
+	void (*forceInterruptCheck)(void);
 #endif
 
 #if VM_PROXY_MINOR > 6
@@ -292,7 +291,7 @@ typedef struct VirtualMachine {
 #if VM_PROXY_MINOR > 10
   void  (*addHighPriorityTickee)(void (*ticker)(void), unsigned periodms);
   void  (*addSynchronousTickee)(void (*ticker)(void), unsigned periodms, unsigned roundms);
-  volatile unsigned long long (*utcMicroseconds)(void);
+  volatile usqLong (*utcMicroseconds)(void);
   void (*tenuringIncrementalGC)(void);
   sqInt (*isYoung) (sqInt anOop);
   sqInt (*isKindOfClass)(sqInt oop, sqInt aClass);
@@ -312,7 +311,7 @@ typedef struct VirtualMachine {
 
 #if VM_PROXY_MINOR > 12 /* Spur */
   sqInt (*isImmediate)(sqInt objOop);
-  sqInt (*characterObjectOf)(sqInt charCode);
+  sqInt (*characterObjectOf)(int charCode);
   sqInt (*characterValueOf)(sqInt objOop);
   sqInt (*isCharacterObject)(sqInt objOop);
   sqInt (*isCharacterValue)(int charCode);
@@ -331,15 +330,15 @@ typedef struct VirtualMachine {
   sqInt  (*isPositiveMachineIntegerObject)(sqInt);
 #endif
 
-  sqInt (*ptEnterInterpreterFromCallback)(void *);
-  sqInt (*ptExitInterpreterToCallback)(void *);
+  sqInt (*ptEnterInterpreterFromCallback)(vmccp);
+  sqInt (*ptExitInterpreterToCallback)(vmccp);
   sqInt (*isNonImmediate)(sqInt oop);
 
-  Semaphore* (*platformSemaphoreNew)(int initialValue);
+  sqInt (*platformSemaphoreNew)(int initialValue);
 
   sqInt (*scheduleInMainThread)(sqInt (*closure)());
 
-  void (*waitOnExternalSemaphoreIndex)(sqInt semaphoreIndex);
+  sqInt (*waitOnExternalSemaphoreIndex)(sqInt semaphoreIndex);
 
 } VirtualMachine;
 

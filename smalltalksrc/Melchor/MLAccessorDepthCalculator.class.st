@@ -1,14 +1,13 @@
 Class {
-	#name : 'MLAccessorDepthCalculator',
-	#superclass : 'Object',
+	#name : #MLAccessorDepthCalculator,
+	#superclass : #Object,
 	#instVars : [
 		'codeGenerator'
 	],
-	#category : 'Melchor',
-	#package : 'Melchor'
+	#category : #Melchor
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : #'as yet unclassified' }
 MLAccessorDepthCalculator class >> forCodeGenerator: aCodeGenerator [
 
 	^ self new
@@ -16,7 +15,7 @@ MLAccessorDepthCalculator class >> forCodeGenerator: aCodeGenerator [
 		yourself
 ]
 
-{ #category : 'spur primitive compilation' }
+{ #category : #'spur primitive compilation' }
 MLAccessorDepthCalculator >> accessorChainsForMethod: method interpreterClass: interpreterClass [
 
 	"Answer a set of access paths from arguments through objects, in the method, assuming
@@ -90,12 +89,12 @@ MLAccessorDepthCalculator >> accessorChainsForMethod: method interpreterClass: i
 	^ chains
 ]
 
-{ #category : 'spur primitive compilation' }
+{ #category : #'spur primitive compilation' }
 MLAccessorDepthCalculator >> accessorDepthDeterminationFollowsSelfSends [
 	^false
 ]
 
-{ #category : 'spur primitive compilation' }
+{ #category : #'spur primitive compilation' }
 MLAccessorDepthCalculator >> accessorDepthForChain: chain [ "OrderedCollection"
 	"Answer the actual number of accessors in the access chain, filtering out assignments of variables to variables."
 	| accessorDepth |
@@ -108,7 +107,7 @@ MLAccessorDepthCalculator >> accessorDepthForChain: chain [ "OrderedCollection"
 	^accessorDepth
 ]
 
-{ #category : 'spur primitive compilation' }
+{ #category : #'spur primitive compilation' }
 MLAccessorDepthCalculator >> accessorDepthForMethod: method [
 	"Compute the depth the method traverses object structure, assuming it is a primitive.
 	 This is in support of Spur's lazy become.  A primitive may fail because it may encounter
@@ -135,7 +134,7 @@ MLAccessorDepthCalculator >> accessorDepthForMethod: method [
 		ifNotNil: [:pragma| pragma arguments first]
 ]
 
-{ #category : 'spur primitive compilation' }
+{ #category : #'spur primitive compilation' }
 MLAccessorDepthCalculator >> accessorDepthForSelector: selector [
 	^(selector = #initialiseModule
 	   or: [codeGenerator vmmakerConfiguration interpreterPluginClass includesSelector: selector]) ifFalse:
@@ -143,7 +142,7 @@ MLAccessorDepthCalculator >> accessorDepthForSelector: selector [
 			[:m| self accessorDepthForMethod: m]]
 ]
 
-{ #category : 'spur primitive compilation' }
+{ #category : #'spur primitive compilation' }
 MLAccessorDepthCalculator >> accessorsAndAssignmentsForMethod: method actuals: actualParameters depth: depth interpreterClass: interpreterClass into: aTrinaryBlock [
 
 	"Evaluate aTrinaryBlock with the root accessor sends, accessor sends and assignments in the method."
@@ -201,7 +200,7 @@ MLAccessorDepthCalculator >> accessorsAndAssignmentsForMethod: method actuals: a
 	^ aTrinaryBlock value: roots value: accessors value: assignments
 ]
 
-{ #category : 'spur primitive compilation' }
+{ #category : #'spur primitive compilation' }
 MLAccessorDepthCalculator >> actualsForMethod: aTMethod [
 	"Normal primitives have no arguments, but translated primitives do.
 	 This class doesn't handle translated primitives and so smply answers an empty array.
@@ -209,22 +208,22 @@ MLAccessorDepthCalculator >> actualsForMethod: aTMethod [
 	^#()
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 MLAccessorDepthCalculator >> codeGenerator [
 	^ codeGenerator
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 MLAccessorDepthCalculator >> codeGenerator: anObject [
 	codeGenerator := anObject
 ]
 
-{ #category : 'spur primitive compilation' }
+{ #category : #'spur primitive compilation' }
 MLAccessorDepthCalculator >> isObjectAccessor: selector given: interpreterClass [
 	^interpreterClass isObjectAccessor: selector
 ]
 
-{ #category : 'spur primitive compilation' }
+{ #category : #'spur primitive compilation' }
 MLAccessorDepthCalculator >> isStackAccessor: selector given: interpreterClass [
 	^interpreterClass isStackAccessor: selector
 ]

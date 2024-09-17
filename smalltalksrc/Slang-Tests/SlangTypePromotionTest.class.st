@@ -1,11 +1,10 @@
 Class {
-	#name : 'SlangTypePromotionTest',
-	#superclass : 'SlangAbstractTestCase',
-	#category : 'Slang-Tests',
-	#package : 'Slang-Tests'
+	#name : #SlangTypePromotionTest,
+	#superclass : #SlangAbstractTestCase,
+	#category : #'Slang-Tests'
 }
 
-{ #category : 'integer-types' }
+{ #category : #'integer-types' }
 SlangTypePromotionTest >> testCharAndChar [
 	"representative of two types smaller than sizeOf(int) with same size"
 	| firstType secondType resType |
@@ -21,7 +20,7 @@ SlangTypePromotionTest >> testCharAndChar [
 	self assert: (ccg sizeOfIntegralCType: #char) equals: 1.
 ]
 
-{ #category : 'float-types' }
+{ #category : #'float-types' }
 SlangTypePromotionTest >> testCharAndFloat [
 	"representative of two types bigger than sizeOf(int) and with same size"
 	| firstType secondType resType |
@@ -33,7 +32,7 @@ SlangTypePromotionTest >> testCharAndFloat [
 	self assert: (ccg isFloatingPointCType: resType).
 ]
 
-{ #category : 'integer-types' }
+{ #category : #'integer-types' }
 SlangTypePromotionTest >> testCharAndLongLong [
 	"representative of two types bigger than sizeOf(int) and with same size"
 	| firstType secondType resType |
@@ -50,7 +49,7 @@ SlangTypePromotionTest >> testCharAndLongLong [
 	self assert: (ccg sizeOfIntegralCType: #'long long') equals: 8.
 ]
 
-{ #category : 'float-types' }
+{ #category : #'float-types' }
 SlangTypePromotionTest >> testDoubleAndDouble [
 	| firstType secondType resType |
 	firstType := #double.
@@ -61,7 +60,7 @@ SlangTypePromotionTest >> testDoubleAndDouble [
 	self assert: (ccg isFloatingPointCType: resType).
 ]
 
-{ #category : 'float-types' }
+{ #category : #'float-types' }
 SlangTypePromotionTest >> testDoubleAndFloat [
 	| firstType secondType resType |
 	firstType := #double.
@@ -73,7 +72,7 @@ SlangTypePromotionTest >> testDoubleAndFloat [
 	
 ]
 
-{ #category : 'float-types' }
+{ #category : #'float-types' }
 SlangTypePromotionTest >> testFloatAndDouble [
 	| firstType secondType resType |
 	firstType := #float.
@@ -85,7 +84,7 @@ SlangTypePromotionTest >> testFloatAndDouble [
 	
 ]
 
-{ #category : 'float-types' }
+{ #category : #'float-types' }
 SlangTypePromotionTest >> testFloatAndFloat [
 	| firstType secondType resType |
 	firstType := #float.
@@ -97,7 +96,7 @@ SlangTypePromotionTest >> testFloatAndFloat [
 	
 ]
 
-{ #category : 'general' }
+{ #category : #general }
 SlangTypePromotionTest >> testFloatAndNil [
 	| firstType secondType resType |
 	firstType := #float.
@@ -107,7 +106,7 @@ SlangTypePromotionTest >> testFloatAndNil [
 	self assert: resType equals: nil
 ]
 
-{ #category : 'float-types' }
+{ #category : #'float-types' }
 SlangTypePromotionTest >> testIntAndFloat [
 	| firstType secondType resType |
 	firstType := #int.
@@ -119,7 +118,7 @@ SlangTypePromotionTest >> testIntAndFloat [
 	
 ]
 
-{ #category : 'integer-types' }
+{ #category : #'integer-types' }
 SlangTypePromotionTest >> testIntAndInt [
 	"representative of two types with size = sizeOf(int) of same size"
 	| firstType secondType resType |
@@ -134,7 +133,7 @@ SlangTypePromotionTest >> testIntAndInt [
 	self assert: (ccg sizeOfIntegralCType: #int) equals: 4.
 ]
 
-{ #category : 'integer-types' }
+{ #category : #'integer-types' }
 SlangTypePromotionTest >> testIntAndLongLong [
 	"representative of a different size types"
 	| firstType secondType resType |
@@ -151,7 +150,7 @@ SlangTypePromotionTest >> testIntAndLongLong [
 	self assert: (ccg sizeOfIntegralCType: #'long long') equals: 8.
 ]
 
-{ #category : 'general' }
+{ #category : #general }
 SlangTypePromotionTest >> testIntAndNil [
 	| firstType secondType resType |
 	firstType := #int.
@@ -162,7 +161,7 @@ SlangTypePromotionTest >> testIntAndNil [
 	
 ]
 
-{ #category : 'unsigned-priority' }
+{ #category : #'unsigned-priority' }
 SlangTypePromotionTest >> testIntAndUnsignedChar [
 	"representative of an unsigned that is ignored because of integerType promotion"
 	| firstType secondType resType |
@@ -179,7 +178,7 @@ SlangTypePromotionTest >> testIntAndUnsignedChar [
 	self assert: (ccg sizeOfIntegralCType: #'unsigned char') equals: 1.
 ]
 
-{ #category : 'unsigned-priority' }
+{ #category : #'unsigned-priority' }
 SlangTypePromotionTest >> testIntAndUnsignedInt [
 	"representative of two types bigger than sizeOf(int) and with same size"
 	| firstType secondType resType |
@@ -196,7 +195,7 @@ SlangTypePromotionTest >> testIntAndUnsignedInt [
 	self assert: (ccg sizeOfIntegralCType: #'unsigned int') equals: 4.
 ]
 
-{ #category : 'integer-types' }
+{ #category : #'integer-types' }
 SlangTypePromotionTest >> testLongLongAndChar [
 	"representative of different sized types"
 	| firstType secondType resType |
@@ -213,7 +212,7 @@ SlangTypePromotionTest >> testLongLongAndChar [
 	self assert: (ccg sizeOfIntegralCType: #char) equals: 1.
 ]
 
-{ #category : 'float-types' }
+{ #category : #'float-types' }
 SlangTypePromotionTest >> testLongLongAndFloat [
 	| firstType secondType resType |
 	firstType := #'long long'.
@@ -225,7 +224,7 @@ SlangTypePromotionTest >> testLongLongAndFloat [
 	
 ]
 
-{ #category : 'integer-types' }
+{ #category : #'integer-types' }
 SlangTypePromotionTest >> testLongLongAndInt [
 	"representative of different sized types"
 	| firstType secondType resType |
@@ -242,7 +241,7 @@ SlangTypePromotionTest >> testLongLongAndInt [
 	self assert: (ccg sizeOfIntegralCType: #int) equals: 4.
 ]
 
-{ #category : 'integer-types' }
+{ #category : #'integer-types' }
 SlangTypePromotionTest >> testLongLongAndSqLong [
 	"representative of two types bigger than sizeOf(int)"
 	| firstType secondType resType |
@@ -259,7 +258,7 @@ SlangTypePromotionTest >> testLongLongAndSqLong [
 	self assert: (ccg sizeOfIntegralCType: #sqLong) equals: 8.
 ]
 
-{ #category : 'general' }
+{ #category : #general }
 SlangTypePromotionTest >> testNilAndFloat [
 	| firstType secondType resType |
 	firstType := nil.
@@ -269,7 +268,7 @@ SlangTypePromotionTest >> testNilAndFloat [
 	self assert: resType equals: nil
 ]
 
-{ #category : 'general' }
+{ #category : #general }
 SlangTypePromotionTest >> testNilAndInt [
 	| firstType secondType resType |
 	firstType := nil.
@@ -280,7 +279,7 @@ SlangTypePromotionTest >> testNilAndInt [
 	
 ]
 
-{ #category : 'general' }
+{ #category : #general }
 SlangTypePromotionTest >> testNilAndNil [
 	| firstType secondType resType |
 	firstType := nil.
@@ -291,7 +290,7 @@ SlangTypePromotionTest >> testNilAndNil [
 	
 ]
 
-{ #category : 'unsigned-priority' }
+{ #category : #'unsigned-priority' }
 SlangTypePromotionTest >> testUnsignedIntAndInt [
 	"representative of two types bigger than sizeOf(int) and with same size"
 	| firstType secondType resType |
@@ -308,7 +307,7 @@ SlangTypePromotionTest >> testUnsignedIntAndInt [
 	self assert: (ccg sizeOfIntegralCType: #int) equals: 4.
 ]
 
-{ #category : 'unsigned-priority' }
+{ #category : #'unsigned-priority' }
 SlangTypePromotionTest >> testUnsignedIntAndLongLong [
 	"representative of an unsigned that is ignored because of integerType promotion"
 	| firstType secondType resType |
@@ -325,7 +324,7 @@ SlangTypePromotionTest >> testUnsignedIntAndLongLong [
 	self assert: (ccg sizeOfIntegralCType: #'long long') equals: 8.
 ]
 
-{ #category : 'integer-types' }
+{ #category : #'integer-types' }
 SlangTypePromotionTest >> testsqLongAndLongLong [
 	"representative of two types bigger than sizeOf(int) and with same size"
 	| firstType secondType resType |

@@ -1,75 +1,20 @@
 Class {
-	#name : 'CSlangPrettyPrinter',
-	#superclass : 'CAbstractNodeVisitor',
+	#name : #CSlangPrettyPrinter,
+	#superclass : #CAbstractNodeVisitor,
 	#instVars : [
 		'stream',
 		'level'
 	],
-	#category : 'Slang-AST',
-	#package : 'Slang',
-	#tag : 'AST'
+	#category : #'Slang-AST'
 }
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 CSlangPrettyPrinter >> contents [
 	
 	^ stream contents
 ]
 
-{ #category : 'testing' }
-CSlangPrettyPrinter >> expressionListHasNonCommentStatementAfter: expressions futureIndex: startingIndex [
-	"Find a begin inlining comment in an expressionList starting at futureIndex.
-	Sometimes the last statements of an expression list are a sequence of comments.
-	We iterate the next elements to see if there is an actual statement after otherwise the next part is not an element of the list"
-
-	startingIndex to: expressions size do: [ :e |
-		| current |
-		current := expressions at: e.
-		(current isComment not and: [ current isEmpty not ]) ifTrue: [
-			^ true ] ].
-
-	^ false
-]
-
-{ #category : 'testing' }
-CSlangPrettyPrinter >> expressionListNeedAComma: expressions current: e futureIndex: futureIndex commentSeries: commentSeries [
-	"handle space, comma and comment in visitExpressionList, comments only comes from inlining in an expressionList. ensure comments are not considered as element of the list and are linked to theirs respective methods. if the list contains an empty inlined method we can have a potential series of comments  that shouldn't be considered as element, hence the boolean commentSeries. Return if a comma is needed and if the comment series continue/start.
-	"
-
-	| next currentRequiredEndSeparator futureRequireBeginningSeparator continueCommentSeries currentIsEndComment nextIsBeginComment |
-	futureIndex > expressions size ifTrue: [ ^ { false. false } ].
-	next := expressions at: futureIndex.
-
-	currentIsEndComment := e isComment and: [
-		                       e comment beginsWith: #' end' ].
-	nextIsBeginComment := next isComment and: [
-		                      next comment beginsWith: #' begin' ].
-
-	(currentIsEndComment and: [
-		 nextIsBeginComment and: [ commentSeries ] ]) ifTrue: [
-		^ { false. true } ].
-
-	continueCommentSeries := (commentSeries and: [
-		                          e isComment and: [ next isComment ] ])
-		                         or: [ nextIsBeginComment ].
-	currentRequiredEndSeparator := e isEmpty not and: [
-		                               e isComment not or: [
-			                               currentIsEndComment ] ].
-	futureRequireBeginningSeparator := next isEmpty not and: [
-		                                   next isComment not or: [
-			                                   nextIsBeginComment and: [
-				                                   self
-					                                   expressionListHasNonCommentStatementAfter:
-					                                   expressions
-					                                   futureIndex: futureIndex ] ] ].
-
-	^ {
-		  (currentRequiredEndSeparator and: [
-			   futureRequireBeginningSeparator ]).
-		  continueCommentSeries }
-]
-
-{ #category : 'initialization' }
+{ #category : #initialization }
 CSlangPrettyPrinter >> initialize [
 
 	super initialize.
@@ -77,7 +22,7 @@ CSlangPrettyPrinter >> initialize [
 	level := 0
 ]
 
-{ #category : 'visiting' }
+{ #category : #visiting }
 CSlangPrettyPrinter >> printComments: aListOfComments [
 
 	aListOfComments do: [ :e |
@@ -88,7 +33,7 @@ CSlangPrettyPrinter >> printComments: aListOfComments [
 	] separatedBy: [ stream cr ].
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> printExpression: cAST [
 
 	(cAST isLeaf
@@ -104,7 +49,7 @@ CSlangPrettyPrinter >> printExpression: cAST [
 	
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitArray: anArrayAcess [
 
 	anArrayAcess array acceptVisitor: self.
@@ -113,7 +58,7 @@ CSlangPrettyPrinter >> visitArray: anArrayAcess [
 	stream nextPut: $]
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitArrayDeclarator: anArrayDeclarator [
 
 	anArrayDeclarator declarator acceptVisitor: self.
@@ -123,7 +68,7 @@ CSlangPrettyPrinter >> visitArrayDeclarator: anArrayDeclarator [
 	stream nextPut: $]
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitArrow: aPointerAccess [
 
 	aPointerAccess needsParentheses ifTrue:  [ stream nextPut: $(].
@@ -133,7 +78,7 @@ CSlangPrettyPrinter >> visitArrow: aPointerAccess [
 	aPointerAccess needsParentheses ifTrue:  [ stream nextPut: $)].
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitAssignment: anAssignment [
 
 	anAssignment needsParentheses ifTrue: [ stream nextPut: $( ].
@@ -146,7 +91,7 @@ CSlangPrettyPrinter >> visitAssignment: anAssignment [
 	anAssignment needsParentheses ifTrue: [ stream nextPut: $) ]
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitBinary: aBinary [
 	
 	aBinary needsParentheses ifTrue: [ stream nextPut: $( ].
@@ -161,13 +106,13 @@ CSlangPrettyPrinter >> visitBinary: aBinary [
 	aBinary needsParentheses ifTrue: [ stream nextPut: $) ].
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitBreakStatement: aBreakStatement [
 
 	stream nextPutAll: 'break'
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitCall: aCall [
 	
 	aCall identifier isIdentifier ifFalse: [ stream nextPut: $( ].
@@ -179,7 +124,7 @@ CSlangPrettyPrinter >> visitCall: aCall [
 		
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitCastExpression: aCastExpression [
 
 	| nbParentheses |
@@ -198,7 +143,7 @@ CSlangPrettyPrinter >> visitCastExpression: aCastExpression [
 	stream next: nbParentheses put: $)
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitComment: aComment [
 
 	stream nextPutAll: '/*'.
@@ -206,7 +151,7 @@ CSlangPrettyPrinter >> visitComment: aComment [
 	stream nextPutAll: '*/'
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitCompoundStatement: aCompoundStatement [
 
 	| first |
@@ -248,13 +193,13 @@ CSlangPrettyPrinter >> visitCompoundStatement: aCompoundStatement [
 		stream nextPut: $} ]
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitConstant: aConstant [
 
 	stream nextPutAll: aConstant value asString
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitDeclaration: aDeclaration [
 
 	aDeclaration specifiers do: [ :e | 
@@ -268,7 +213,7 @@ CSlangPrettyPrinter >> visitDeclaration: aDeclaration [
 	aDeclaration isFunctionPrototype ifTrue: [ stream nextPut: $; ]
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitDeclarator: aDeclarator [
 
 	aDeclarator qualifiers do: [ :e | 
@@ -280,7 +225,7 @@ CSlangPrettyPrinter >> visitDeclarator: aDeclarator [
 	aDeclarator declarator acceptVisitor: self
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitDecrement: anDecrementNode [
 	| visit |
 	visit := [ anDecrementNode object acceptVisitor: self ].
@@ -289,7 +234,7 @@ CSlangPrettyPrinter >> visitDecrement: anDecrementNode [
 	anDecrementNode prefix ifTrue: visit.
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitDoStatement: aDoStatement [
 
 	stream nextPutAll: 'do'.
@@ -299,40 +244,30 @@ CSlangPrettyPrinter >> visitDoStatement: aDoStatement [
 	stream nextPut: $)
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitEmptyStatement: anEmptyStatement [
 	"Nothing to print."
 	self printComments: anEmptyStatement comments
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitExpressionList: anExpressionList [
 
-	| needCommaAndCommentSeries futureIndex expressions commentSeries |
+	| lastRequiredSeparator |
 	stream nextPut: $(.
-	futureIndex := 1.
-	expressions := anExpressionList expressions.
-	commentSeries := true.
-	expressions
-		do: [ :e |
-			e acceptVisitor: self.
-			futureIndex := futureIndex + 1.
-			needCommaAndCommentSeries := self
-				                             expressionListNeedAComma: expressions
-				                             current: e
-				                             futureIndex: futureIndex
-				                             commentSeries: commentSeries.
-			commentSeries := needCommaAndCommentSeries second ]
-		separatedBy: [
-			needCommaAndCommentSeries first
-				ifFalse: [ stream nextPutAll: ' ' ]
-				ifTrue: [
-					stream nextPutAll: ', '.
-					anExpressionList printOnMultipleLines ifTrue: [ stream cr ] ] ].
+	anExpressionList expressions do: [ :e | 
+		e acceptVisitor: self.
+		lastRequiredSeparator := e isEmpty not ]
+	separatedBy: [ 
+		lastRequiredSeparator
+			ifFalse: [ stream nextPutAll: ' ' ]
+			ifTrue: [ 
+				stream nextPutAll: ', '.
+				anExpressionList printOnMultipleLines ifTrue: [ stream cr ] ] ].
 	stream nextPut: $)
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitForStatement: aForStatement [
 
 	stream nextPutAll: 'for ('.
@@ -349,7 +284,7 @@ CSlangPrettyPrinter >> visitForStatement: aForStatement [
 	aForStatement statement acceptVisitor: self
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitFunctionDeclarator: aFunctionDeclarator [
 
 	aFunctionDeclarator declarator acceptVisitor: self.
@@ -360,7 +295,7 @@ CSlangPrettyPrinter >> visitFunctionDeclarator: aFunctionDeclarator [
 	stream nextPut: $)
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitFunctionDefinition: aFunction [
 
 	aFunction specifiers
@@ -374,7 +309,7 @@ CSlangPrettyPrinter >> visitFunctionDefinition: aFunction [
 	stream cr.
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitGotoStatement: aGoToStatement [
 
 	stream nextPutAll: 'goto ';
@@ -382,13 +317,13 @@ CSlangPrettyPrinter >> visitGotoStatement: aGoToStatement [
 	
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitIdentifier: anIdentifier [
 
 	stream nextPutAll: anIdentifier name
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitIfStatement: anIf [
 
 	stream nextPutAll: 'if ('.
@@ -405,7 +340,7 @@ CSlangPrettyPrinter >> visitIfStatement: anIf [
 		anIf else needsTrailingSemicolon ifTrue: [ stream nextPut: $; ]]
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitIncrement: anIncrementNode [
 	| visit |
 	visit := [ anIncrementNode object acceptVisitor: self ].
@@ -414,7 +349,7 @@ CSlangPrettyPrinter >> visitIncrement: anIncrementNode [
 	anIncrementNode prefix ifTrue: visit.
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitInitDeclarator: anInitDeclarator [
 
 	anInitDeclarator declarator acceptVisitor: self.
@@ -422,7 +357,7 @@ CSlangPrettyPrinter >> visitInitDeclarator: anInitDeclarator [
 	anInitDeclarator initializer acceptVisitor: self.
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitInitializer: anInitializer [
 
 	stream
@@ -435,7 +370,7 @@ CSlangPrettyPrinter >> visitInitializer: anInitializer [
 	stream nextPut: $}
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitLabeledStatement: aLabeledStatement [
 
 	"Case and labels are overloaded in the same node..."
@@ -466,7 +401,7 @@ CSlangPrettyPrinter >> visitLabeledStatement: aLabeledStatement [
 		stream nextPutAll: ';' ]
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitParameterDeclaration: aParameter [
 
 	"Raw declaration wins over a normal declaration."
@@ -479,7 +414,7 @@ CSlangPrettyPrinter >> visitParameterDeclaration: aParameter [
 			aParameter declarator acceptVisitor: self ]
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitPoint: aMemberAccess [
 
 	aMemberAccess needsParentheses ifTrue:  [ stream nextPut: $(].
@@ -489,7 +424,7 @@ CSlangPrettyPrinter >> visitPoint: aMemberAccess [
 	aMemberAccess needsParentheses ifTrue:  [ stream nextPut: $)].
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitPreprocessorDefine: aPreprocessorDefine [
 
 	stream nextPutAll: '#define '.
@@ -501,7 +436,7 @@ CSlangPrettyPrinter >> visitPreprocessorDefine: aPreprocessorDefine [
 		ifNil: [ aPreprocessorDefine expression acceptVisitor: self ]
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitPreprocessorIf: anIf [
 
 	| previousLevel tabbing |
@@ -544,13 +479,13 @@ CSlangPrettyPrinter >> visitPreprocessorIf: anIf [
 	level := previousLevel.
 ]
 
-{ #category : 'visiting' }
+{ #category : #visiting }
 CSlangPrettyPrinter >> visitRawCode: aCRawCodeNode [ 
 	
 	stream nextPutAll: aCRawCodeNode code asString
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitReturnStatement: aReturn [
 
 	stream nextPutAll: 'return'.
@@ -559,7 +494,7 @@ CSlangPrettyPrinter >> visitReturnStatement: aReturn [
 		exp acceptVisitor: self ]
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitStringLiteral: aStringLiteral [
 
 	aStringLiteral needsDoubleQuotes ifTrue: [ stream nextPut: $" ].
@@ -567,7 +502,7 @@ CSlangPrettyPrinter >> visitStringLiteral: aStringLiteral [
 	aStringLiteral needsDoubleQuotes ifTrue: [ stream nextPut: $" ]
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitSwitchStatement: aSwitchStatement [
 
 	stream nextPutAll: 'switch ('.
@@ -576,7 +511,7 @@ CSlangPrettyPrinter >> visitSwitchStatement: aSwitchStatement [
 	aSwitchStatement statement acceptVisitor: self.
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitTernary: aTernary [
 
 	stream nextPutAll: '(('.
@@ -594,13 +529,13 @@ CSlangPrettyPrinter >> visitTernary: aTernary [
 	aTernary printOnMultipleLines ifTrue: [ level := level - 1 ]
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitTypename: aTypename [
 
 	stream nextPutAll: aTypename symbol
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitUnaryOperator: anUnary [
 
 	| avoidParentheses |
@@ -616,7 +551,7 @@ CSlangPrettyPrinter >> visitUnaryOperator: anUnary [
 	anUnary needsParentheses ifTrue: [ stream nextPut: $) ]
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CSlangPrettyPrinter >> visitWhileStatement: aWhileStatement [
 
 	stream nextPutAll: 'while ('.
@@ -625,7 +560,7 @@ CSlangPrettyPrinter >> visitWhileStatement: aWhileStatement [
 	aWhileStatement statement acceptVisitor: self
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 CSlangPrettyPrinter >> writeStream: aWriteStream [
 
 	stream := aWriteStream 

@@ -1,44 +1,41 @@
 Class {
-	#name : 'CIncrementNode',
-	#superclass : 'CExpressionNode',
+	#name : #CIncrementNode,
+	#superclass : #CExpressionNode,
 	#instVars : [
 		'object',
-		'prefix',
-		'plusPlusToken'
+		'prefix'
 	],
-	#category : 'CAST-Nodes',
-	#package : 'CAST',
-	#tag : 'Nodes'
+	#category : #'CAST-Nodes'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 CIncrementNode class >> object: aVariable [
 	
 	^self new object: aVariable; prefix: false; yourself
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 CIncrementNode class >> object: aVariable prefix: boolean [
 	
 	^self new object: aVariable; prefix: boolean; yourself
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CIncrementNode >> acceptVisitor: anAbstractVisitor [
 	^ anAbstractVisitor visitIncrement: self
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CIncrementNode >> isIncrement [
 	^ true
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CIncrementNode >> object [
 	^ object
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CIncrementNode >> object: aCGLRAbstractNode [
 	self assertExpression: aCGLRAbstractNode.
 	
@@ -49,19 +46,13 @@ CIncrementNode >> object: aCGLRAbstractNode [
 		ifTrue: [ self object parent: self ]
 ]
 
-{ #category : 'accessing' }
-CIncrementNode >> plusPlusToken: aSmaCCToken [ 
-
-	plusPlusToken := aSmaCCToken
-]
-
-{ #category : 'accessing' }
+{ #category : #accessing }
 CIncrementNode >> prefix [
 
 	^ prefix
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 CIncrementNode >> prefix: boolean [
 
 	prefix := boolean

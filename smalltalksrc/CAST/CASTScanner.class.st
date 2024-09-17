@@ -2,14 +2,12 @@
 I am a GLR based C scanner.
 "
 Class {
-	#name : 'CASTScanner',
-	#superclass : 'SmaCCScanner',
-	#category : 'CAST-Parser',
-	#package : 'CAST',
-	#tag : 'Parser'
+	#name : #CASTScanner,
+	#superclass : #SmaCCScanner,
+	#category : #'CAST-Parser'
 }
 
-{ #category : 'generated-initialization' }
+{ #category : #'generated-initialization' }
 CASTScanner class >> initializeKeywordMap [
 	keywordMap := Dictionary new.
 	#(#(76 'auto' 70) #(76 'break' 48) #(76 'case' 38) #(76 'char' 73) #(76 'const' 40) #(76 'continue' 47) #(76 'default' 39) #(76 'do' 54) #(76 'double' 60) #(76 'else' 46) #(76 'enum' 51) #(76 'extern' 58) #(76 'float' 67) #(76 'for' 49) #(76 'goto' 50) #(76 'if' 42) #(76 'int' 69) #(76 'long' 66) #(76 'register' 71) #(76 'return' 13) #(76 'short' 68) #(76 'signed' 56) #(76 'sizeof' 24) #(76 'static' 61) #(76 'struct' 43) #(76 'switch' 52) #(76 'typedef' 57) #(76 'union' 44) #(76 'unsigned' 55) #(76 'void' 72) #(76 'volatile' 41) #(76 'while' 53))
@@ -20,17 +18,17 @@ CASTScanner class >> initializeKeywordMap [
 	^ keywordMap
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> emptySymbolTokenId [
 	^ 149
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> errorTokenId [
 	^ 150
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scan1 [
 	[ self step.
 	currentCharacter == $"
@@ -41,7 +39,7 @@ CASTScanner >> scan1 [
 	true ] whileTrue
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scan10 [
 	[ self recordMatch: #(77).
 	self step.
@@ -55,7 +53,7 @@ CASTScanner >> scan10 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scan2 [
 	self step.
 	currentCharacter == $\
@@ -67,7 +65,7 @@ CASTScanner >> scan2 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scan3 [
 	[ self step.
 	currentCharacter == $'
@@ -91,13 +89,13 @@ CASTScanner >> scan3 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scan4 [
 	self step.
 	^ self scan3
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scan5 [
 	[ self recordMatch: #(77).
 	self step.
@@ -109,7 +107,7 @@ CASTScanner >> scan5 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scan6 [
 	self step.
 	('+-' includes: currentCharacter)
@@ -119,7 +117,7 @@ CASTScanner >> scan6 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scan7 [
 	[ self recordMatch: #(77).
 	self step.
@@ -129,7 +127,7 @@ CASTScanner >> scan7 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scan8 [
 	[ self step.
 	currentCharacter == $*
@@ -141,7 +139,7 @@ CASTScanner >> scan8 [
 	true ] whileTrue
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scan9 [
 	self step.
 	(currentCharacter between: $0 and: $9)
@@ -149,7 +147,7 @@ CASTScanner >> scan9 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scanForToken [
 	self step.
 	currentCharacter == $!
@@ -178,7 +176,7 @@ CASTScanner >> scanForToken [
 	^ self scanForTokenX20
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scanForTokenX1 [
 	self recordMatch: #(77).
 	self step.
@@ -206,7 +204,7 @@ CASTScanner >> scanForTokenX1 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scanForTokenX10 [
 	self recordMatch: #(35).
 	self step.
@@ -217,7 +215,7 @@ CASTScanner >> scanForTokenX10 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scanForTokenX11 [
 	self recordMatch: #(28).
 	self step.
@@ -228,7 +226,7 @@ CASTScanner >> scanForTokenX11 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scanForTokenX12 [
 	self recordMatch: #(30).
 	self step.
@@ -239,7 +237,7 @@ CASTScanner >> scanForTokenX12 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scanForTokenX13 [
 	[ self recordMatch: #(83).
 	self step.
@@ -248,7 +246,7 @@ CASTScanner >> scanForTokenX13 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scanForTokenX14 [
 	self recordMatch: #(1).
 	self step.
@@ -257,7 +255,7 @@ CASTScanner >> scanForTokenX14 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scanForTokenX15 [
 	self recordMatch: #(17).
 	self step.
@@ -266,7 +264,7 @@ CASTScanner >> scanForTokenX15 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scanForTokenX16 [
 	self recordMatch: #(16).
 	self step.
@@ -275,7 +273,7 @@ CASTScanner >> scanForTokenX16 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scanForTokenX17 [
 	self recordMatch: #(34).
 	self step.
@@ -284,7 +282,7 @@ CASTScanner >> scanForTokenX17 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scanForTokenX18 [
 	self recordMatch: #(32).
 	self step.
@@ -293,7 +291,7 @@ CASTScanner >> scanForTokenX18 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scanForTokenX19 [
 	currentCharacter == $[
 		ifTrue: [ ^ self recordAndReportMatch: #(79) ].
@@ -323,7 +321,7 @@ CASTScanner >> scanForTokenX19 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scanForTokenX2 [
 	self recordMatch: #(76).
 	self step.
@@ -343,7 +341,7 @@ CASTScanner >> scanForTokenX2 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scanForTokenX20 [
 	currentCharacter == $,
 		ifTrue: [ ^ self recordAndReportMatch: #(21) ].
@@ -381,7 +379,7 @@ CASTScanner >> scanForTokenX20 [
 	^ self scanForTokenX19
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scanForTokenX3 [
 	self recordMatch: #(18).
 	self step.
@@ -400,7 +398,7 @@ CASTScanner >> scanForTokenX3 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scanForTokenX4 [
 	[ self recordMatch: #(76).
 	self step.
@@ -410,7 +408,7 @@ CASTScanner >> scanForTokenX4 [
 		whileTrue
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scanForTokenX5 [
 	self recordMatch: #(27).
 	self step.
@@ -424,7 +422,7 @@ CASTScanner >> scanForTokenX5 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scanForTokenX6 [
 	self recordMatch: #(36).
 	self step.
@@ -437,7 +435,7 @@ CASTScanner >> scanForTokenX6 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scanForTokenX7 [
 	self recordMatch: #(6).
 	self step.
@@ -451,7 +449,7 @@ CASTScanner >> scanForTokenX7 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scanForTokenX8 [
 	self recordMatch: #(2).
 	self step.
@@ -462,7 +460,7 @@ CASTScanner >> scanForTokenX8 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> scanForTokenX9 [
 	self recordMatch: #(29).
 	self step.
@@ -473,7 +471,7 @@ CASTScanner >> scanForTokenX9 [
 	^ self reportLastMatch
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CASTScanner >> tokenActions [
 	^ #(nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil #comment nil nil nil nil nil nil nil #whitespace)
 ]

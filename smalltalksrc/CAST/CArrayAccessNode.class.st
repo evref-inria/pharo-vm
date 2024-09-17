@@ -1,16 +1,14 @@
 Class {
-	#name : 'CArrayAccessNode',
-	#superclass : 'CExpressionNode',
+	#name : #CArrayAccessNode,
+	#superclass : #CExpressionNode,
 	#instVars : [
 		'array',
 		'index'
 	],
-	#category : 'CAST-Nodes',
-	#package : 'CAST',
-	#tag : 'Nodes'
+	#category : #'CAST-Nodes'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 CArrayAccessNode class >> array: anIdentifierNode index: anExpressionNode [
 
 	^ self new
@@ -19,17 +17,17 @@ CArrayAccessNode class >> array: anIdentifierNode index: anExpressionNode [
 		  yourself
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CArrayAccessNode >> acceptVisitor: anAbstractVisitor [
 	^ anAbstractVisitor visitArray: self
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CArrayAccessNode >> array [
 	^ array
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CArrayAccessNode >> array: aCGLRAbstractNode [
 	self assertExpression: aCGLRAbstractNode.
 	
@@ -40,12 +38,12 @@ CArrayAccessNode >> array: aCGLRAbstractNode [
 		ifTrue: [ self array parent: self ]
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CArrayAccessNode >> index [
 	^ index
 ]
 
-{ #category : 'generated' }
+{ #category : #generated }
 CArrayAccessNode >> index: aCGLRExpressionNode [
 	self assertExpression: aCGLRExpressionNode.
 	
@@ -56,7 +54,7 @@ CArrayAccessNode >> index: aCGLRExpressionNode [
 		ifTrue: [ self index parent: self ]
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 CArrayAccessNode >> isArrayAccessNode [
 	
 	^ true
