@@ -1074,7 +1074,6 @@ StackToRegisterMappingCogit >> compileTwoPathFramelessInit [
 { #category : 'bytecode generator support' }
 StackToRegisterMappingCogit >> compileVTableTrampoline: methodReg pushLinkReg: pushLinkReg [
 	
-	<var: #aRoutine type: #'void *'>
 	<inline: false>
 	self genSmalltalkToCStackSwitch: pushLinkReg.
 	self
