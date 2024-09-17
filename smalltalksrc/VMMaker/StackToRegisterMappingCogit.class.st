@@ -2529,8 +2529,8 @@ StackToRegisterMappingCogit >> genSendVTableMessage [
 	numExtB := 0.
 
 	"Allocate registers"
+	self ssFlushStack.
 	self voidReceiverResultRegContainsSelf.
-	self ssFlushUpThroughRegister: ClassReg.
 
 	"Fetch receiver and class"	
 	(self ssValue: argumentCount) copyToReg: ReceiverResultReg .
@@ -2540,7 +2540,6 @@ StackToRegisterMappingCogit >> genSendVTableMessage [
 	self MoveMw: (VTableIndex + 1) * objectMemory wordSize r: ClassReg R: TempReg.
 	self MoveMw: (methodIndex + 1) * objectMemory wordSize r: TempReg R: TempReg.
 
-	self ssFlushStack.
 	"If the method is compiled, we jump to it, if not we jump to the interpret."
 	objectRepresentation genLoadSlot: HeaderIndex sourceReg: TempReg destReg: ClassReg.
 	jumpInterpret := objectRepresentation genJumpImmediate: ClassReg.
