@@ -2529,14 +2529,10 @@ StackToRegisterMappingCogit >> genSendVTableMessage [
 	numExtB := 0.
 
 	"Allocate registers"
-	self ssFlushStack.
-	self voidReceiverResultRegContainsSelf.
-
-	"Fetch receiver and class"	
-	(self ssValue: argumentCount) copyToReg: ReceiverResultReg .
-	objectRepresentation  genGetClassObjectOf: ReceiverResultReg into: ClassReg scratchReg: TempReg instRegIsReceiver: true.
+	self marshallSendArguments: argumentCount.
 
 	"Fetch the method from the VTable"	
+	objectRepresentation  genGetClassObjectOf: ReceiverResultReg into: ClassReg scratchReg: TempReg instRegIsReceiver: true.
 	self MoveMw: (VTableIndex + 1) * objectMemory wordSize r: ClassReg R: TempReg.
 	self MoveMw: (methodIndex + 1) * objectMemory wordSize r: TempReg R: TempReg.
 
@@ -2546,7 +2542,7 @@ StackToRegisterMappingCogit >> genSendVTableMessage [
 
 	"Jump to the method's unchecked entry-point."
 	self AddCq: cmNoCheckEntryOffset R: ClassReg.
-	self CallR: ClassReg.
+	self CallRT: ClassReg.
 	mergeJump := self Jump: 0.
 	
 	"Call the trampoline to continue execution in the interpreter"
@@ -2554,7 +2550,9 @@ StackToRegisterMappingCogit >> genSendVTableMessage [
 	self compileVTableTrampoline: TempReg pushLinkReg: true.
 
 	mergeJump jmpTarget: self Label.
-	self ssPop: argumentCount + 1 popSpilled: false.
+	self annotateBytecode: self Label.
+
+	self voidReceiverOptStatus.
 	self ssPush: ReceiverResultReg.
 	^0
 ]
