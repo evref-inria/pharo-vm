@@ -2542,12 +2542,12 @@ StackToRegisterMappingCogit >> genSendVTableMessage [
 
 	"Jump to the method's unchecked entry-point."
 	self AddCq: cmNoCheckEntryOffset R: ClassReg.
-	self CallR: ClassReg.
+	self CallR: ClassReg. "Receiver and Args travel in registers"
 	mergeJump := self Jump: 0.
 	
 	"Call the trampoline to continue execution in the interpreter"
 	jumpInterpret jmpTarget: self Label.
-	self compileVTableTrampoline: TempReg pushLinkReg: true.
+	self CallRT: vTableSend. "Receiver and Args travel in the stack"
 
 	mergeJump jmpTarget: self Label.
 	self annotateBytecode: self Label.
