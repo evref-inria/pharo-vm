@@ -373,7 +373,8 @@ StackToRegisterMappingCogit class >> initializeBytecodeTableForSistaV1 [
 		(2 244 244 genExtStoreLiteralVariableBytecode isMappedIfImmutability)
 		(2 245 245 genLongStoreTemporaryVariableBytecode)
 
-		(2 246 247	unknownBytecode)
+		(2 246 246	genSendVTableMessage)
+		(2 247 247	unknownBytecode)
 
 		"3 byte bytecodes"
 		(3 248 248 genCallPrimitiveBytecode hasUnsafeJump)
