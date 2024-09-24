@@ -1764,7 +1764,6 @@ Cogit >> ArithmeticShiftRightR: reg1 R: reg2 [
 Cogit >> Call: callTarget [ 
 	<inline: true>
 	<returnTypeC: #'AbstractInstruction *'>
-	callTarget = 22 ifTrue: [ 1halt ].
 	^self gen: Call operand: callTarget
 ]
 

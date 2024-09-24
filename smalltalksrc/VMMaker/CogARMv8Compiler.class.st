@@ -999,7 +999,6 @@ CogARMv8Compiler >> computeMaximumSize [
 		[Nop]					-> [^4].
 		"Control"
 		[Call]					-> [^4].
-		[CallR]					-> [^4].
 		[CallFull]				-> [^self literalLoadInstructionBytes + 4].
 		[JumpR]					-> [^4].
 		[Jump]					-> [^4].
@@ -1589,20 +1588,6 @@ CogARMv8Compiler >> concretizeCallFull [
 	self machineCodeAt: instrOffset put: (self blr: ConcreteIPReg).
 	self assert: instrOffset = self literalLoadInstructionBytes.
 	^ machineCodeSize := instrOffset + 4
-]
-
-{ #category : 'generate machine code' }
-CogARMv8Compiler >> concretizeCallR [
-
-	"C5.6.27 BLR
-Branch with link to register, calls a subroutine at an address in a register, setting register X30 to PC + 4"
-
-	| reg op |
-	self assert: (operands at: 0) ~= 0.
-	op := 2r1101011000111111000000 << 10.
-	reg := (operands at: 0) signedIntFromLong << 5.
-	self machineCodeAt: 0 put: op + reg.
-	^ machineCodeSize := 4
 ]
 
 { #category : 'generate machine code' }
@@ -3428,7 +3413,6 @@ CogARMv8Compiler >> dispatchConcretize [
 		[Nop]					-> [^self concretizeNop].
 		"Control"
 		[Call]						-> [^self concretizeCall]. "call code within code space"
-		[CallR]						-> [^self concretizeCallR]. "call to a Register"
 		[CallFull]					-> [^self concretizeCallFull]. "call code anywhere in address space"
 		[JumpR]						-> [^self concretizeJumpR].
 		[JumpFull]					-> [^self concretizeJumpFull]."jump within address space"

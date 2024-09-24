@@ -1686,18 +1686,6 @@ CoInterpreter >> ceSendFromInLineCacheMiss: cogMethodOrPIC [
 ]
 
 { #category : 'trampolines' }
-CoInterpreter >> ceSendFromVTableInterpreted: aMethod [
-	<api>
-
-	instructionPointer := self popStack.
-	newMethod := aMethod.
-	primitiveFunctionPointer := 0.
-
-	self executeNewMethod: false.
-	self returnToExecutive: false	
-]
-
-{ #category : 'trampolines' }
 CoInterpreter >> ceSendMustBeBoolean: anObject [
 	<api>
 	instructionPointer := self popStack.
