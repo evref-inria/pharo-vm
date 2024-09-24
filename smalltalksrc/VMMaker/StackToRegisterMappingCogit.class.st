@@ -3260,6 +3260,11 @@ StackToRegisterMappingCogit >> generateMissAbortTrampolines [
 { #category : 'initialization' }
 StackToRegisterMappingCogit >> generateSendTrampolines [
 	"Override to generate code to push the register arg(s) for <= numRegArg arity sends."
+
+	vTableSend := self genTrampolineFor: #ceSendFromVTableInterpreted: 
+			called: 'VTableSend' 
+			arg: TempReg.
+
 	0 to: NumSendTrampolines - 1 do:
 		[:numArgs|
 		ordinarySendTrampolines

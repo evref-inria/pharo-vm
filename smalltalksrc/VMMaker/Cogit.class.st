@@ -7997,10 +7997,6 @@ Cogit >> generateRunTimeTrampolines [
 { #category : 'initialization' }
 Cogit >> generateSendTrampolines [
 
-	vTableSend := self genTrampolineFor: #ceSendFromVTableInterpreted: 
-			called: 'VTableSend' 
-			arg: TempReg.
-
 	0 to: NumSendTrampolines - 1 do:
 		[:numArgs|
 		ordinarySendTrampolines
