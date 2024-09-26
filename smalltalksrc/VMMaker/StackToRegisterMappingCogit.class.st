@@ -1071,22 +1071,6 @@ StackToRegisterMappingCogit >> compileTwoPathFramelessInit [
 	jumpOld jmpTarget: self Label
 ]
 
-{ #category : 'bytecode generator support' }
-StackToRegisterMappingCogit >> compileVTableTrampoline: methodReg pushLinkReg: pushLinkReg [
-	
-	<inline: false>
-	self genSmalltalkToCStackSwitch: pushLinkReg.
-	self
-		compileCallFor: #ceSendFromVTableInterpreted:
-		numArgs: 1
-		arg: methodReg
-		arg: nil
-		arg: nil
-		arg: nil
-		resultReg: NoReg
-		regsToSave: 0
-]
-
 { #category : 'simulation only' }
 StackToRegisterMappingCogit >> debugStackPointerFor: bcpc [
 	<doNotGenerate>
@@ -2547,6 +2531,7 @@ StackToRegisterMappingCogit >> genSendVTableMessage [
 	
 	"Call the trampoline to continue execution in the interpreter"
 	jumpInterpret jmpTarget: self Label.
+	self PushR: ReceiverResultReg.
 	self CallRT: vTableSend. "Receiver and Args travel in the stack"
 
 	mergeJump jmpTarget: self Label.
