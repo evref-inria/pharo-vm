@@ -257,7 +257,8 @@ Class {
 		'statCompileMethodUsecs',
 		'jitCodeZoneWriteEnabled',
 		'cePrimReturnEnterCogCode',
-		'cePrimReturnEnterCogCodeProfiling'
+		'cePrimReturnEnterCogCodeProfiling',
+		'vTableSend'
 	],
 	#classVars : [
 		'AnnotationConstantNames',
@@ -1340,7 +1341,7 @@ Cogit class >> notesAndQueries [
 
 { #category : 'accessing' }
 Cogit class >> numTrampolines [
-	^39 "31 + 4 each for self and super sends"
+	^40 "31 + 4 * 2 each for self and super sends + 1 for vTable"
 
 	"self withAllSubclasses collect: [:c| {c. (c instVarNames select: [:ea| ea beginsWith: 'ce']) size}]"
 ]
@@ -7995,6 +7996,7 @@ Cogit >> generateRunTimeTrampolines [
 
 { #category : 'initialization' }
 Cogit >> generateSendTrampolines [
+
 	0 to: NumSendTrampolines - 1 do:
 		[:numArgs|
 		ordinarySendTrampolines

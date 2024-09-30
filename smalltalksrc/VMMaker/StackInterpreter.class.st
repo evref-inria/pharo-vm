@@ -740,7 +740,9 @@ StackInterpreter class >> initializeBytecodeTableForSistaV1 [
 		(244		extStoreLiteralVariableBytecode)
 		(245		longStoreTemporaryVariableBytecode)
 
-		(246 247	unknownBytecode)
+		(246	sendVTableMessage)
+
+		(247	unknownBytecode)
 
 		"3 byte bytecodes"
 		(248		callPrimitiveBytecode)
@@ -798,6 +800,7 @@ StackInterpreter class >> initializeClassIndices [
 	SuperclassIndex := 0.
 	MethodDictionaryIndex := 1.
 	InstanceSpecificationIndex := 2.
+	VTableIndex := 5.
 	"Fields of a message dictionary"
 	MethodArrayIndex := 1. 
 	SelectorStart := 2.
@@ -7622,6 +7625,7 @@ StackInterpreter >> initialize [
 	statProcessSwitch := statStackPageDivorce :=
 	statIdleUsecs := 0.
 	imageVersionNumber := 0.
+	desiredStackPageBytes := 256 * objectMemory wordSize.
 ]
 
 { #category : 'initialization' }
@@ -13622,6 +13626,30 @@ StackInterpreter >> sendLiteralSelector2ArgsBytecode [
 	lkupClassTag := objectMemory fetchClassTagOf: rcvr.
 	self assert: lkupClassTag ~= objectMemory nilObject.
 	self commonSendOrdinary
+]
+
+{ #category : 'bytecodes' }
+StackInterpreter >> sendVTableMessage [
+
+	| byte methodIndex rcvr classTag class vTable |
+	byte := self fetchByte.
+	methodIndex := (byte >> 3) + (extA << 5).
+	extA := 0.
+	argumentCount := (byte bitAnd: 7) + (extB << 3).
+	extB := 0.
+	numExtB := 0.
+
+	rcvr := self stackValue: argumentCount.
+	classTag := objectMemory fetchClassTagOf: rcvr.
+	
+	class := objectMemory classForClassTag: classTag.
+	vTable := objectMemory fetchPointer: VTableIndex ofObject: class.
+	
+	newMethod := objectMemory fetchPointer: methodIndex ofObject: vTable.
+	primitiveFunctionPointer := 0.
+	
+	self executeNewMethod: false.
+	self fetchNextBytecode
 ]
 
 { #category : 'debug support' }

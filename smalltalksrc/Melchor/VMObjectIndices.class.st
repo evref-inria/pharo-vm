@@ -91,6 +91,7 @@ Class {
 		'TheLowSpaceSemaphore',
 		'TheTimerSemaphore',
 		'TrueObject',
+		'VTableIndex',
 		'ValueIndex',
 		'XIndex',
 		'YIndex'

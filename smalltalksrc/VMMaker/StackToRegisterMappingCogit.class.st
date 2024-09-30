@@ -373,7 +373,8 @@ StackToRegisterMappingCogit class >> initializeBytecodeTableForSistaV1 [
 		(2 244 244 genExtStoreLiteralVariableBytecode isMappedIfImmutability)
 		(2 245 245 genLongStoreTemporaryVariableBytecode)
 
-		(2 246 247	unknownBytecode)
+		(2 246 246	genSendVTableMessage)
+		(2 247 247	unknownBytecode)
 
 		"3 byte bytecodes"
 		(3 248 248 genCallPrimitiveBytecode hasUnsafeJump)
@@ -2501,6 +2502,46 @@ StackToRegisterMappingCogit >> genSendTrampolineFor: aRoutine numArgs: numArgs c
 	^startAddress
 ]
 
+{ #category : 'bytecode generator support' }
+StackToRegisterMappingCogit >> genSendVTableMessage [
+
+	| methodIndex argumentCount jumpInterpret mergeJump |
+	methodIndex := (byte1 >> 3) + (extA << 5).
+	extA := 0.
+	argumentCount := (byte1 bitAnd: 7) + (extB << 3).
+	extB := 0.
+	numExtB := 0.
+
+	"Allocate registers"
+	self marshallSendArguments: argumentCount.
+
+	"Fetch the method from the VTable"	
+	objectRepresentation  genGetClassObjectOf: ReceiverResultReg into: ClassReg scratchReg: TempReg instRegIsReceiver: true.
+	self MoveMw: (VTableIndex + 1) * objectMemory wordSize r: ClassReg R: TempReg.
+	self MoveMw: (methodIndex + 1) * objectMemory wordSize r: TempReg R: TempReg.
+
+	"If the method is compiled, we jump to it, if not we jump to the interpret."
+	objectRepresentation genLoadSlot: HeaderIndex sourceReg: TempReg destReg: ClassReg.
+	jumpInterpret := objectRepresentation genJumpImmediate: ClassReg.
+
+	"Jump to the method's unchecked entry-point."
+	self AddCq: cmNoCheckEntryOffset R: ClassReg.
+	self CallR: ClassReg. "Receiver and Args travel in registers"
+	mergeJump := self Jump: 0.
+	
+	"Call the trampoline to continue execution in the interpreter"
+	jumpInterpret jmpTarget: self Label.
+	self PushR: ReceiverResultReg.
+	self CallRT: vTableSend. "Receiver and Args travel in the stack"
+
+	mergeJump jmpTarget: self Label.
+	self annotateBytecode: self Label.
+
+	self voidReceiverOptStatus.
+	self ssPushRegister: ReceiverResultReg.
+	^0
+]
+
 { #category : 'bytecode generators' }
 StackToRegisterMappingCogit >> genSistaExtStoreAndPopReceiverVariableBytecodePopBoolean: popBoolean [
 	<inline: true>
@@ -3204,6 +3245,11 @@ StackToRegisterMappingCogit >> generateMissAbortTrampolines [
 { #category : 'initialization' }
 StackToRegisterMappingCogit >> generateSendTrampolines [
 	"Override to generate code to push the register arg(s) for <= numRegArg arity sends."
+
+	vTableSend := self genTrampolineFor: #ceSendFromVTableInterpreted: 
+			called: 'VTableSend' 
+			arg: TempReg.
+
 	0 to: NumSendTrampolines - 1 do:
 		[:numArgs|
 		ordinarySendTrampolines

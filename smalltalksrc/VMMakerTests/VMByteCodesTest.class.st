@@ -745,3 +745,28 @@ VMByteCodesTest >> testSubVectorBytecode [
 	self assert: (memory fetchFloat64: 1 ofObject: result) equals: 2.0.
 	
 ]
+
+{ #category : 'tests-send' }
+VMByteCodesTest >> testVTableCall [
+
+	| aMethod receiver |
+	aMethod := methodBuilder
+		           bytecodes: #[ 246 0 ];
+		           buildMethod. "send VTable" "index"
+
+	receiver := self configVTable .
+
+	stackBuilder addNewFrame
+		method: aMethod;
+		stack: { receiver }.
+	stackBuilder buildStack.
+
+	interpreter setBreakSelector: nil.
+	interpreter method: aMethod.
+	interpreter currentBytecode: 246.
+
+	interpreter fetchByte.
+	self interpret: [ interpreter sendVTableMessage ].
+
+	self assert: interpreter stackTop equals: receiver
+]

@@ -50,6 +50,22 @@ VMSpurMemoryManagerTest class >> wordSizeParameters [
 			yourself
 ]
 
+{ #category : 'tests-send' }
+VMSpurMemoryManagerTest >> configVTable [
+	| aMethodToActivate receiver receiverClass vTable |
+	aMethodToActivate := methodBuilder newMethod
+		                     numberOfArguments: 0;
+		                     buildMethod.
+	receiver := memory integerObjectOf: 41.
+	receiverClass := self setSmallIntegerClassIntoClassTable.
+
+	vTable := self setUpVTableIn: receiverClass.
+
+	memory storePointer: 0 ofObject: vTable withValue: aMethodToActivate.
+
+	^ receiver 
+]
+
 { #category : 'configuring' }
 VMSpurMemoryManagerTest >> configureEnvironmentBuilder [
 
@@ -462,7 +478,7 @@ VMSpurMemoryManagerTest >> newClassInOldSpaceWithSlots: numberOfSlots instSpec: 
 	| newClass formatWithSlots |
 
 	newClass := memory
-		allocateSlotsInOldSpace: 3
+		allocateSlotsInOldSpace: 6
 		format: memory nonIndexablePointerFormat
 		classIndex: memory arrayClassIndexPun.
 	
@@ -874,6 +890,16 @@ VMSpurMemoryManagerTest >> setUpUsingImage [
 		methodBuilder: methodBuilder;
 		yourself.
 		
+]
+
+{ #category : 'initialization' }
+VMSpurMemoryManagerTest >> setUpVTableIn: aClass [
+	"The VTable is an array in the 4th entry of the class"
+
+	| array |
+	array := self newArrayWithSlots: 10.
+	memory storePointer: VTableIndex ofObject: aClass withValue: array.
+	^ array
 ]
 
 { #category : 'accessing' }
