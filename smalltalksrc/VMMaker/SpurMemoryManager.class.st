@@ -618,7 +618,8 @@ Class {
 		'fromOldSpaceRememberedSet',
 		'fromPermToOldSpaceRememberedSet',
 		'fromPermToNewSpaceRememberedSet',
-		'gcType'
+		'gcType',
+		'bogon'
 	],
 	#classVars : [
 		'BitsPerByte',
@@ -1845,6 +1846,7 @@ SpurMemoryManager >> allPermSpaceObjectsUnmarked [
 	self allPermSpaceObjectsDo:
 		[:o| (self isMarked: o) ifTrue: [bogon := o. ^false]].
 	^true
+	
 ]
 
 { #category : #'weakness and ephemerality' }
