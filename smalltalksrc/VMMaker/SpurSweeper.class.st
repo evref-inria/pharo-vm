@@ -81,10 +81,49 @@ SpurSweeper >> interceptAddFreeChunkWithBytes: bytes at: start [
 
 ]
 
+{ #category : #testing }
+SpurSweeper >> isMobileObj: obj [
+
+	<inline: true>
+	^ super isMobileObj: obj
+]
+
+{ #category : #api }
+SpurSweeper >> postSwizzleAction [
+
+	super postSwizzleAction
+]
+
+{ #category : #compaction }
+SpurSweeper >> relocateObjInHeapEntity: heapEntity from: startIndex to: finishIndex [
+
+	<inline: true>
+	^ super
+		  relocateObjInHeapEntity: heapEntity
+		  from: startIndex
+		  to: finishIndex
+]
+
+{ #category : #api }
+SpurSweeper >> remapObjCompactor: objOop [
+
+	<api>
+	<inline: false>
+	<slangHalt>
+	^ super remapObjCompactor: objOop
+]
+
 { #category : #api }
 SpurSweeper >> resetFreeLists [
 	manager resetFreeListHeads.
 	manager totalFreeOldSpace: 0.
+]
+
+{ #category : #api }
+SpurSweeper >> shouldRemapObjCompactor: objOop [
+
+	<api>
+	^ super shouldRemapObjCompactor: objOop
 ]
 
 { #category : #'sweep phase' }

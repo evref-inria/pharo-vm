@@ -544,6 +544,12 @@ SpurPlanningCompactor >> planCompactSavingForwarders [
 	^true
 ]
 
+{ #category : #compaction }
+SpurPlanningCompactor >> postSwizzleAction [
+
+	super postSwizzleAction
+]
+
 { #category : #private }
 SpurPlanningCompactor >> recordMovementOf: o to: toFinger savedFirstFieldPtr: savedFirstFieldPtr [
 	"No-op in the real class."
