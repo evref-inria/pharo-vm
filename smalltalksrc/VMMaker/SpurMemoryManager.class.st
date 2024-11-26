@@ -5941,6 +5941,13 @@ SpurMemoryManager >> garbageCollectForSnapshot [
 ]
 
 { #category : #accessing }
+SpurMemoryManager >> garbageCollectorType [
+
+	<api>
+	^ gcType
+]
+
+{ #category : #accessing }
 SpurMemoryManager >> gcStartUsecs [
 	^gcStartUsecs
 ]
