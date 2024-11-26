@@ -2786,6 +2786,10 @@ StackInterpreterPrimitives >> primitiveSetVMParameter: index arg: argOop [
 		[79] -> [ (arg between: 0 and: 65535) ifTrue:
 					[result := objectMemory integerObjectOf: self getImageVersion.
 					 self setImageVersion: arg.
+					 self initPrimCall] ].
+		[86] -> [ (arg between: 0 and: 65535) ifTrue:
+					[result := objectMemory integerObjectOf: objectMemory garbageCollectorType.
+					 objectMemory setGarbageCollectorType: arg.
 					 self initPrimCall] ] }
 		otherwise: [].
 
