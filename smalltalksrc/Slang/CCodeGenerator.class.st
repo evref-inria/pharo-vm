@@ -233,7 +233,7 @@ CCodeGenerator >> addMethodFor: aClass selector: selector [
 
 	| method tmethod |
 	method := aClass compiledMethodAt: selector.
-	(method pragmaAt: #slangHalt) ifNotNil: [ self halt ].
+"	(method pragmaAt: #slangHalt) ifNotNil: [ self halt ]."
 	
 	(method pragmaAt: #doNotGenerate) ifNotNil:
 		["only remove a previous method if this one overrides it, i.e. this is a subclass method.
