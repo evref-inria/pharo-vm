@@ -40,6 +40,28 @@ VMPinnedObjectTest >> newKeptPinnedObject [
 	^ newPinned
 ]
 
+{ #category : 'instance creation' }
+VMPinnedObjectTest >> newPinnedOldByteObjectOfSize: byteSize [
+	
+	| oop numSlots instSpec |
+
+	numSlots := memory numSlotsForBytes: byteSize.
+	instSpec := memory byteFormatForNumBytes: byteSize.
+	
+	oop := memory
+			allocateSlotsInOldSpace: numSlots
+			format: instSpec
+			classIndex: (memory ensureBehaviorHash: memory classByteArray)
+			isPinned: true.
+
+	oop ifNil: [ ^ nil ].
+
+	0 to: byteSize - 1 do: [ :index | 
+		memory storeByte: index ofObject: oop withValue: 	0 ].
+
+	^ oop
+]
+
 { #category : 'testCompactor' }
 VMPinnedObjectTest >> testAllocatingObjectAfterAPinObjectShouldSlideAtStartOfOldSpace [
 	| aliveObject destination shouldBeFreed aliveHash |
@@ -231,6 +253,48 @@ VMPinnedObjectTest >> testPinANewObjectShouldMoveItToTheOldSpaceAndLeaveAForward
 	memory pinObject: obj.
 	
 	self assert: (memory isForwarded: obj)
+]
+
+{ #category : 'tests' }
+VMPinnedObjectTest >> testPinObjectAtEndOfUsedSegmentIsBridgedAndFree [
+
+	| newPinned firstAddressInSecondSegmeent initialOccupiedSize |
+	self timeLimit: 1 minute.
+
+	"We are going to create some objects, and then a pinned object. When we GC, the whole should be returned to the OS"
+
+	self assert: memory freeTreeNodes size equals: 1.
+	initialOccupiedSize := memory freeTreeNodes first - memory getMemoryMap oldSpaceStart.
+
+	[ (self newOldByteObjectOfSize: 0) isNotNil ] 
+		whileTrue.
+
+	memory
+		growOldSpaceByAtLeast: 2 * 1024 * 1024
+		callingOperation: 'testPinObjectAtEndOfUsedSegmentIsBridgedAndFree'.
+
+	firstAddressInSecondSegmeent := self newOldByteObjectOfSize: 1024*1024.
+
+	newPinned := self newPinnedOldByteObjectOfSize: 0. 
+	self keepObjectInVMVariable1: newPinned.
+
+	
+	self assert: memory segmentManager numSegments equals: 2.
+	self assert: (memory segmentManager segments at: 0) segStart equals: memory getMemoryMap oldSpaceStart.
+	self assert: (memory segmentManager segments at: 0) segSize equals: 16r200000.
+	self assert: (memory segmentManager segments at: 1) segStart equals: memory getMemoryMap oldSpaceStart + 16r200000.
+
+	memory fullGC.
+
+	"We still have two segments"
+
+	self assert: (memory isFreeObject: firstAddressInSecondSegmeent).
+		
+	self assert: memory segmentManager numSegments equals: 2.
+	self assert: (memory segmentManager segments at: 0) segStart equals: memory getMemoryMap oldSpaceStart.
+	self assert: (memory segmentManager segments at: 0) segSize equals: initialOccupiedSize + memory bridgeSize.
+	self assert: (memory segmentManager segments at: 1) segStart equals: memory getMemoryMap oldSpaceStart + 16r200000.
+	
 ]
 
 { #category : 'tests' }

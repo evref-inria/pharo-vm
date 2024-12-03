@@ -549,6 +549,8 @@ VMSpurMemoryManagerTest >> newOldByteObjectOfSize: byteSize [
 			format: instSpec
 			classIndex: (memory ensureBehaviorHash: memory classByteArray).
 
+	oop ifNil: [ ^ nil ].
+
 	0 to: byteSize - 1 do: [ :index | 
 		memory storeByte: index ofObject: oop withValue: 	0 ].
 

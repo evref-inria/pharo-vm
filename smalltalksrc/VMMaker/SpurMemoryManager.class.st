@@ -6004,6 +6004,14 @@ SpurMemoryManager >> freeStart [
 	^freeStart
 ]
 
+{ #category : 'simulation' }
+SpurMemoryManager >> freeTreeNodes [
+
+	<doNotGenerate>
+	^ Array streamContents: [ :s |
+		  self freeTreeNodesDo: [ :aFreeNode | s nextPut: aFreeNode ] ]
+]
+
 { #category : 'free space' }
 SpurMemoryManager >> freeTreeNodesDo: aBlock [
 	"Enumerate all nodes in the free tree (in order, smaller to larger),
