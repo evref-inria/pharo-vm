@@ -792,10 +792,7 @@ VMSpurMemoryManagerTest >> setSmallIntegerClassIntoClassTable [
 VMSpurMemoryManagerTest >> setUp [
 	super setUp.
 
-	environmentBuilder := VMSimulatedEnvironmentBuilder new.
-	self configureEnvironmentBuilder.
-
-	environmentBuilder build.
+	self setUpSimulationEnvironment.
 
 	interpreter := environmentBuilder interpreter.
 	memory := environmentBuilder objectMemory.
@@ -841,6 +838,15 @@ VMSpurMemoryManagerTest >> setUpScheduler [
 		withValue: (memory integerObjectOf: 0).
 	
 	memory memoryActiveProcess: activeProcessOop.
+]
+
+{ #category : 'running' }
+VMSpurMemoryManagerTest >> setUpSimulationEnvironment [
+	
+	environmentBuilder := VMSimulatedEnvironmentBuilder new.
+	self configureEnvironmentBuilder.
+
+	environmentBuilder build.
 ]
 
 { #category : 'running' }
