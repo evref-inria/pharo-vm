@@ -807,16 +807,14 @@ VMSimpleStackBasedCogitAbstractTest >> setUp [
 	cogit minCallAddress: cogInitialAddress.
 	cogit cogCodeBase: cogInitialAddress.
 	memory coInterpreter cogCodeSize: self initialCodeSize.
-	cogit initializeProcessor.
 	
-	machineSimulator := cogit processor machineSimulator.
+	self setUpMachineCodeSimulator.
 	
 	self generateCaptureCStackPointers ifTrue: [cogit generateStackPointerCapture].
 	cogit methodZone manageFrom: cogit cogCodeBase to: memory getMemoryMap codeZoneEnd.
 
 	memory coInterpreter numStackPages: 8.
 
-	machineSimulator flushICacheFrom: cogit cogCodeBase to: memory getMemoryMap codeZoneEnd. 
 
 	self initializeOldSpaceForScavenger.
 	self initializeStackMemory.
@@ -838,6 +836,16 @@ VMSimpleStackBasedCogitAbstractTest >> setUpCogMethodEntry [
 	cogit computeEntryOffsets.
 	
 	cogit methodZone manageFrom: cogit methodZoneBase to: memory getMemoryMap codeZoneEnd.
+]
+
+{ #category : 'running' }
+VMSimpleStackBasedCogitAbstractTest >> setUpMachineCodeSimulator [
+
+	cogit initializeProcessor.
+	machineSimulator := cogit processor machineSimulator.
+	machineSimulator
+		flushICacheFrom: cogit cogCodeBase
+		to: memory getMemoryMap codeZoneEnd
 ]
 
 { #category : 'running' }

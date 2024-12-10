@@ -4921,6 +4921,11 @@ StackInterpreter >> currentBytecode [
 	^ currentBytecode
 ]
 
+{ #category : 'primitive support' }
+StackInterpreter >> currentBytecode: anInteger [ 
+	currentBytecode := anInteger
+]
+
 { #category : 'initialization' }
 StackInterpreter >> defaultNumStackPages [
 	"Return the default number of stack pages allocate at startup.
@@ -14704,14 +14709,13 @@ StackInterpreter >> specialSelectorNumArgs: index [
 StackInterpreter >> stObject: array at: index [
 	"Return what ST would return for <obj> at: index."
 
-	| hdr fmt totalLength fixedFields stSize |
+	| fmt totalLength fixedFields stSize |
 	<inline: true>
-	hdr := objectMemory baseHeader: array.
-	fmt := objectMemory formatOfHeader: hdr.
+	fmt := objectMemory formatOf: array.
 	totalLength := objectMemory lengthOf: array format: fmt.
 	fixedFields := objectMemory fixedFieldsOf: array format: fmt length: totalLength.
 	(fmt = objectMemory indexablePointersFormat
-	 and: [objectMemory isContextHeader: hdr])
+	 and: [objectMemory isContextObject: array])
 		ifTrue:
 			[stSize := self stackPointerForMaybeMarriedContext: array.
 			((self oop: index isGreaterThanOrEqualTo: 1)
@@ -14729,13 +14733,12 @@ StackInterpreter >> stObject: array at: index [
 { #category : 'indexing primitive support' }
 StackInterpreter >> stObject: array at: index put: value [
 	"Do what ST would return for <obj> at: index put: value."
-	| hdr fmt totalLength fixedFields stSize |
+	| fmt totalLength fixedFields stSize |
 	<inline: true>
-	hdr := objectMemory baseHeader: array.
-	(objectMemory isContextHeader: hdr) ifTrue:[
+	(objectMemory isContextObject: array) ifTrue:[
 		"we have another primitive (contextAt:Put: for contexts"
 		^self primitiveFailFor: PrimErrBadReceiver].
-	fmt := objectMemory formatOfHeader: hdr.
+	fmt := objectMemory formatOf: array.
 	totalLength := objectMemory lengthOf: array format: fmt.
 	fixedFields := objectMemory fixedFieldsOf: array format: fmt length: totalLength.
 	stSize := totalLength - fixedFields.
@@ -14773,7 +14776,7 @@ StackInterpreter >> stackFloatValue: offset [
 StackInterpreter >> stackIntegerValue: offset [
 	"In the StackInterpreter stacks grow down."
 	| integerPointer |
-	integerPointer := stackPages unsignedLongAt: stackPointer + (offset*objectMemory wordSize).
+	integerPointer := self stackValue: offset.
 	^self checkedIntegerValueOf: integerPointer
 ]
 

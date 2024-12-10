@@ -7324,6 +7324,13 @@ SpurMemoryManager >> isContextNonImm: oop [
 	^(self classIndexOf: oop) = ClassMethodContextCompactIndex
 ]
 
+{ #category : 'free space' }
+SpurMemoryManager >> isContextObject: anOop [
+	
+	<inline: true>
+	^(self classIndexOfHeader: (self baseHeader: anOop)) = ClassMethodContextCompactIndex
+]
+
 { #category : 'obj stacks' }
 SpurMemoryManager >> isEmptyObjStack: objStack [
 	objStack = nilObj ifTrue:
