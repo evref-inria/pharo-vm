@@ -6730,7 +6730,6 @@ Cogit >> gen: opcode "<Integer>" operand: operand [ "<Integer|CogAbstractInstruc
 	<returnTypeC: #'AbstractInstruction *'>
 	<var: #abstractInstruction type: #'AbstractInstruction *'>
 	self assert: opcodeIndex < numAbstractOpcodes.
-	self haltIf: opcode = (CogARMCompiler classPool at: #PopLDM).
 	abstractInstruction := self abstractInstructionAt: opcodeIndex.
 	opcodeIndex := opcodeIndex + 1.
 	abstractInstruction opcode: opcode.
