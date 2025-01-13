@@ -1431,6 +1431,37 @@ StackInterpreterPrimitives >> primitiveFullGC [
 	super primitiveFullGC
 ]
 
+{ #category : 'ffi' }
+StackInterpreterPrimitives >> primitiveGetAddressOfOOPPinningIfNeeded [
+
+	"This primitive returns the address of an image object.
+	If the object is not pinned it will pin it.
+   Receives an OOP as parameter and returns an ExternalAddress"
+
+	| externalAddress oop |
+
+	<returnTypeC: #void>
+
+	argumentCount = 0 ifFalse: [ self primitiveFail. ^ self ].
+
+	oop  := self stackObjectValue: 0.
+	self failed ifTrue: [ ^ self].
+
+	(objectMemory isPinned: oop)
+		ifFalse: [ 
+			(oop := objectMemory pinObject: oop) = 0 ifTrue: [ self primitiveFail. ^ self ]].
+
+	externalAddress := objectMemory 
+		instantiateClass: objectMemory classExternalAddress 
+		indexableSize: BytesPerWord.
+
+	externalAddress = nil ifTrue: [ self primitiveFail. ^ self ].
+
+	objectMemory storePointer: 0 ofObject: externalAddress withValue: (self cCoerce: (oop + BaseHeaderSize) to: #sqInt).
+
+	^ self methodReturnValue: externalAddress
+]
+
 { #category : 'I/O primitives' }
 StackInterpreterPrimitives >> primitiveGetCurrentWorkingDirectory [
 	

@@ -853,7 +853,7 @@ Cogit class >> initializePrimitiveTable [
 	 N.B. primitives that don't have an explicit arg count (the integer following the generator) may be variadic."
 	"SimpleStackBasedCogit initializePrimitiveTable"
 	MaxCompiledPrimitiveIndex := self objectRepresentationClass wordSize = 8
-										ifTrue: [659]
+										ifTrue: [660]
 										ifFalse: [222].
 	primitiveTable := CArrayAccessor on: (Array new: MaxCompiledPrimitiveIndex + 1).
 	self table: primitiveTable from: 
@@ -1142,6 +1142,9 @@ Cogit class >> initializePrimitiveTable [
 		(657 genPrimitiveStoreChar32IntoExternalAddress)
 		(658 genPrimitiveStoreFloat32IntoExternalAddress)
 		(659 genPrimitiveStoreFloat64IntoExternalAddress)
+
+		(660 genPrimitiveGetAddressOfOOPPinningIfNeeded)
+		
 	)
 ]
 

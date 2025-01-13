@@ -1257,6 +1257,30 @@ CogObjectRepresentationForSpur >> genPrimitiveAtPut [
 ]
 
 { #category : 'primitive generators' }
+CogObjectRepresentationForSpur >> genPrimitiveGetAddressOfOOPPinningIfNeeded [
+	
+	| jumpImmediate jumpNonPinned jumpFailAlloc |
+	jumpImmediate := self genJumpImmediate: ReceiverResultReg.
+
+	cogit MoveMw: 0 r: ReceiverResultReg R: ClassReg.
+
+	cogit TstCq: (1 << objectMemory pinnedBitShift) R: ClassReg.
+	jumpNonPinned := cogit JumpZero: 0.
+	
+	cogit LoadEffectiveAddressMw: objectMemory baseHeaderSize r: ReceiverResultReg R: ClassReg.
+
+	jumpFailAlloc := self genAllocExternalAddressValue: ClassReg into: ReceiverResultReg scratchReg: SendNumArgsReg scratchReg: TempReg.
+	
+	cogit genPrimReturn.
+	
+	jumpImmediate jmpTarget:
+		(jumpNonPinned jmpTarget: 
+			(jumpFailAlloc jmpTarget: cogit Label)).
+	
+	^ 0
+]
+
+{ #category : 'primitive generators' }
 CogObjectRepresentationForSpur >> genPrimitiveIdenticalOrNotIf: orNot [
 	| jumpCmp comp |
 	<var: #jumpCmp type: #'AbstractInstruction *'>

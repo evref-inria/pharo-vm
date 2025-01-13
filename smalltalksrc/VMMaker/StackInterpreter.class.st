@@ -1001,7 +1001,7 @@ StackInterpreter class >> initializePrimitiveTable [
 	"self initializePrimitiveTable"
 
 	"NOTE: The real limit here is 2047 because of the old method header layout but there is no point in going over the needed size"
-	MaxPrimitiveIndex := 660.	
+	MaxPrimitiveIndex := 661.	
 	MaxQuickPrimitiveIndex := 519.
 	PrimNumberExternalCall := 117.
 	PrimNumberDoPrimitive := 118.
@@ -1398,7 +1398,8 @@ StackInterpreter class >> initializePrimitiveTable [
 		(658 primitiveStoreFloat32IntoExternalAddress)
 		(659 primitiveStoreFloat64IntoExternalAddress)
 		
-		(660 primitiveFail)
+		(660 primitiveGetAddressOfOOPPinningIfNeeded)
+		(661 primitiveFail)
 		)
 ]
 
