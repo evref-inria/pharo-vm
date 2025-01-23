@@ -1182,6 +1182,20 @@ CoInterpreter >> ceCounterTripped: condition [
 ]
 
 { #category : 'trampolines' }
+CoInterpreter >> ceFallbackInvalidFFICall: savedInstructionPointer [
+
+	| ourContext |
+	ourContext := self ensureFrameIsMarried: framePointer SP: stackPointer.
+	self push: ourContext.
+
+	self push: savedInstructionPointer.
+	^self
+		ceSendAbort: (objectMemory splObj: SelectorInvalidFFICall)
+		to: ourContext
+		numArgs: 2
+]
+
+{ #category : 'trampolines' }
 CoInterpreter >> ceInterpretMethodFromPIC: aMethodObj receiver: rcvr [
 	<api>
 	| pic primitiveIndex |
@@ -1406,6 +1420,42 @@ CoInterpreter >> ceReturnToInterpreter: anOop [
 	self push: anOop.
 	self siglong: reenterInterpreter jmp: ReturnToInterpreter.
 	self unreachable
+]
+
+{ #category : 'trampolines' }
+CoInterpreter >> ceSameThreadCalloutWithLiteralIndex: functionDefinitionIndex [
+	
+	<api>	
+	<var: #cogMethod type: #'CogMethod *'>		
+		
+	| savedInstructionPointer cogMethod functionDefinition externalFunction cif returnValue |
+	
+	"saving instruction pointer in a temporary, as the FFI call can reenter in the interpreter and affect the instance variable"	
+	savedInstructionPointer := instructionPointer := self popStack.
+	
+	cogMethod := self mframeCogMethod: framePointer .
+	functionDefinition := self literal: functionDefinitionIndex ofMethod: cogMethod methodObject.
+
+	externalFunction := self getHandler: functionDefinition.
+	externalFunction ifNil: [
+		self logDebug: 'Invalid External Function Argument'.		
+		^ self ceFallbackInvalidFFICall: savedInstructionPointer ].
+
+	cif := self getHandlerAsCif: (objectMemory fetchPointer: 1 ofObject: functionDefinition).
+
+	cif ifNil: [
+		self logDebug: 'Invalid CIF in ExternalFunction'.
+		^ self ceFallbackInvalidFFICall: savedInstructionPointer ]	.
+	
+	self doSameThreadCalloutBytecodeFor: externalFunction andCif: cif.
+	self failed 
+		ifTrue: [ ^ self ceFallbackInvalidFFICall: savedInstructionPointer ].
+	
+	returnValue := cif returnType type = FFI_TYPE_VOID ifTrue: [ 0 ] ifFalse: [ self stackTop ].
+	
+	self push: savedInstructionPointer.
+	
+	^ returnValue 
 ]
 
 { #category : 'trampolines' }

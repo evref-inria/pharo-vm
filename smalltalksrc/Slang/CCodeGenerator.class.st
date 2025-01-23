@@ -5272,7 +5272,9 @@ CCodeGenerator >> validateLocalizationOfGlobals: varList exceptMethod: methodNam
 			methodFreeVariables := meth freeVariableReferences asSet.
 			 localizationCandidates do: [ :candidate | 
 				(methodFreeVariables includes: candidate)
-					ifTrue: [ variablesInConflict add: candidate ] ] ] ].
+					ifTrue: [ 
+						1halt.
+						variablesInConflict add: candidate ] ] ] ].
 
 	variablesInConflict ifNotEmpty: [ | errorMessage |
 		errorMessage := String streamContents: [ :stream |

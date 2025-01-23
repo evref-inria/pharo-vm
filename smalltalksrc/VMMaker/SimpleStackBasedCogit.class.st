@@ -12,7 +12,8 @@ Class {
 		'externalPrimJumpOffsets',
 		'externalSetPrimOffsets',
 		'introspectionDataIndex',
-		'introspectionData'
+		'introspectionData',
+		'ceSameThreadCalloutTrampoline'
 	],
 	#pools : [
 		'VMClassIndices',
@@ -28,7 +29,9 @@ Class {
 { #category : 'translation' }
 SimpleStackBasedCogit class >> ancilliaryClasses [
 	"Answer any extra classes to be included in the translation."
-	^super ancilliaryClasses, (self objectRepresentationClass withAllSuperclasses copyUpThrough: CogObjectRepresentation) reverse
+	^super ancilliaryClasses, 
+	{LibFFI},
+	(self objectRepresentationClass withAllSuperclasses copyUpThrough: CogObjectRepresentation) reverse
 ]
 
 { #category : 'documentation' }
@@ -67,7 +70,11 @@ SimpleStackBasedCogit class >> declareCVarsIn: aCCodeGenerator [
 		var: #externalSetPrimOffsets
 			declareC: 'sqInt externalSetPrimOffsets[MaxNumArgs + 1]';
 		var: #primSetFunctionLabel type: #'AbstractInstruction *';
-		var: #primInvokeInstruction type: #'AbstractInstruction *'
+		var: #primInvokeInstruction type: #'AbstractInstruction *';
+		addHeaderFile: '#if FEATURE_FFI
+#include <ffi.h>
+#endif //FEATURE_FFI'.
+
 ]
 
 { #category : 'class initialization' }
@@ -272,6 +279,20 @@ SimpleStackBasedCogit >> cPICMissTrampolineFor: numArgs [
 SimpleStackBasedCogit >> ceCPICMissTrampoline: anAddress [ 
 	
 	ceCPICMissTrampoline := anAddress
+]
+
+{ #category : 'accessing' }
+SimpleStackBasedCogit >> ceSameThreadCalloutTrampoline [
+	
+	<doNotGenerate>
+	^ ceSameThreadCalloutTrampoline
+]
+
+{ #category : 'accessing' }
+SimpleStackBasedCogit >> ceSameThreadCalloutTrampoline: anAddress [ 
+
+	<doNotGenerate>
+	ceSameThreadCalloutTrampoline := anAddress
 ]
 
 { #category : 'simulation only' }
@@ -2797,6 +2818,25 @@ SimpleStackBasedCogit >> generateMissAbortTrampolines [
 	ceReapAndResetErrorCodeTrampoline := self genTrampolineFor: #ceReapAndResetErrorCodeFor:
 												called: 'ceReapAndResetErrorCodeTrampoline'
 												arg: ClassReg
+]
+
+{ #category : 'initialization' }
+SimpleStackBasedCogit >> generateRunTimeTrampolines [
+
+	super generateRunTimeTrampolines.
+	self generateSameThreadCalloutTrampolines
+]
+
+{ #category : 'initialization' }
+SimpleStackBasedCogit >> generateSameThreadCalloutTrampolines [
+
+	ceSameThreadCalloutTrampoline := self
+		                                 genTrampolineFor:
+		                                 #ceSameThreadCalloutWithLiteralIndex:
+		                                 called:
+		                                 'ceSameThreadCalloutTrampoline'
+		                                 arg: SendNumArgsReg
+		                                 result: ReceiverResultReg
 ]
 
 { #category : 'initialization' }

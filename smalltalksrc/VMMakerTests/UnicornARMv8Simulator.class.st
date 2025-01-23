@@ -170,6 +170,12 @@ UnicornARMv8Simulator >> instructionPointerRegister [
 	^ UcARM64Registers pc
 ]
 
+{ #category : 'as yet unclassified' }
+UnicornARMv8Simulator >> instructionPointerValue [
+	
+	^ self instructionPointerRegister value
+]
+
 { #category : 'accessing-registers-abstract' }
 UnicornARMv8Simulator >> linkRegister [
 	

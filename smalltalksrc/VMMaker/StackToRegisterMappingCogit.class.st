@@ -141,6 +141,7 @@ Class {
 	],
 	#pools : [
 		'CogCompilationConstants',
+		'LibFFIConstants',
 		'VMMethodCacheConstants',
 		'VMObjectIndices',
 		'VMStackFrameOffsets'
@@ -347,7 +348,7 @@ StackToRegisterMappingCogit class >> initializeBytecodeTableForSistaV1 [
 		(2 227 227 genExtPushLiteralVariableBytecode			needsFrameNever: 1)
 		(2 228 228 genExtPushLiteralBytecode					needsFrameNever: 1)
 		(2 229 229 genLongPushTemporaryVariableBytecode)
-		(2 230 230 unknownBytecode)
+		(2 230 230 genSameThreadCalloutBytecode)
 		(2 231 231 genPushNewArrayBytecode)
 		(2 232 232 genExtPushIntegerBytecode				needsFrameNever: 1)
 		(2 233 233 genExtPushCharacterBytecode				needsFrameNever: 1)
@@ -2437,6 +2438,32 @@ StackToRegisterMappingCogit >> genReturnTopFromBlock [
 StackToRegisterMappingCogit >> genReturnTopFromMethod [
 	self ssPopTopToReg: ReceiverResultReg.
 	^self genUpArrowReturn
+]
+
+{ #category : 'bytecode generators' }
+StackToRegisterMappingCogit >> genSameThreadCalloutBytecode [
+
+	| literalIndex functionDefinition cif |
+
+	self ssAllocateCallReg: SendNumArgsReg.
+	self ssFlushStack.
+
+	literalIndex := byte1.
+
+	"The index of the literal with the function definition is passed as parameter of the trampoline"
+	self MoveCq: literalIndex R: SendNumArgsReg.
+	self CallRT: ceSameThreadCalloutTrampoline.
+
+	functionDefinition := self getLiteral: literalIndex.
+	cif := coInterpreter getHandlerAsCif: (objectMemory fetchPointer: 1 ofObject: functionDefinition).
+
+	cif ifNil: [ ^ ShouldNotJIT ].
+
+	self ssPop: cif numberArguments.
+
+	cif returnType type = FFI_TYPE_VOID 
+		ifTrue: [ ^ 0 ]
+		ifFalse: [ ^ self ssPushRegister: ReceiverResultReg ]
 ]
 
 { #category : 'bytecode generator support' }
