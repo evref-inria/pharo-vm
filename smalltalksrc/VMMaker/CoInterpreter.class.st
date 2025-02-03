@@ -1428,10 +1428,9 @@ CoInterpreter >> ceSameThreadCalloutWithLiteralIndex: functionDefinitionIndex [
 	<api>	
 	<var: #cogMethod type: #'CogMethod *'>		
 		
-	| savedInstructionPointer cogMethod functionDefinition externalFunction cif returnValue |
+	| cogMethod functionDefinition externalFunction cif returnValue |
 	
-	"saving instruction pointer in a temporary, as the FFI call can reenter in the interpreter and affect the instance variable"	
-	savedInstructionPointer := instructionPointer := self popStack.
+	instructionPointer := self popStack.
 	
 	cogMethod := self mframeCogMethod: framePointer .
 	functionDefinition := self literal: functionDefinitionIndex ofMethod: cogMethod methodObject.
@@ -1439,21 +1438,22 @@ CoInterpreter >> ceSameThreadCalloutWithLiteralIndex: functionDefinitionIndex [
 	externalFunction := self getHandler: functionDefinition.
 	externalFunction ifNil: [
 		self logDebug: 'Invalid External Function Argument'.		
-		^ self ceFallbackInvalidFFICall: savedInstructionPointer ].
+		^ self ceFallbackInvalidFFICall: instructionPointer ].
 
 	cif := self getHandlerAsCif: (objectMemory fetchPointer: 1 ofObject: functionDefinition).
 
 	cif ifNil: [
 		self logDebug: 'Invalid CIF in ExternalFunction'.
-		^ self ceFallbackInvalidFFICall: savedInstructionPointer ]	.
+		^ self ceFallbackInvalidFFICall: instructionPointer ]	.
 	
 	self doSameThreadCalloutBytecodeFor: externalFunction andCif: cif.
+		
 	self failed 
-		ifTrue: [ ^ self ceFallbackInvalidFFICall: savedInstructionPointer ].
+		ifTrue: [ ^ self ceFallbackInvalidFFICall: instructionPointer ].
 	
 	returnValue := cif returnType type = FFI_TYPE_VOID ifTrue: [ 0 ] ifFalse: [ self stackTop ].
 	
-	self push: savedInstructionPointer.
+	self push: instructionPointer.
 	
 	^ returnValue 
 ]

@@ -125,7 +125,7 @@ VMSpurMemoryManagerTest >> createExternalAddressClass [
 VMSpurMemoryManagerTest >> createExternalFunctionFor: aBlock withArgumentTypes: argumentTypes withReturnType: returnType [
 
 	| functionAddress tfExternalFunction functionExternalAddress tfFunctionDefinition cif cifExternalAddress |
-
+		
 	functionAddress := interpreter libFFI registerFunction: aBlock.
 
 	tfExternalFunction := self newObjectWithSlots: 2. 

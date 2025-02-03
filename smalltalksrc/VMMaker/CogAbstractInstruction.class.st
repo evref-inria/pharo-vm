@@ -57,7 +57,8 @@ Class {
 		'dependent',
 		'cogit',
 		'objectMemory',
-		'bcpc'
+		'bcpc',
+		'objectRepresentation'
 	],
 	#classVars : [
 		'NumOperands'
@@ -65,7 +66,8 @@ Class {
 	#pools : [
 		'CogAbstractRegisters',
 		'CogCompilationConstants',
-		'CogRTLOpcodes'
+		'CogRTLOpcodes',
+		'LibFFIConstants'
 	],
 	#category : 'VMMaker-JIT',
 	#package : 'VMMaker',
@@ -617,7 +619,8 @@ CogAbstractInstruction >> codeGranularity [
 CogAbstractInstruction >> cogit: aCogit [
 	<doNotGenerate>
 	cogit := aCogit.
-	objectMemory := aCogit objectMemory
+	objectMemory := aCogit objectMemory.
+	objectRepresentation := aCogit objectRepresentation.
 ]
 
 { #category : 'generate machine code' }
@@ -873,6 +876,15 @@ CogAbstractInstruction >> genMulR: regSource R: regDest [
 	self subclassResponsibility
 ]
 
+{ #category : 'sameThread callout - optimizations' }
+CogAbstractInstruction >> genOptimizedSameThreadCalloutFor: cif andFunctionAddress: externalFunctionAddress [ 
+	
+	<var: #cif type: #'ffi_cif *'>	
+	<var: #externalFunctionAddress type: #'void *'>
+	
+	^ false
+]
+
 { #category : 'smalltalk calling convention' }
 CogAbstractInstruction >> genPushRegisterArgsForAbortMissNumArgs: numArgs [
 	"Ensure that the register args are pushed before the outer and
@@ -1072,6 +1084,17 @@ CogAbstractInstruction >> hasVarBaseRegister [
 	"Answer if the processor has a dedicated callee-saved register to point to
 	 the base of commonly-accessed variables. By default this is false."
 	^false
+]
+
+{ #category : 'sameThread callout - optimizations' }
+CogAbstractInstruction >> if: cif hasArgType: arg0Type returnType: returnType do: aBlock [
+
+	<inline: #always>
+	<var: #cif type: #'ffi_cif *'>
+
+	(cif nargs = 1 and: [
+		 (cif arg_types at: 0) type = arg0Type and: [
+			 cif returnType type = returnType ] ]) ifTrue: [ aBlock value ]
 ]
 
 { #category : 'generate machine code' }

@@ -110,3 +110,34 @@ VMFFISameThreadBytecodeArgumentMarshallingTest >> installFFIFallbackMethod [
 		inMethodDictionary: aMethodDictionary.
 
 ]
+
+{ #category : 'tests' }
+VMFFISameThreadBytecodeArgumentMarshallingTest >> testCalloutWithPointerArgumentWithIntObjectIsMarshalledCorrectly [
+
+	self
+		doTestFuntionWithArgumentType: interpreter libFFI pointer
+		smalltalkValue: (memory integerObjectOf: 8)
+		expectedValue: 8
+]
+
+{ #category : 'tests' }
+VMFFISameThreadBytecodeArgumentMarshallingTest >> testCalloutWithPointerArgumentWithOopObjectIsMarshalledCorrectly [
+
+	| anObject |
+	anObject := self newZeroSizedObject.
+
+	self
+		doTestFuntionWithArgumentType: interpreter libFFI pointer
+		smalltalkValue: anObject
+		expectedValue: anObject + BaseHeaderSize
+]
+
+{ #category : 'tests' }
+VMFFISameThreadBytecodeArgumentMarshallingTest >> testCalloutWithPointerPassingCharacterProducesBadArgument [
+
+	self
+		doTestFuntionWithArgumentType:  interpreter libFFI pointer
+		smalltalkValue: (memory characterObjectOf: 17)
+		failsWith: PrimErrBadArgument
+
+]

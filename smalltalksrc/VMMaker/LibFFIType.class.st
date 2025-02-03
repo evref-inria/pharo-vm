@@ -59,6 +59,13 @@ LibFFIType class >> type: aType size: aSize on: aLibFFI [
 		yourself
 ]
 
+{ #category : 'comparing' }
+LibFFIType >> = another [
+	<doNotGenerate>
+	(another isKindOf: self class) ifFalse: [ ^ self ].
+	^ another type = self type
+]
+
 { #category : 'accessing' }
 LibFFIType >> elements: aCollection [ 
 	elements := aCollection

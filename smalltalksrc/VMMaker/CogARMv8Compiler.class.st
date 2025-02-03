@@ -4120,6 +4120,48 @@ CogARMv8Compiler >> genMulR: regSource R: regDest [
 	^ first
 ]
 
+{ #category : 'sameThread callout - optimizations' }
+CogARMv8Compiler >> genOptimizedSameThreadCalloutFor: cif andFunctionAddress: externalFunctionAddress [ 
+	<var: #cif type: #'ffi_cif *'>	
+	<var: #externalFunctionAddress type: #'void *'>
+	
+	self if: cif hasArgType: FFI_TYPE_POINTER returnType: FFI_TYPE_VOID 
+		do: [ ^ self genOptimizedSameThreadCalloutPointerVoidFor: externalFunctionAddress ].
+
+	^ super genOptimizedSameThreadCalloutFor: cif andFunctionAddress: externalFunctionAddress
+]
+
+{ #category : 'sameThread callout - optimizations' }
+CogARMv8Compiler >> genOptimizedSameThreadCalloutPointerVoidFor: anExternalFunctionAddress [ 
+	
+	| isOop isOtherImmediate performCallWithSmallInteger jumpExternalAddress performCallWithOop |
+	cogit ssFlushStack.
+	cogit ssPopTopToReg: CArg0Reg.
+	
+	isOop := objectRepresentation genJumpNotImmediate: CArg0Reg.
+	isOtherImmediate := objectRepresentation genJumpNotSmallInteger: CArg0Reg.
+	 
+	objectRepresentation genConvertSmallIntegerToIntegerInReg: CArg0Reg.
+	performCallWithSmallInteger := cogit Jump: 0.
+
+	isOop jmpTarget: cogit Label.
+	objectRepresentation genGetCompactClassIndexNonImmOf: CArg0Reg into: TempReg.
+	cogit CmpCq: objectMemory classExternalAddressIndex R: TempReg.
+	jumpExternalAddress := cogit JumpZero: 0.
+
+	cogit LoadEffectiveAddressMw: objectMemory baseHeaderSize r: CArg0Reg R: CArg0Reg.
+	performCallWithOop := cogit Jump: 0.
+
+	jumpExternalAddress jmpTarget: cogit Label.
+	cogit MoveMw: objectMemory baseHeaderSize r: CArg0Reg R: CArg0Reg.
+
+	performCallWithOop jmpTarget: (performCallWithSmallInteger jmpTarget: cogit Label).
+	cogit CallFullRT: anExternalFunctionAddress.	
+		
+	isOtherImmediate jmpTarget: cogit Label.		
+	^ true.
+]
+
 { #category : 'smalltalk calling convention' }
 CogARMv8Compiler >> genPushRegisterArgsForAbortMissNumArgs: numArgs [
 	"Ensure that the register args are pushed before the outer and

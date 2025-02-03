@@ -5078,7 +5078,9 @@ StackInterpreter >> doSameThreadCalloutBytecodeFor: externalFunction andCif: cif
 	<var: #cif type: #'ffi_cif *'>
 	
 	| argumentSize parameters returnHolder |
-
+	
+	self initPrimCall.
+	
 	argumentSize := cif numberArguments.
 
 	" 1. Prepare Arguments:
@@ -5106,7 +5108,9 @@ StackInterpreter >> doSameThreadCalloutBytecodeFor: externalFunction andCif: cif
 				
 		self failed 
 				ifTrue: [ 
-					self logDebug: 'Could not convert argument index: %d' _: i + 1.
+					self logDebug: 'Could not convert argument index: %d value: %p' _: i + 1 _: (self cCoerce: argOop to: #'void*').
+					self logDebug: 'Could not convert argument type: %d size: %ld' _: argType type _: argType size.
+
 					^ self ]].
 	
 	returnHolder := self alloca: cif returnType size.

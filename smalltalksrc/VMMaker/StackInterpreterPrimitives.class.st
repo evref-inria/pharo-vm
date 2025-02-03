@@ -497,6 +497,22 @@ StackInterpreterPrimitives >> marshallPointerOrOop: externalAddressOrOop into: h
 	
 	pointerHolder := self cCoerce: holder to: #'void **'.
 	
+	externalAddressOrOop = objectMemory nilObject
+		ifTrue: [ 
+			pointerHolder at: 0 put: nil.
+			^ self ].
+	
+	(objectMemory isIntegerObject: externalAddressOrOop)
+		ifTrue: [ 
+			pointerHolder at: 0 put: (objectMemory integerValueOf: externalAddressOrOop).
+			^ self ].
+	
+	(objectMemory isImmediate: externalAddressOrOop)
+		ifTrue: [ 
+			self logDebug: 'Error Marshalling Pointer: %p (invalidImmediate)' _: externalAddressOrOop.
+			self primitiveFail. ^ self ].
+	
+	
 	((objectMemory classIndexOf: externalAddressOrOop) = objectMemory classExternalAddressIndex)
 		ifTrue: [ pointerHolder at: 0 put: (objectMemory fetchPointer: 0 ofObject: externalAddressOrOop) ]
 		ifFalse: [ pointerHolder at: 0 put: (self cCoerce: (externalAddressOrOop + BaseHeaderSize) to: #sqInt) ]
@@ -4013,13 +4029,18 @@ StackInterpreterPrimitives >> ptExitInterpreterToCallback: aPointer [
 	<var: #aPointer type: #'void *'>
 	<var: #vmCallbackContext type: #'VMCallbackContext *'>
 
-	| vmCallbackContext suspendedProcess |
-
+	| vmCallbackContext suspendedProcess suspendedContext |
+	
 	vmCallbackContext := self 
 		cCode: [self cCoerce: aPointer to: #'VMCallbackContext *']
 		inSmalltalk: [ aPointer ].
 	
 	suspendedProcess := self popSameThreadCalloutSuspendedProcess.
+	suspendedContext := objectMemory fetchPointer: SuspendedContextIndex ofObject: suspendedProcess.
+	
+"	(self isStillMarriedContext: suspendedContext)
+		ifFalse: [ self logDebug: 'The context is not married' ]. 
+"	
 	self putToSleep: self activeProcess yieldingIf: preemptionYields.
 	self transferTo: suspendedProcess from: CSCallbackLeave.
 	

@@ -348,7 +348,7 @@ StackToRegisterMappingCogit class >> initializeBytecodeTableForSistaV1 [
 		(2 227 227 genExtPushLiteralVariableBytecode			needsFrameNever: 1)
 		(2 228 228 genExtPushLiteralBytecode					needsFrameNever: 1)
 		(2 229 229 genLongPushTemporaryVariableBytecode)
-		(2 230 230 genSameThreadCalloutBytecode)
+		(2 230 230 genSameThreadCalloutBytecode isMapped)
 		(2 231 231 genPushNewArrayBytecode)
 		(2 232 232 genExtPushIntegerBytecode				needsFrameNever: 1)
 		(2 233 233 genExtPushCharacterBytecode				needsFrameNever: 1)
@@ -2443,27 +2443,46 @@ StackToRegisterMappingCogit >> genReturnTopFromMethod [
 { #category : 'bytecode generators' }
 StackToRegisterMappingCogit >> genSameThreadCalloutBytecode [
 
-	| literalIndex functionDefinition cif |
-
-	self ssAllocateCallReg: SendNumArgsReg.
-	self ssFlushStack.
-
+	| literalIndex functionDefinition cif externalFunction |
 	literalIndex := byte1.
+
+	functionDefinition := self getLiteral: literalIndex.
+
+	externalFunction := coInterpreter getHandler: functionDefinition.
+	externalFunction ifNil: [ ^ ShouldNotJIT ].
+
+	cif := coInterpreter getHandlerAsCif:
+		       (objectMemory fetchPointer: 1 ofObject: functionDefinition).
+	cif ifNil: [ ^ ShouldNotJIT ].
+
+"	(backEnd
+		 genOptimizedSameThreadCalloutFor: cif
+		 andFunctionAddress: externalFunction) ifTrue: [ ^ 0 ].
+"
+	self ssFlushStack.
+	self ssAllocateCallReg: SendNumArgsReg.
 
 	"The index of the literal with the function definition is passed as parameter of the trampoline"
 	self MoveCq: literalIndex R: SendNumArgsReg.
 	self CallRT: ceSameThreadCalloutTrampoline.
+	"We need to annotate the bytecode as there might be a message send in the function call through a Callback"
+	self annotateBytecode: self Label.
 
-	functionDefinition := self getLiteral: literalIndex.
-	cif := coInterpreter getHandlerAsCif: (objectMemory fetchPointer: 1 ofObject: functionDefinition).
+	"The trampoline has already poped the values. We need to update the stack count, but not generate pops."
+	self ssPop: cif numberArguments popSpilled: false.
 
-	cif ifNil: [ ^ ShouldNotJIT ].
-
-	self ssPop: cif numberArguments.
-
-	cif returnType type = FFI_TYPE_VOID 
-		ifTrue: [ ^ 0 ]
-		ifFalse: [ ^ self ssPushRegister: ReceiverResultReg ]
+	cif returnType type = FFI_TYPE_VOID
+		ifFalse: [ 	
+				self ssPush: 1.
+				self ssTop
+					type: SSRegister;
+					spilled: true;
+					registerr: ReceiverResultReg ;
+					bcptr: bytecodePC.
+				simSpillBase := simSpillBase + 1.
+				self updateSimSpillBase].
+			
+	^ 0
 ]
 
 { #category : 'bytecode generator support' }
