@@ -5273,7 +5273,6 @@ CCodeGenerator >> validateLocalizationOfGlobals: varList exceptMethod: methodNam
 			 localizationCandidates do: [ :candidate | 
 				(methodFreeVariables includes: candidate)
 					ifTrue: [ 
-						1halt.
 						variablesInConflict add: candidate ] ] ] ].
 
 	variablesInConflict ifNotEmpty: [ | errorMessage |
