@@ -5070,6 +5070,7 @@ StackInterpreter >> doRecordSendTrace [
 { #category : 'FFI bytecode' }
 StackInterpreter >> doSameThreadCalloutBytecodeFor: externalFunction andCif: cif [
 
+	<externalizeAllVariables>
 	<inline: false>
 
 	<var: #parameters type: #'void **'>
@@ -5078,7 +5079,7 @@ StackInterpreter >> doSameThreadCalloutBytecodeFor: externalFunction andCif: cif
 	<var: #cif type: #'ffi_cif *'>
 	
 	| argumentSize parameters returnHolder |
-	
+		
 	self initPrimCall.
 	
 	argumentSize := cif numberArguments.
@@ -9811,6 +9812,7 @@ StackInterpreter >> marryFrame: theFP SP: theSP copyTemps: copyTemps [
 	<inline: true>
 	<var: #theFP type: #'char *'>
 	<var: #theSP type: #'char *'>
+	<var: #numStack type: #'sqInt'>
 	| theContext methodHeader closureOrNil numSlots numArgs numStack numTemps |
 
 	self assert: (self frameHasContext: theFP) not.
@@ -14950,6 +14952,8 @@ StackInterpreter >> stackPointerIndexForFrame: theFP WithSP: theSP [
 	"Return the 1-based index rel to the given frame"
 
 	"In the StackInterpreter stacks grow down."
+
+	<returnTypeC: #sqInt>
 
 	^ (self frameReceiverLocation: theFP) - theSP
 	  >> objectMemory shiftForWord + (self frameNumArgs: theFP)

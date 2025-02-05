@@ -2472,15 +2472,7 @@ StackToRegisterMappingCogit >> genSameThreadCalloutBytecode [
 	self ssPop: cif numberArguments popSpilled: false.
 
 	cif returnType type = FFI_TYPE_VOID
-		ifFalse: [ 	
-				self ssPush: 1.
-				self ssTop
-					type: SSRegister;
-					spilled: true;
-					registerr: ReceiverResultReg ;
-					bcptr: bytecodePC.
-				simSpillBase := simSpillBase + 1.
-				self updateSimSpillBase].
+		ifFalse: [ self ssPushRegister: ReceiverResultReg].
 			
 	^ 0
 ]

@@ -1432,6 +1432,8 @@ CoInterpreter >> ceSameThreadCalloutWithLiteralIndex: functionDefinitionIndex [
 	
 	instructionPointer := self popStack.
 	
+	self assert: stackPointer < framePointer.
+	
 	cogMethod := self mframeCogMethod: framePointer .
 	functionDefinition := self literal: functionDefinitionIndex ofMethod: cogMethod methodObject.
 
@@ -1451,7 +1453,7 @@ CoInterpreter >> ceSameThreadCalloutWithLiteralIndex: functionDefinitionIndex [
 	self failed 
 		ifTrue: [ ^ self ceFallbackInvalidFFICall: instructionPointer ].
 	
-	returnValue := cif returnType type = FFI_TYPE_VOID ifTrue: [ 0 ] ifFalse: [ self stackTop ].
+	returnValue := cif returnType type = FFI_TYPE_VOID ifTrue: [ 0 ] ifFalse: [ self popStack ].
 	
 	self push: instructionPointer.
 	
