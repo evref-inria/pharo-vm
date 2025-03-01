@@ -195,6 +195,12 @@ UnicornARMv5Simulator >> doublePrecisionFloatingPointRegister2 [
 ]
 
 { #category : 'as yet unclassified' }
+UnicornARMv5Simulator >> doublePrecisionFloatingPointRegister3 [
+
+	^ UcARMRegisters d3
+]
+
+{ #category : 'as yet unclassified' }
 UnicornARMv5Simulator >> extractDestinationRegisterFromAssembly: aLLVMInstruction [ 
 	
 	"In ARM, instructions are usually encoded asSpotterCandidateLink 

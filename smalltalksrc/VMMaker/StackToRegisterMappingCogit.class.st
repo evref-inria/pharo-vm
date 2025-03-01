@@ -2443,22 +2443,24 @@ StackToRegisterMappingCogit >> genReturnTopFromMethod [
 { #category : 'bytecode generators' }
 StackToRegisterMappingCogit >> genSameThreadCalloutBytecode [
 
-	| literalIndex functionDefinition cif externalFunction |
+	| literalIndex functionDefinition cif externalFunction flags |
 	literalIndex := byte1.
 
 	functionDefinition := self getLiteral: literalIndex.
 
 	externalFunction := coInterpreter getHandler: functionDefinition.
 	externalFunction ifNil: [ ^ ShouldNotJIT ].
+	flags := objectMemory fetchInteger: 2 ofObject: functionDefinition.
 
 	cif := coInterpreter getHandlerAsCif:
 		       (objectMemory fetchPointer: 1 ofObject: functionDefinition).
 	cif ifNil: [ ^ ShouldNotJIT ].
 
-"	(backEnd
+	(backEnd
 		 genOptimizedSameThreadCalloutFor: cif
+		 flags: flags
 		 andFunctionAddress: externalFunction) ifTrue: [ ^ 0 ].
-"
+
 	self ssFlushStack.
 	self ssAllocateCallReg: SendNumArgsReg.
 
@@ -2471,9 +2473,9 @@ StackToRegisterMappingCogit >> genSameThreadCalloutBytecode [
 	"The trampoline has already poped the values. We need to update the stack count, but not generate pops."
 	self ssPop: cif numberArguments popSpilled: false.
 
-	cif returnType type = FFI_TYPE_VOID
-		ifFalse: [ self ssPushRegister: ReceiverResultReg].
-			
+	cif returnType type = FFI_TYPE_VOID ifFalse: [
+		self ssPushRegister: ReceiverResultReg ].
+
 	^ 0
 ]
 

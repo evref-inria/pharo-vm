@@ -4,10 +4,25 @@ Class {
 	#instVars : [
 		'jitCompilerClass'
 	],
+	#pools : [
+		'LibFFIConstants'
+	],
 	#category : 'VMMakerTests-JitTests',
 	#package : 'VMMakerTests',
 	#tag : 'JitTests'
 }
+
+{ #category : 'helpers' }
+VMJitFFISameThreadCalloutTest >> assertIsNonOptimizedCall: aTFFunctionDefinition [
+	
+	self deny: machineSimulator pc equals: (interpreter getHandler: aTFFunctionDefinition)
+]
+
+{ #category : 'helpers' }
+VMJitFFISameThreadCalloutTest >> assertIsOptimizedCall: aTFFunctionDefinition [
+	
+	self assert: machineSimulator pc equals: (interpreter getHandler: aTFFunctionDefinition)
+]
 
 { #category : 'helpers' }
 VMJitFFISameThreadCalloutTest >> callCogMethod: callingMethod receiver: receiver arguments: args returnAddress: returnAddress [
@@ -42,6 +57,7 @@ VMJitFFISameThreadCalloutTest >> setUp [
 	interpreter libFFI: LibFFI new.
 	interpreter libFFI interpreter: interpreter.
 	
+	self installFloatClass.
 	self createExternalAddressClass.
 
 
@@ -73,7 +89,7 @@ VMJitFFISameThreadCalloutTest >> setUpTrampolines [
 	cogit generateSameThreadCalloutTrampolines
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - general bytecode' }
 VMJitFFISameThreadCalloutTest >> testExecutingFunctionCallsExternalFunction [
 
 	| compiledMethod cogMethod externalFunction tfExternalFunction called |
@@ -81,7 +97,9 @@ VMJitFFISameThreadCalloutTest >> testExecutingFunctionCallsExternalFunction [
 	called := false.
 
 	tfExternalFunction := self 
-		createExternalFunctionFor:  [ called := true ] 
+		createExternalFunctionFor:  [ 
+			self assertIsNonOptimizedCall: tfExternalFunction.
+			called := true ] 
 		withArgumentTypes: {} 
 		withReturnType: interpreter libFFI void.
 
@@ -112,7 +130,7 @@ VMJitFFISameThreadCalloutTest >> testExecutingFunctionCallsExternalFunction [
 	self assert: called
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - general bytecode' }
 VMJitFFISameThreadCalloutTest >> testExecutingFunctionChangesStack [
 
 	| compiledMethod cogMethod tfExternalFunction changedStack anExternalAddress |
@@ -123,6 +141,7 @@ VMJitFFISameThreadCalloutTest >> testExecutingFunctionChangesStack [
 	void returning function "
 	tfExternalFunction := self
 		                      createExternalFunctionFor: [ 
+										self assertIsNonOptimizedCall: tfExternalFunction.			
 										changedStack := (machineSimulator stackPointerRegisterValue bitAnd: 16rFFFFFF00) = (cogit getCStackPointer bitAnd: 16rFFFFFF00).
 										0 ]
 		                      withArgumentTypes: { }
@@ -155,7 +174,7 @@ VMJitFFISameThreadCalloutTest >> testExecutingFunctionChangesStack [
 
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - general bytecode' }
 VMJitFFISameThreadCalloutTest >> testExecutingFunctionPopsCorrectlyAndReturnsTheResult [
 
 	| compiledMethod cogMethod externalFunction tfExternalFunction called |
@@ -163,7 +182,9 @@ VMJitFFISameThreadCalloutTest >> testExecutingFunctionPopsCorrectlyAndReturnsThe
 	called := false.
 
 	tfExternalFunction := self 
-		createExternalFunctionFor:  [ :a :b | a + b ] 
+		createExternalFunctionFor:  [ :a :b | 
+			self assertIsNonOptimizedCall: tfExternalFunction.
+			a + b ] 
 		withArgumentTypes: {interpreter libFFI sint64. interpreter libFFI sint64} 
 		withReturnType: interpreter libFFI sint64.
 
@@ -198,7 +219,7 @@ VMJitFFISameThreadCalloutTest >> testExecutingFunctionPopsCorrectlyAndReturnsThe
 
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - general bytecode' }
 VMJitFFISameThreadCalloutTest >> testExecutingFunctionReturnsCorrectValue [
 
 	| compiledMethod cogMethod externalFunction tfExternalFunction called |
@@ -206,7 +227,9 @@ VMJitFFISameThreadCalloutTest >> testExecutingFunctionReturnsCorrectValue [
 	called := false.
 
 	tfExternalFunction := self 
-		createExternalFunctionFor:  [ 17 ] 
+		createExternalFunctionFor:  [ 
+			self assertIsNonOptimizedCall: tfExternalFunction.			
+			17 ] 
 		withArgumentTypes: {} 
 		withReturnType: interpreter libFFI sint64.
 
@@ -237,12 +260,12 @@ VMJitFFISameThreadCalloutTest >> testExecutingFunctionReturnsCorrectValue [
 
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - general bytecode' }
 VMJitFFISameThreadCalloutTest >> testJITCompilesCallToTrampolineByDefault [
 
 	| compiledMethod cogMethod tfExternalFunction |
 	tfExternalFunction := self
-		                      createExternalFunctionFor: [  ]
+		                      createExternalFunctionFor: [ self assertIsNonOptimizedCall: tfExternalFunction ]
 		                      withArgumentTypes: {  }
 		                      withReturnType: interpreter libFFI void.
 
@@ -273,53 +296,10 @@ VMJitFFISameThreadCalloutTest >> testJITCompilesCallToTrampolineByDefault [
 		equals: 0
 ]
 
-{ #category : 'tests' }
-VMJitFFISameThreadCalloutTest >> testOptimizedFunctionPointerToVoidChangesStack [
+{ #category : 'tests - double to void' }
+VMJitFFISameThreadCalloutTest >> testNonOptimizedFunctionDoubleToVoid [
 
-	| compiledMethod cogMethod tfExternalFunction changedStack anExternalAddress |
-
-	changedStack := false.
-
-	"I need to return 0 in the function, even if it is void, as the simulation cannot identify when it is a 
-	void returning function "
-	tfExternalFunction := self
-		                      createExternalFunctionFor: [:arg | 
-										changedStack := (machineSimulator stackPointerRegisterValue bitAnd: 16rFFFFFF00) = (cogit getCStackPointer bitAnd: 16rFFFFFF00).
-										0 ]
-		                      withArgumentTypes: { interpreter libFFI pointer }
-		                      withReturnType: interpreter libFFI void.
-
-	anExternalAddress := self newExternalAddress: 17.
-
-	compiledMethod := methodBuilder
-		                  newMethod;
-		                  literalAt: 0 put: tfExternalFunction;
-		                  literalAt: 1 put: anExternalAddress;
-		                  literalAt: 2 put: memory nilObject; "Class Binding"
-		                  bytecodes: #[
-											33 "PushLiteral 1"
-											230 0 "SameThreadCallout Literal0"
-											88 "ReturnReceiver"];
-		                  buildMethod.
-
-	cogMethod := cogit cog: compiledMethod selector: memory nilObject.
-
-	self deny: cogMethod isNil.
-
-	self
-		callCogMethod: cogMethod
-		receiver: (memory integerObjectOf: 23)
-		arguments: {  }
-		returnAddress: callerAddress.
-
-	self assert: changedStack.
-
-]
-
-{ #category : 'tests' }
-VMJitFFISameThreadCalloutTest >> testOptimizedFunctionPointerToVoidWithExternalAddressAsParameter [
-
-	| compiledMethod cogMethod tfExternalFunction called receivedArgument anExternalAddress |
+	| compiledMethod cogMethod tfExternalFunction aByteArray called receivedArgument |
 
 	called := false.
 
@@ -327,18 +307,19 @@ VMJitFFISameThreadCalloutTest >> testOptimizedFunctionPointerToVoidWithExternalA
 	void returning function "
 	tfExternalFunction := self
 		                      createExternalFunctionFor: [:arg | 
+										self assertIsNonOptimizedCall: tfExternalFunction.
 										called := true.
 										receivedArgument := arg.
 										0 ]
-		                      withArgumentTypes: { interpreter libFFI pointer }
-		                      withReturnType: interpreter libFFI void.
+		                      withArgumentTypes: { interpreter libFFI double }
+		                      withReturnType: interpreter libFFI void.		
 
-	anExternalAddress := self newExternalAddress: 17.
+	aByteArray := self newByteArrayWithContent: #[1 2 3 4 0 0 0 0].
 
 	compiledMethod := methodBuilder
 		                  newMethod;
 		                  literalAt: 0 put: tfExternalFunction;
-		                  literalAt: 1 put: anExternalAddress;
+		                  literalAt: 1 put: (memory floatObjectOf: 23.5);
 		                  literalAt: 2 put: memory nilObject; "Class Binding"
 		                  bytecodes: #[
 											33 "PushLiteral 1"
@@ -359,11 +340,234 @@ VMJitFFISameThreadCalloutTest >> testOptimizedFunctionPointerToVoidWithExternalA
 	self assert: machineSimulator pc equals: callerAddress.
 	self assert: machineSimulator receiverRegisterValue equals: (memory integerObjectOf: 23).
 	self assert: called.
-	self assert: receivedArgument equals: 17
+	self assert: receivedArgument equals: 23.5
 ]
 
-{ #category : 'tests' }
-VMJitFFISameThreadCalloutTest >> testOptimizedFunctionPointerToVoidWithNilAsParameter [
+{ #category : 'tests - pointer double double double double void' }
+VMJitFFISameThreadCalloutTest >> testNonOptimizedFunctionPointerDoubleDoubleDoubleDoubleToVoid [
+
+	| compiledMethod cogMethod tfExternalFunction called receivedArgument1 receivedArgument2 receivedArgument3 anExternalAddress receivedArgument4 receivedArgument5 |
+
+	called := false.
+
+	"I need to return 0 in the function, even if it is void, as the simulation cannot identify when it is a 
+	void returning function "
+	tfExternalFunction := self
+		                      createExternalFunctionFor: [:ptr :dbl1 :dbl2 :dbl3 :dbl4 | 
+										self assertIsNonOptimizedCall: tfExternalFunction.
+										called := true.
+										receivedArgument1 := ptr.
+										receivedArgument2 := dbl1.
+										receivedArgument3 := dbl2.
+										receivedArgument4 := dbl3.
+										receivedArgument5 := dbl4.
+										0 ]
+		                      withArgumentTypes: { interpreter libFFI pointer. interpreter libFFI double. interpreter libFFI double. interpreter libFFI double. interpreter libFFI double }
+		                      withReturnType: interpreter libFFI void.		
+
+	anExternalAddress := self newExternalAddress: 17.
+
+	compiledMethod := methodBuilder
+		                  newMethod;
+		                  literalAt: 0 put: tfExternalFunction;
+		                  literalAt: 1 put: anExternalAddress;
+		                  literalAt: 2 put: (memory floatObjectOf: 23.5);
+		                  literalAt: 3 put: (memory floatObjectOf: 42.0);
+		                  literalAt: 4 put: (memory floatObjectOf: 99.5);
+		                  literalAt: 5 put: (memory floatObjectOf: 55.0);
+		                  literalAt: 6 put: memory nilObject; "Class Binding"
+		                  bytecodes: #[
+											33 "PushLiteral 1"
+											34 "PushLiteral 2"
+											35 "PushLiteral 3"
+											36 "PushLiteral 4"
+											37 "PushLiteral 5"
+											230 0 "SameThreadCallout Literal0"
+											88 "ReturnReceiver"];
+		                  buildMethod.
+
+	cogMethod := cogit cog: compiledMethod selector: memory nilObject.
+
+	self deny: cogMethod isNil.
+
+	self
+		callCogMethod: cogMethod
+		receiver: (memory integerObjectOf: 23)
+		arguments: {  }
+		returnAddress: callerAddress.
+
+	self assert: machineSimulator pc equals: callerAddress.
+	self assert: machineSimulator receiverRegisterValue equals: (memory integerObjectOf: 23).
+	self assert: called.
+	self assert: receivedArgument1 equals: 17.
+	self assert: receivedArgument2 equals: 23.5.
+	self assert: receivedArgument3 equals: 42.0.
+	self assert: receivedArgument4 equals: 99.5.
+	self assert: receivedArgument5 equals: 55.0.			
+]
+
+{ #category : 'tests - pointer double double double void' }
+VMJitFFISameThreadCalloutTest >> testNonOptimizedFunctionPointerDoubleDoubleDoubleToVoid [
+
+	| compiledMethod cogMethod tfExternalFunction called receivedArgument1 receivedArgument2 receivedArgument3 anExternalAddress receivedArgument4 |
+
+	called := false.
+
+	"I need to return 0 in the function, even if it is void, as the simulation cannot identify when it is a 
+	void returning function "
+	tfExternalFunction := self
+		                      createExternalFunctionFor: [:ptr :dbl1 :dbl2 :dbl3 | 
+										self assertIsNonOptimizedCall: tfExternalFunction.
+										called := true.
+										receivedArgument1 := ptr.
+										receivedArgument2 := dbl1.
+										receivedArgument3 := dbl2.
+										receivedArgument4 := dbl3.
+										0 ]
+		                      withArgumentTypes: { interpreter libFFI pointer. interpreter libFFI double. interpreter libFFI double. interpreter libFFI double }
+		                      withReturnType: interpreter libFFI void.		
+
+	anExternalAddress := self newExternalAddress: 17.
+
+	compiledMethod := methodBuilder
+		                  newMethod;
+		                  literalAt: 0 put: tfExternalFunction;
+		                  literalAt: 1 put: anExternalAddress;
+		                  literalAt: 2 put: (memory floatObjectOf: 23.5);
+		                  literalAt: 3 put: (memory floatObjectOf: 42.0);
+		                  literalAt: 4 put: (memory floatObjectOf: 99.5);
+		                  literalAt: 5 put: memory nilObject; "Class Binding"
+		                  bytecodes: #[
+											33 "PushLiteral 1"
+											34 "PushLiteral 2"
+											35 "PushLiteral 3"
+											36 "PushLiteral 4"
+											230 0 "SameThreadCallout Literal0"
+											88 "ReturnReceiver"];
+		                  buildMethod.
+
+	cogMethod := cogit cog: compiledMethod selector: memory nilObject.
+
+	self deny: cogMethod isNil.
+
+	self
+		callCogMethod: cogMethod
+		receiver: (memory integerObjectOf: 23)
+		arguments: {  }
+		returnAddress: callerAddress.
+
+	self assert: machineSimulator pc equals: callerAddress.
+	self assert: machineSimulator receiverRegisterValue equals: (memory integerObjectOf: 23).
+	self assert: called.
+	self assert: receivedArgument1 equals: 17.
+	self assert: receivedArgument2 equals: 23.5.
+	self assert: receivedArgument3 equals: 42.0.
+	self assert: receivedArgument4 equals: 99.5.
+
+]
+
+{ #category : 'tests - pointer double double to void' }
+VMJitFFISameThreadCalloutTest >> testNonOptimizedFunctionPointerDoubleDoubleToVoid [
+
+	| compiledMethod cogMethod tfExternalFunction called receivedArgument1 receivedArgument2 receivedArgument3 anExternalAddress |
+
+	called := false.
+
+	"I need to return 0 in the function, even if it is void, as the simulation cannot identify when it is a 
+	void returning function "
+	tfExternalFunction := self
+		                      createExternalFunctionFor: [:ptr :dbl1 :dbl2 | 
+										self assertIsNonOptimizedCall: tfExternalFunction.
+										called := true.
+										receivedArgument1 := ptr.
+										receivedArgument2 := dbl1.
+										receivedArgument3 := dbl2.
+										0 ]
+		                      withArgumentTypes: { interpreter libFFI pointer. interpreter libFFI double. interpreter libFFI double }
+		                      withReturnType: interpreter libFFI void.		
+
+	anExternalAddress := self newExternalAddress: 17.
+
+	compiledMethod := methodBuilder
+		                  newMethod;
+		                  literalAt: 0 put: tfExternalFunction;
+		                  literalAt: 1 put: anExternalAddress;
+		                  literalAt: 2 put: (memory floatObjectOf: 23.5);
+		                  literalAt: 3 put: (memory floatObjectOf: 42.0);
+		                  literalAt: 4 put: memory nilObject; "Class Binding"
+		                  bytecodes: #[
+											33 "PushLiteral 1"
+											34 "PushLiteral 2"
+											35 "PushLiteral 3"
+											230 0 "SameThreadCallout Literal0"
+											88 "ReturnReceiver"];
+		                  buildMethod.
+
+	cogMethod := cogit cog: compiledMethod selector: memory nilObject.
+
+	self deny: cogMethod isNil.
+
+	self
+		callCogMethod: cogMethod
+		receiver: (memory integerObjectOf: 23)
+		arguments: {  }
+		returnAddress: callerAddress.
+
+	self assert: machineSimulator pc equals: callerAddress.
+	self assert: machineSimulator receiverRegisterValue equals: (memory integerObjectOf: 23).
+	self assert: called.
+	self assert: receivedArgument1 equals: 17.
+	self assert: receivedArgument2 equals: 23.5.
+	self assert: receivedArgument3 equals: 42.0.		
+]
+
+{ #category : 'tests - pointer to pointer' }
+VMJitFFISameThreadCalloutTest >> testNonOptimizedFunctionPointerToPointer [
+
+	| compiledMethod cogMethod tfExternalFunction called anExternalAddress |
+
+	called := false.
+
+	tfExternalFunction := self
+		                      createExternalFunctionFor: [ :e | 
+										self assertIsNonOptimizedCall: tfExternalFunction.
+										called := true. e + 23 ]
+		                      withArgumentTypes: { interpreter libFFI pointer }
+		                      withReturnType: interpreter libFFI pointer.		
+
+	anExternalAddress := self newExternalAddress: 17.
+
+	compiledMethod := methodBuilder
+		                  newMethod;
+		                  literalAt: 0 put: tfExternalFunction;
+		                  literalAt: 1 put: anExternalAddress;
+		                  literalAt: 2 put: memory nilObject; "Class Binding"
+		                  bytecodes: #[
+											33 "PushLiteral 1"
+											230 0 "SameThreadCallout Literal0"
+											92 "ReturnTop"];
+		                  buildMethod.
+
+	cogMethod := cogit cog: compiledMethod selector: memory nilObject.
+
+	self deny: cogMethod isNil.
+
+	self
+		callCogMethod: cogMethod
+		receiver: (memory integerObjectOf: 23)
+		arguments: {}
+		returnAddress: callerAddress.
+
+	self assert: machineSimulator pc equals: callerAddress.
+	self assert: (memory fetchClassTagOf: machineSimulator receiverRegisterValue) equals: memory classExternalAddressIndex.
+	self assert: (interpreter readAddress: machineSimulator receiverRegisterValue) equals: 17 + 23.
+	
+	self assert: called.
+
+]
+
+{ #category : 'tests - pointer to void (NonOpt)' }
+VMJitFFISameThreadCalloutTest >> testNonOptimizedFunctionPointerToVoidWithNilAsParameter [
 
 	| compiledMethod cogMethod tfExternalFunction aByteArray called receivedArgument |
 
@@ -373,11 +577,12 @@ VMJitFFISameThreadCalloutTest >> testOptimizedFunctionPointerToVoidWithNilAsPara
 	void returning function "
 	tfExternalFunction := self
 		                      createExternalFunctionFor: [:arg | 
+										self assertIsNonOptimizedCall: tfExternalFunction.
 										called := true.
 										receivedArgument := arg.
 										0 ]
 		                      withArgumentTypes: { interpreter libFFI pointer }
-		                      withReturnType: interpreter libFFI void.
+		                      withReturnType: interpreter libFFI void.		
 
 	aByteArray := self newByteArrayWithContent: #[1 2 3 4 0 0 0 0].
 
@@ -408,8 +613,8 @@ VMJitFFISameThreadCalloutTest >> testOptimizedFunctionPointerToVoidWithNilAsPara
 	self assert: receivedArgument equals: 0
 ]
 
-{ #category : 'tests' }
-VMJitFFISameThreadCalloutTest >> testOptimizedFunctionPointerToVoidWithOopAsParameter [
+{ #category : 'tests - pointer to void (NonOpt)' }
+VMJitFFISameThreadCalloutTest >> testNonOptimizedFunctionPointerToVoidWithOopAsParameter [
 
 	| compiledMethod cogMethod tfExternalFunction aByteArray called receivedArgument |
 
@@ -419,11 +624,12 @@ VMJitFFISameThreadCalloutTest >> testOptimizedFunctionPointerToVoidWithOopAsPara
 	void returning function "
 	tfExternalFunction := self
 		                      createExternalFunctionFor: [:arg | 
+										self assertIsNonOptimizedCall: tfExternalFunction.
 										called := true.
 										receivedArgument := arg.
 										0 ]
 		                      withArgumentTypes: { interpreter libFFI pointer }
-		                      withReturnType: interpreter libFFI void.
+		                      withReturnType: interpreter libFFI void.		
 
 	aByteArray := self newByteArrayWithContent: #[1 2 3 4 0 0 0 0].
 
@@ -454,10 +660,54 @@ VMJitFFISameThreadCalloutTest >> testOptimizedFunctionPointerToVoidWithOopAsPara
 	self assert: receivedArgument equals: aByteArray + BaseHeaderSize 
 ]
 
-{ #category : 'tests' }
-VMJitFFISameThreadCalloutTest >> testOptimizedFunctionPointerToVoidWithSmallIntegerAsParameter [
+{ #category : 'tests - void to pointer' }
+VMJitFFISameThreadCalloutTest >> testNonOptimizedFunctionVoidToPointer [
 
-	| compiledMethod cogMethod tfExternalFunction called receivedArgument |
+	| compiledMethod cogMethod tfExternalFunction called |
+
+	called := false.
+
+	tfExternalFunction := self
+		                      createExternalFunctionFor: [ 
+										self assertIsNonOptimizedCall: tfExternalFunction.
+										called := true.
+										16rCAFEBABE ]
+		                      withArgumentTypes: { }
+		                      withReturnType: interpreter libFFI pointer.		
+
+	compiledMethod := methodBuilder
+		                  newMethod;
+		                  literalAt: 0 put: tfExternalFunction;
+		                  literalAt: 1 put: memory nilObject; "Class Binding"
+		                  bytecodes: #[
+											230 0 "SameThreadCallout Literal0"
+											92 "ReturnTop"];
+		                  buildMethod.
+
+	cogMethod := cogit cog: compiledMethod selector: memory nilObject.
+
+	self deny: cogMethod isNil.
+
+	self
+		callCogMethod: cogMethod
+		receiver: (memory integerObjectOf: 23)
+		arguments: {}
+		returnAddress: callerAddress.
+
+	self assert: machineSimulator pc equals: callerAddress.
+	self assert: (memory fetchClassTagOf: machineSimulator receiverRegisterValue) equals: memory classExternalAddressIndex.
+	self assert: (interpreter readAddress: machineSimulator receiverRegisterValue) equals: 16rCafeBabe.
+	
+	self assert: called.
+
+]
+
+{ #category : 'tests - double to void' }
+VMJitFFISameThreadCalloutTest >> testOptimizedFunctionDoubleToVoid [
+
+	| compiledMethod cogMethod tfExternalFunction aByteArray called receivedArgument |
+
+	isa = #IA32 ifTrue: [ ^ self skip ].
 
 	called := false.
 
@@ -465,16 +715,403 @@ VMJitFFISameThreadCalloutTest >> testOptimizedFunctionPointerToVoidWithSmallInte
 	void returning function "
 	tfExternalFunction := self
 		                      createExternalFunctionFor: [:arg | 
+										self assertIsOptimizedCall: tfExternalFunction.
 										called := true.
-										receivedArgument := arg.
+										receivedArgument := machineSimulator doublePrecisionFloatingPointRegister0Value.
 										0 ]
-		                      withArgumentTypes: { interpreter libFFI pointer }
-		                      withReturnType: interpreter libFFI void.
+		                      withArgumentTypes: { interpreter libFFI double }
+		                      withReturnType: interpreter libFFI void
+									flags: FFI_FLAG_USE_OPTIMIZED_VERSION.
+
+	aByteArray := self newByteArrayWithContent: #[1 2 3 4 0 0 0 0].
 
 	compiledMethod := methodBuilder
 		                  newMethod;
 		                  literalAt: 0 put: tfExternalFunction;
-		                  literalAt: 1 put: (memory integerObjectOf: 17);
+		                  literalAt: 1 put: (memory floatObjectOf: 23.5);
+		                  literalAt: 2 put: memory nilObject; "Class Binding"
+		                  bytecodes: #[
+											33 "PushLiteral 1"
+											230 0 "SameThreadCallout Literal0"
+											88 "ReturnReceiver"];
+		                  buildMethod.
+
+	cogMethod := cogit cog: compiledMethod selector: memory nilObject.
+
+	self deny: cogMethod isNil.
+
+	self
+		callCogMethod: cogMethod
+		receiver: (memory integerObjectOf: 23)
+		arguments: {  }
+		returnAddress: callerAddress.
+
+	self assert: machineSimulator pc equals: callerAddress.
+	self assert: machineSimulator receiverRegisterValue equals: (memory integerObjectOf: 23).
+	self assert: called.
+	self assert: receivedArgument equals: 23.5
+]
+
+{ #category : 'tests - pointer double double double double void' }
+VMJitFFISameThreadCalloutTest >> testOptimizedFunctionPointerDoubleDoubleDoubleDoubleToVoid [
+
+	| compiledMethod cogMethod tfExternalFunction called receivedArgument1 receivedArgument2 receivedArgument3 anExternalAddress receivedArgument4 receivedArgument5 |
+
+	isa = #IA32 ifTrue: [ ^ self skip ].
+
+	called := false.
+
+	"I need to return 0 in the function, even if it is void, as the simulation cannot identify when it is a 
+	void returning function "
+	tfExternalFunction := self
+		                      createExternalFunctionFor: [:ptr ":dbl1 :dbl2 :dbl3 :dbl4 Double Parameters are not handled by our simulation"  | 
+										self assertIsOptimizedCall: tfExternalFunction.
+										called := true.
+										receivedArgument1 := ptr.
+										receivedArgument2 := machineSimulator doublePrecisionFloatingPointRegister0Value.
+										receivedArgument3 := machineSimulator doublePrecisionFloatingPointRegister1Value.
+										receivedArgument4 := machineSimulator doublePrecisionFloatingPointRegister2Value.
+										receivedArgument5 := machineSimulator doublePrecisionFloatingPointRegister3Value.
+										0 ]
+		                      withArgumentTypes: { interpreter libFFI pointer. interpreter libFFI double. interpreter libFFI double. interpreter libFFI double. interpreter libFFI double }
+		                      withReturnType: interpreter libFFI void
+									flags: FFI_FLAG_USE_OPTIMIZED_VERSION | FFI_FLAG_POINTERS_MIGHT_BE_EXTERNAL_ADDRESSES.
+	
+
+	anExternalAddress := self newExternalAddress: 17.
+
+	compiledMethod := methodBuilder
+		                  newMethod;
+		                  literalAt: 0 put: tfExternalFunction;
+		                  literalAt: 1 put: anExternalAddress;
+		                  literalAt: 2 put: (memory floatObjectOf: 23.5);
+		                  literalAt: 3 put: (memory floatObjectOf: 42.0);
+		                  literalAt: 4 put: (memory floatObjectOf: 99.5);
+		                  literalAt: 5 put: (memory floatObjectOf: 55.0);
+		                  literalAt: 6 put: memory nilObject; "Class Binding"
+		                  bytecodes: #[
+											33 "PushLiteral 1"
+											34 "PushLiteral 2"
+											35 "PushLiteral 3"
+											36 "PushLiteral 4"
+											37 "PushLiteral 5"
+											230 0 "SameThreadCallout Literal0"
+											88 "ReturnReceiver"];
+		                  buildMethod.
+
+	cogMethod := cogit cog: compiledMethod selector: memory nilObject.
+
+	self deny: cogMethod isNil.
+
+	self
+		callCogMethod: cogMethod
+		receiver: (memory integerObjectOf: 23)
+		arguments: {  }
+		returnAddress: callerAddress.
+
+	self assert: machineSimulator pc equals: callerAddress.
+	self assert: machineSimulator receiverRegisterValue equals: (memory integerObjectOf: 23).
+	self assert: called.
+	self assert: receivedArgument1 equals: 17.
+	self assert: receivedArgument2 equals: 23.5.
+	self assert: receivedArgument3 equals: 42.0.
+	self assert: receivedArgument4 equals: 99.5.
+	self assert: receivedArgument5 equals: 55.0.
+]
+
+{ #category : 'tests - pointer double double double void' }
+VMJitFFISameThreadCalloutTest >> testOptimizedFunctionPointerDoubleDoubleDoubleToVoid [
+
+	| compiledMethod cogMethod tfExternalFunction called receivedArgument1 receivedArgument2 receivedArgument3 anExternalAddress receivedArgument4 |
+
+	isa = #IA32 ifTrue: [ ^ self skip ].
+
+	called := false.
+
+	"I need to return 0 in the function, even if it is void, as the simulation cannot identify when it is a 
+	void returning function "
+	tfExternalFunction := self
+		                      createExternalFunctionFor: [:ptr :dbl1 :dbl2 :dbl3 | 
+										self assertIsOptimizedCall: tfExternalFunction.
+										called := true.
+										receivedArgument1 := ptr.
+										receivedArgument2 := machineSimulator doublePrecisionFloatingPointRegister0Value.
+										receivedArgument3 := machineSimulator doublePrecisionFloatingPointRegister1Value.
+										receivedArgument4 := machineSimulator doublePrecisionFloatingPointRegister2Value.
+										0 ]
+		                      withArgumentTypes: { interpreter libFFI pointer. interpreter libFFI double. interpreter libFFI double. interpreter libFFI double }
+		                      withReturnType: interpreter libFFI void
+									flags: FFI_FLAG_USE_OPTIMIZED_VERSION | FFI_FLAG_POINTERS_MIGHT_BE_EXTERNAL_ADDRESSES.
+
+	anExternalAddress := self newExternalAddress: 17.
+
+	compiledMethod := methodBuilder
+		                  newMethod;
+		                  literalAt: 0 put: tfExternalFunction;
+		                  literalAt: 1 put: anExternalAddress;
+		                  literalAt: 2 put: (memory floatObjectOf: 23.5);
+		                  literalAt: 3 put: (memory floatObjectOf: 42.0);
+		                  literalAt: 4 put: (memory floatObjectOf: 99.5);
+		                  literalAt: 5 put: memory nilObject; "Class Binding"
+		                  bytecodes: #[
+											33 "PushLiteral 1"
+											34 "PushLiteral 2"
+											35 "PushLiteral 3"
+											36 "PushLiteral 4"
+											230 0 "SameThreadCallout Literal0"
+											88 "ReturnReceiver"];
+		                  buildMethod.
+
+	cogMethod := cogit cog: compiledMethod selector: memory nilObject.
+
+	self deny: cogMethod isNil.
+
+	self
+		callCogMethod: cogMethod
+		receiver: (memory integerObjectOf: 23)
+		arguments: {  }
+		returnAddress: callerAddress.
+
+	self assert: machineSimulator pc equals: callerAddress.
+	self assert: machineSimulator receiverRegisterValue equals: (memory integerObjectOf: 23).
+	self assert: called.
+	self assert: receivedArgument1 equals: 17.
+	self assert: receivedArgument2 equals: 23.5.
+	self assert: receivedArgument3 equals: 42.0.
+	self assert: receivedArgument4 equals: 99.5.
+
+]
+
+{ #category : 'tests - pointer double double to void' }
+VMJitFFISameThreadCalloutTest >> testOptimizedFunctionPointerDoubleDoubleToVoid [
+
+	| compiledMethod cogMethod tfExternalFunction called receivedArgument1 receivedArgument2 receivedArgument3 anExternalAddress |
+
+	isa = #IA32 ifTrue: [ ^ self skip ].
+
+	called := false.
+
+	"I need to return 0 in the function, even if it is void, as the simulation cannot identify when it is a 
+	void returning function "
+	tfExternalFunction := self
+		                      createExternalFunctionFor: [:ptr :dbl1 :dbl2 | 
+										self assertIsOptimizedCall: tfExternalFunction.
+										called := true.
+										receivedArgument1 := ptr.
+										receivedArgument2 := machineSimulator doublePrecisionFloatingPointRegister0Value.
+										receivedArgument3 := machineSimulator doublePrecisionFloatingPointRegister1Value.
+										0 ]
+		                      withArgumentTypes: { interpreter libFFI pointer. interpreter libFFI double. interpreter libFFI double }
+		                      withReturnType: interpreter libFFI void
+									flags: FFI_FLAG_USE_OPTIMIZED_VERSION | FFI_FLAG_POINTERS_MIGHT_BE_EXTERNAL_ADDRESSES.
+
+	anExternalAddress := self newExternalAddress: 17.
+
+	compiledMethod := methodBuilder
+		                  newMethod;
+		                  literalAt: 0 put: tfExternalFunction;
+		                  literalAt: 1 put: anExternalAddress;
+		                  literalAt: 2 put: (memory floatObjectOf: 23.5);
+		                  literalAt: 3 put: (memory floatObjectOf: 42.0);
+		                  literalAt: 4 put: memory nilObject; "Class Binding"
+		                  bytecodes: #[
+											33 "PushLiteral 1"
+											34 "PushLiteral 2"
+											35 "PushLiteral 3"
+											230 0 "SameThreadCallout Literal0"
+											88 "ReturnReceiver"];
+		                  buildMethod.
+
+	cogMethod := cogit cog: compiledMethod selector: memory nilObject.
+
+	self deny: cogMethod isNil.
+
+	self
+		callCogMethod: cogMethod
+		receiver: (memory integerObjectOf: 23)
+		arguments: {  }
+		returnAddress: callerAddress.
+
+	self assert: machineSimulator pc equals: callerAddress.
+	self assert: machineSimulator receiverRegisterValue equals: (memory integerObjectOf: 23).
+	self assert: called.
+	self assert: receivedArgument1 equals: 17.
+	self assert: receivedArgument2 equals: 23.5.
+	self assert: receivedArgument3 equals: 42.0.		
+]
+
+{ #category : 'tests - pointer to pointer' }
+VMJitFFISameThreadCalloutTest >> testOptimizedFunctionPointerToPointer [
+
+	| compiledMethod cogMethod tfExternalFunction called anExternalAddress |
+
+	isa = #IA32 ifTrue: [ ^ self skip ].
+
+	called := false.
+
+	tfExternalFunction := self
+		                      createExternalFunctionFor: [ :e | 
+										self assertIsOptimizedCall: tfExternalFunction.
+										called := true. e + 23 ]
+		                      withArgumentTypes: { interpreter libFFI pointer }
+		                      withReturnType: interpreter libFFI pointer
+									flags: FFI_FLAG_USE_OPTIMIZED_VERSION | FFI_FLAG_POINTERS_MIGHT_BE_EXTERNAL_ADDRESSES.
+
+	anExternalAddress := self newExternalAddress: 17.
+
+	compiledMethod := methodBuilder
+		                  newMethod;
+		                  literalAt: 0 put: tfExternalFunction;
+		                  literalAt: 1 put: anExternalAddress;
+		                  literalAt: 2 put: memory nilObject; "Class Binding"
+		                  bytecodes: #[
+											33 "PushLiteral 1"
+											230 0 "SameThreadCallout Literal0"
+											92 "ReturnTop"];
+		                  buildMethod.
+
+	cogMethod := cogit cog: compiledMethod selector: memory nilObject.
+
+	self deny: cogMethod isNil.
+
+	self
+		callCogMethod: cogMethod
+		receiver: (memory integerObjectOf: 23)
+		arguments: {}
+		returnAddress: callerAddress.
+
+	self assert: machineSimulator pc equals: callerAddress.
+	self assert: (memory fetchClassTagOf: machineSimulator receiverRegisterValue) equals: memory classExternalAddressIndex.
+	self assert: (interpreter readAddress: machineSimulator receiverRegisterValue) equals: 17 + 23.
+	
+	self assert: called.
+
+]
+
+{ #category : 'tests - pointer to void (Opt)' }
+VMJitFFISameThreadCalloutTest >> testOptimizedFunctionPointerToVoidAllowinOopsWithOopAsParameter [
+
+	| compiledMethod cogMethod tfExternalFunction aByteArray called receivedArgument |
+
+	isa = #IA32 ifTrue: [ ^ self skip ].
+
+	called := false.
+
+	"I need to return 0 in the function, even if it is void, as the simulation cannot identify when it is a 
+	void returning function "
+	tfExternalFunction := self
+		                      createExternalFunctionFor: [:arg | 
+										self assertIsOptimizedCall: tfExternalFunction.
+										called := true.
+										receivedArgument := arg.
+										0 ]
+		                      withArgumentTypes: { interpreter libFFI pointer }
+		                      withReturnType: interpreter libFFI void
+									flags: FFI_FLAG_USE_OPTIMIZED_VERSION | FFI_FLAG_POINTERS_MIGHT_BE_OBJECTS.		
+
+	aByteArray := self newByteArrayWithContent: #[1 2 3 4 0 0 0 0].
+
+	compiledMethod := methodBuilder
+		                  newMethod;
+		                  literalAt: 0 put: tfExternalFunction;
+		                  literalAt: 1 put: aByteArray;
+		                  literalAt: 2 put: memory nilObject; "Class Binding"
+		                  bytecodes: #[
+											33 "PushLiteral 1"
+											230 0 "SameThreadCallout Literal0"
+											88 "ReturnReceiver"];
+		                  buildMethod.
+
+	cogMethod := cogit cog: compiledMethod selector: memory nilObject.
+
+	self deny: cogMethod isNil.
+
+	self
+		callCogMethod: cogMethod
+		receiver: (memory integerObjectOf: 23)
+		arguments: {  }
+		returnAddress: callerAddress.
+
+	self assert: machineSimulator pc equals: callerAddress.
+	self assert: machineSimulator receiverRegisterValue equals: (memory integerObjectOf: 23).
+	self assert: called.
+	self assert: receivedArgument equals: aByteArray + BaseHeaderSize 
+]
+
+{ #category : 'tests - pointer to void (Opt)' }
+VMJitFFISameThreadCalloutTest >> testOptimizedFunctionPointerToVoidChangesStack [
+
+	| compiledMethod cogMethod tfExternalFunction changedStack anExternalAddress |
+
+	isa = #IA32 ifTrue: [ ^ self skip ].
+
+	changedStack := false.
+
+	"I need to return 0 in the function, even if it is void, as the simulation cannot identify when it is a 
+	void returning function "
+	tfExternalFunction := self
+		                      createExternalFunctionFor: [:arg | 
+										self assertIsOptimizedCall: tfExternalFunction.
+										changedStack := (machineSimulator stackPointerRegisterValue bitAnd: 16rFFFFFF00) = (cogit getCStackPointer bitAnd: 16rFFFFFF00).
+										0 ]
+		                      withArgumentTypes: { interpreter libFFI pointer }
+		                      withReturnType: interpreter libFFI void
+									flags: FFI_FLAG_USE_OPTIMIZED_VERSION | FFI_FLAG_POINTERS_MIGHT_BE_EXTERNAL_ADDRESSES.
+
+	anExternalAddress := self newExternalAddress: 17.
+
+	compiledMethod := methodBuilder
+		                  newMethod;
+		                  literalAt: 0 put: tfExternalFunction;
+		                  literalAt: 1 put: anExternalAddress;
+		                  literalAt: 2 put: memory nilObject; "Class Binding"
+		                  bytecodes: #[
+											33 "PushLiteral 1"
+											230 0 "SameThreadCallout Literal0"
+											88 "ReturnReceiver"];
+		                  buildMethod.
+
+	cogMethod := cogit cog: compiledMethod selector: memory nilObject.
+
+	self deny: cogMethod isNil.
+
+	self
+		callCogMethod: cogMethod
+		receiver: (memory integerObjectOf: 23)
+		arguments: {  }
+		returnAddress: callerAddress.
+
+	self assert: changedStack.
+
+]
+
+{ #category : 'tests - pointer to void (Opt)' }
+VMJitFFISameThreadCalloutTest >> testOptimizedFunctionPointerToVoidWithExternalAddressAsParameter [
+
+	| compiledMethod cogMethod tfExternalFunction called receivedArgument anExternalAddress |
+
+	isa = #IA32 ifTrue: [ ^ self skip ].
+
+	called := false.
+
+	"I need to return 0 in the function, even if it is void, as the simulation cannot identify when it is a 
+	void returning function "
+	tfExternalFunction := self
+		                      createExternalFunctionFor: [:arg | 
+										self assertIsOptimizedCall: tfExternalFunction.
+										called := true.
+										receivedArgument := arg.
+										0 ]
+		                      withArgumentTypes: { interpreter libFFI pointer }
+		                      withReturnType: interpreter libFFI void
+									flags: FFI_FLAG_USE_OPTIMIZED_VERSION | FFI_FLAG_POINTERS_MIGHT_BE_EXTERNAL_ADDRESSES.
+
+	anExternalAddress := self newExternalAddress: 17.
+
+	compiledMethod := methodBuilder
+		                  newMethod;
+		                  literalAt: 0 put: tfExternalFunction;
+		                  literalAt: 1 put: anExternalAddress;
 		                  literalAt: 2 put: memory nilObject; "Class Binding"
 		                  bytecodes: #[
 											33 "PushLiteral 1"
@@ -498,7 +1135,197 @@ VMJitFFISameThreadCalloutTest >> testOptimizedFunctionPointerToVoidWithSmallInte
 	self assert: receivedArgument equals: 17
 ]
 
-{ #category : 'tests' }
+{ #category : 'tests - pointer to void (Opt)' }
+VMJitFFISameThreadCalloutTest >> testOptimizedFunctionPointerToVoidWithNilAsParameterShouldFail [
+
+	| compiledMethod cogMethod tfExternalFunction aByteArray called receivedArgument |
+	
+	isa = #IA32 ifTrue: [ ^ self skip ].
+		
+	called := false.
+
+	"I need to return 0 in the function, even if it is void, as the simulation cannot identify when it is a 
+	void returning function "
+	tfExternalFunction := self
+		                      createExternalFunctionFor: [:arg | 
+										self assertIsOptimizedCall: tfExternalFunction.
+										called := true.
+										receivedArgument := arg.
+										0 ]
+		                      withArgumentTypes: { interpreter libFFI pointer }
+		                      withReturnType: interpreter libFFI void
+									flags: FFI_FLAG_USE_OPTIMIZED_VERSION | FFI_FLAG_POINTERS_MIGHT_BE_EXTERNAL_ADDRESSES.		
+
+	aByteArray := self newByteArrayWithContent: #[1 2 3 4 0 0 0 0].
+
+	compiledMethod := methodBuilder
+		                  newMethod;
+		                  literalAt: 0 put: tfExternalFunction;
+		                  literalAt: 1 put: memory nilObject;
+		                  literalAt: 2 put: memory nilObject; "Class Binding"
+		                  bytecodes: #[
+											33 "PushLiteral 1"
+											230 0 "SameThreadCallout Literal0"
+											88 "ReturnReceiver"];
+		                  buildMethod.
+
+	cogMethod := cogit cog: compiledMethod selector: memory nilObject.
+
+	self deny: cogMethod isNil.
+
+	self
+		callCogMethod: cogMethod
+		receiver: (memory integerObjectOf: 23)
+		arguments: {  }
+		returnAddress: cogit ceFallbackInvalidFFICallTrampoline.
+
+	self assert: machineSimulator pc equals: cogit ceFallbackInvalidFFICallTrampoline.
+	self deny: called.
+
+]
+
+{ #category : 'tests - pointer to void (Opt)' }
+VMJitFFISameThreadCalloutTest >> testOptimizedFunctionPointerToVoidWithOopAsParameterShouldFail [
+
+	| compiledMethod cogMethod tfExternalFunction aByteArray called receivedArgument |
+
+	isa = #IA32 ifTrue: [ ^ self skip ].
+	
+	called := false.
+
+	"I need to return 0 in the function, even if it is void, as the simulation cannot identify when it is a 
+	void returning function "
+	tfExternalFunction := self
+		                      createExternalFunctionFor: [:arg | 
+										self assertIsOptimizedCall: tfExternalFunction.
+										called := true.
+										receivedArgument := arg.
+										0 ]
+		                      withArgumentTypes: { interpreter libFFI pointer }
+		                      withReturnType: interpreter libFFI void
+									flags: FFI_FLAG_USE_OPTIMIZED_VERSION | FFI_FLAG_POINTERS_MIGHT_BE_EXTERNAL_ADDRESSES.		
+
+	aByteArray := self newByteArrayWithContent: #[1 2 3 4 0 0 0 0].
+
+	compiledMethod := methodBuilder
+		                  newMethod;
+		                  literalAt: 0 put: tfExternalFunction;
+		                  literalAt: 1 put: aByteArray;
+		                  literalAt: 2 put: memory nilObject; "Class Binding"
+		                  bytecodes: #[
+											33 "PushLiteral 1"
+											230 0 "SameThreadCallout Literal0"
+											88 "ReturnReceiver"];
+		                  buildMethod.
+
+	cogMethod := cogit cog: compiledMethod selector: memory nilObject.
+
+	self deny: cogMethod isNil.
+
+	self
+		callCogMethod: cogMethod
+		receiver: (memory integerObjectOf: 23)
+		arguments: {  }
+		returnAddress: cogit ceFallbackInvalidFFICallTrampoline.
+
+	self assert: machineSimulator pc equals: cogit ceFallbackInvalidFFICallTrampoline.
+	self deny: called.
+
+]
+
+{ #category : 'tests - pointer to void (Opt)' }
+VMJitFFISameThreadCalloutTest >> testOptimizedFunctionPointerToVoidWithSmallIntegerAsParameterShouldFail [
+
+	| compiledMethod cogMethod tfExternalFunction called receivedArgument |
+
+	isa = #IA32 ifTrue: [ ^ self skip ].
+
+	called := false.
+
+	"I need to return 0 in the function, even if it is void, as the simulation cannot identify when it is a 
+	void returning function "
+	tfExternalFunction := self
+		                      createExternalFunctionFor: [:arg | 
+										self assertIsOptimizedCall: tfExternalFunction.
+										called := true.
+										receivedArgument := arg.
+										0 ]
+		                      withArgumentTypes: { interpreter libFFI pointer }
+		                      withReturnType: interpreter libFFI void
+									flags: FFI_FLAG_USE_OPTIMIZED_VERSION | FFI_FLAG_POINTERS_MIGHT_BE_EXTERNAL_ADDRESSES  | FFI_FLAG_POINTERS_MIGHT_BE_OBJECTS .		
+
+	compiledMethod := methodBuilder
+		                  newMethod;
+		                  literalAt: 0 put: tfExternalFunction;
+		                  literalAt: 1 put: (memory integerObjectOf: 17);
+		                  literalAt: 2 put: memory nilObject; "Class Binding"
+		                  bytecodes: #[
+											33 "PushLiteral 1"
+											230 0 "SameThreadCallout Literal0"
+											88 "ReturnReceiver"];
+		                  buildMethod.
+
+	cogMethod := cogit cog: compiledMethod selector: memory nilObject.
+
+	self deny: cogMethod isNil.
+
+	self
+		callCogMethod: cogMethod
+		receiver: (memory integerObjectOf: 23)
+		arguments: {  }
+		returnAddress: cogit ceFallbackInvalidFFICallTrampoline.
+
+	self assert: machineSimulator pc equals: cogit ceFallbackInvalidFFICallTrampoline.
+	self deny: called.
+
+]
+
+{ #category : 'tests - void to pointer' }
+VMJitFFISameThreadCalloutTest >> testOptimizedFunctionVoidToPointer [
+
+	| compiledMethod cogMethod tfExternalFunction called |
+
+	isa = #IA32 ifTrue: [ ^ self skip ].
+
+	called := false.
+
+	tfExternalFunction := self
+		                      createExternalFunctionFor: [ 
+										self assertIsOptimizedCall: tfExternalFunction.
+										called := true.
+										16rCafeBabe ]
+		                      withArgumentTypes: { }
+		                      withReturnType: interpreter libFFI pointer
+									flags: FFI_FLAG_USE_OPTIMIZED_VERSION.
+
+	compiledMethod := methodBuilder
+		                  newMethod;
+		                  literalAt: 0 put: tfExternalFunction;
+		                  literalAt: 1 put: memory nilObject; "Class Binding"
+		                  bytecodes: #[
+											230 0 "SameThreadCallout Literal0"
+											92 "ReturnTop"];
+		                  buildMethod.
+
+	cogMethod := cogit cog: compiledMethod selector: memory nilObject.
+
+	self deny: cogMethod isNil.
+
+	self
+		callCogMethod: cogMethod
+		receiver: (memory integerObjectOf: 23)
+		arguments: {}
+		returnAddress: callerAddress.
+
+	self assert: machineSimulator pc equals: callerAddress.
+	self assert: (memory fetchClassTagOf: machineSimulator receiverRegisterValue) equals: memory classExternalAddressIndex.
+	self assert: (interpreter readAddress: machineSimulator receiverRegisterValue) equals: 16rCafeBabe.
+	
+	self assert: called.
+
+]
+
+{ #category : 'tests - general bytecode' }
 VMJitFFISameThreadCalloutTest >> testPopingIntoTemporaryReturnValueWorkCorrectly [
 
 	| compiledMethod cogMethod tfExternalFunction called anExternalAddress |
@@ -508,7 +1335,9 @@ VMJitFFISameThreadCalloutTest >> testPopingIntoTemporaryReturnValueWorkCorrectly
 	"I need to return 0 in the function, even if it is void, as the simulation cannot identify when it is a 
 	void returning function "
 	tfExternalFunction := self
-		                      createExternalFunctionFor: [ called:= true. 32 ]
+		                      createExternalFunctionFor: [ 
+										self assertIsNonOptimizedCall: tfExternalFunction.			
+										called:= true. 32 ]
 		                      withArgumentTypes: { }
 		                      withReturnType: interpreter libFFI sint64.
 

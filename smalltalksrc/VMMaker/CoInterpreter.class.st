@@ -1182,6 +1182,14 @@ CoInterpreter >> ceCounterTripped: condition [
 ]
 
 { #category : 'trampolines' }
+CoInterpreter >> ceFallbackInvalidFFICall [
+
+	<api>
+	instructionPointer := self popStack.
+	^ self ceFallbackInvalidFFICall: instructionPointer 
+]
+
+{ #category : 'trampolines' }
 CoInterpreter >> ceFallbackInvalidFFICall: savedInstructionPointer [
 
 	| ourContext |

@@ -94,6 +94,12 @@ UnicornX64Simulator >> doublePrecisionFloatingPointRegister2 [
 	^ UcX86Registers xmm2
 ]
 
+{ #category : 'registers' }
+UnicornX64Simulator >> doublePrecisionFloatingPointRegister3 [
+
+	^ UcX86Registers xmm3
+]
+
 { #category : 'as yet unclassified' }
 UnicornX64Simulator >> extractDestinationRegisterFromAssembly: aLLVMInstruction [ 
 	

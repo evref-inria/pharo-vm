@@ -365,7 +365,8 @@ CogObjectRepresentationForSpur >> genActiveContextTrampolineLarge: isLarge inBlo
 ]
 
 { #category : 'primitive generators' }
-CogObjectRepresentationForSpur >> genAllocExternalAddressValue: valueReg into: resultReg scratchReg: scratch1 scratchReg: scratch2 [
+CogObjectRepresentationForSpur >> genAllocExternalAddressValue: valueReg into: resultReg scratchReg: scratch1 [ 
+
 	<returnTypeC: #'AbstractInstruction *'>
 	| allocSize newExternalAddressHeader jumpFail |
 	allocSize := objectMemory baseHeaderSize + objectMemory wordSize.
@@ -1269,7 +1270,7 @@ CogObjectRepresentationForSpur >> genPrimitiveGetAddressOfOOPPinningIfNeeded [
 	
 	cogit LoadEffectiveAddressMw: objectMemory baseHeaderSize r: ReceiverResultReg R: ClassReg.
 
-	jumpFailAlloc := self genAllocExternalAddressValue: ClassReg into: ReceiverResultReg scratchReg: SendNumArgsReg scratchReg: TempReg.
+	jumpFailAlloc := self genAllocExternalAddressValue: ClassReg into: ReceiverResultReg scratchReg: SendNumArgsReg.
 	
 	cogit genPrimReturn.
 	
@@ -1651,9 +1652,11 @@ CogObjectRepresentationForSpur >> genPrimitiveLoadPointerFromBytes [
 	^ self genPrimitiveLoad: BytesPerWord fromBytesWith: [ :sourcePointer |
 		| jumpFailAlloc |
 		cogit MoveMw: 0 r: sourcePointer R: ClassReg.
-		jumpFailAlloc := self genAllocExternalAddressValue: ClassReg into: SendNumArgsReg scratchReg: Extra0Reg scratchReg: TempReg.
-			 cogit MoveR: SendNumArgsReg R: ReceiverResultReg.
-			 cogit genPrimReturn.
+		jumpFailAlloc := self genAllocExternalAddressValue: ClassReg into: SendNumArgsReg scratchReg: Extra0Reg.
+		
+		cogit MoveR: SendNumArgsReg R: ReceiverResultReg.
+		cogit genPrimReturn.
+		
 		cogit MoveR: SendNumArgsReg R: ReceiverResultReg.
 		cogit genPrimReturn.
 		jumpFailAlloc jmpTarget: cogit Label
@@ -1665,9 +1668,10 @@ CogObjectRepresentationForSpur >> genPrimitiveLoadPointerFromExternalAddress [
 	^ self genPrimitiveLoadFromExternalAddressWith: [ :sourcePointer |
 		| jumpFailAlloc |
 		cogit MoveMw: 0 r: sourcePointer R: ClassReg.
-		jumpFailAlloc := self genAllocExternalAddressValue: ClassReg into: SendNumArgsReg scratchReg: Extra0Reg scratchReg: TempReg.
-			 cogit MoveR: SendNumArgsReg R: ReceiverResultReg.
-			 cogit genPrimReturn.
+		jumpFailAlloc := self genAllocExternalAddressValue: ClassReg into: SendNumArgsReg scratchReg: Extra0Reg.
+		
+		cogit MoveR: SendNumArgsReg R: ReceiverResultReg.
+		cogit genPrimReturn.
 		cogit MoveR: SendNumArgsReg R: ReceiverResultReg.
 		cogit genPrimReturn.
 		jumpFailAlloc jmpTarget: cogit Label

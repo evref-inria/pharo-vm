@@ -327,6 +327,18 @@ ProcessorSimulator >> doublePrecisionFloatingPointRegister2Value: aValue [
 	^ self writeFloat64Register: self doublePrecisionFloatingPointRegister2 value: aValue
 ]
 
+{ #category : 'accessing-registers-abstract' }
+ProcessorSimulator >> doublePrecisionFloatingPointRegister3 [
+
+	self subclassResponsibility
+]
+
+{ #category : 'accessing-registers-abstract' }
+ProcessorSimulator >> doublePrecisionFloatingPointRegister3Value [
+
+	^ self readFloat64Register: self doublePrecisionFloatingPointRegister3
+]
+
 { #category : 'disassembling' }
 ProcessorSimulator >> extractDestinationRegisterFromAssembly: aLLVMInstruction [
 

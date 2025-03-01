@@ -13,7 +13,8 @@ Class {
 		'externalSetPrimOffsets',
 		'introspectionDataIndex',
 		'introspectionData',
-		'ceSameThreadCalloutTrampoline'
+		'ceSameThreadCalloutTrampoline',
+		'ceFallbackInvalidFFICallTrampoline'
 	],
 	#pools : [
 		'VMClassIndices',
@@ -279,6 +280,12 @@ SimpleStackBasedCogit >> cPICMissTrampolineFor: numArgs [
 SimpleStackBasedCogit >> ceCPICMissTrampoline: anAddress [ 
 	
 	ceCPICMissTrampoline := anAddress
+]
+
+{ #category : 'accessing' }
+SimpleStackBasedCogit >> ceFallbackInvalidFFICallTrampoline [
+	<doNotGenerate>
+	^ ceFallbackInvalidFFICallTrampoline
 ]
 
 { #category : 'accessing' }
@@ -2836,7 +2843,13 @@ SimpleStackBasedCogit >> generateSameThreadCalloutTrampolines [
 		                                 called:
 		                                 'ceSameThreadCalloutTrampoline'
 		                                 arg: SendNumArgsReg
-		                                 result: ReceiverResultReg
+		                                 result: ReceiverResultReg.
+
+	ceFallbackInvalidFFICallTrampoline := self
+		                                      genTrampolineFor:
+		                                      #ceFallbackInvalidFFICall
+		                                      called:
+		                                      'ceFallbackInvalidFFICallTrampoline'
 ]
 
 { #category : 'initialization' }
@@ -2863,6 +2876,12 @@ SimpleStackBasedCogit >> generateTracingTrampolines [
 		[ceTraceLinkedSendTrampoline := self simulatedTrampolineFor: #ceShortCutTraceLinkedSend:.
 		 ceTraceBlockActivationTrampoline := self simulatedTrampolineFor: #ceShortCutTraceBlockActivation:.
 		 ceTraceStoreTrampoline := self simulatedTrampolineFor: #ceShortCutTraceStore:]
+]
+
+{ #category : 'accessing' }
+SimpleStackBasedCogit >> getFallbackInvalidFFICallTrampoline [
+
+	^ ceFallbackInvalidFFICallTrampoline
 ]
 
 { #category : 'register management' }

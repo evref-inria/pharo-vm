@@ -356,6 +356,13 @@ CogX64Compiler >> availableRegisterOrNoneFor: liveRegsMask [
 	^super availableRegisterOrNoneFor: liveRegsMask
 ]
 
+{ #category : 'accessing' }
+CogX64Compiler >> cArg0Register [
+
+	<inline: true>
+	^ Arg0Reg
+]
+
 { #category : 'abi' }
 CogX64Compiler >> cFloatResultToRd: reg [
 	XMM0L ~= reg ifTrue: [ 
@@ -4470,6 +4477,13 @@ CogX64Compiler >> numLowLevelLockOpcodes [
 { #category : 'generate machine code' }
 CogX64Compiler >> padIfPossibleWithStopsFrom: startAddr to: endAddr [
 	self stopsFrom: startAddr to: endAddr
+]
+
+{ #category : 'sameThread callout - optimizations' }
+CogX64Compiler >> prepareStackForFFICall [
+
+	"WIN64 ABI allways reserve shadow space on the stack for callee to save up to 4 register parameters"
+	SysV ifFalse: [ cogit SubCq: 32 R: RSP ]
 ]
 
 { #category : 'calling C function in Smalltalk stack' }

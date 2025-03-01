@@ -439,6 +439,13 @@ CogARMCompiler >> byteReadsZeroExtend [
 ]
 
 { #category : 'abi' }
+CogARMCompiler >> cArg0Register [
+
+	<inline: true>
+	^R0
+]
+
+{ #category : 'abi' }
 CogARMCompiler >> cResultRegister [
 	"Answer the register through which C funcitons return integral results."
 	<inline: true>

@@ -3356,6 +3356,15 @@ CogIA32Compiler >> genMulR: regSource R: regDest [
 	^cogit gen: IMULRR operand: regSource operand: regDest
 ]
 
+{ #category : 'sameThread callout - optimizations' }
+CogIA32Compiler >> genOptimizedSameThreadCalloutFor: cif flags: flags andFunctionAddress: externalFunctionAddress [
+
+	<var: #cif type: #'ffi_cif *'>
+	<var: #externalFunctionAddress type: #'void *'>
+
+	^ false
+]
+
 { #category : 'abstract instructions' }
 CogIA32Compiler >> genPopRd: reg [
 	<inline: true>

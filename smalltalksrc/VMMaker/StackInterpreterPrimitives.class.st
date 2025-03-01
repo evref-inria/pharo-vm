@@ -499,7 +499,7 @@ StackInterpreterPrimitives >> marshallPointerOrOop: externalAddressOrOop into: h
 	
 	externalAddressOrOop = objectMemory nilObject
 		ifTrue: [ 
-			pointerHolder at: 0 put: nil.
+			pointerHolder at: 0 put: 0.
 			^ self ].
 	
 	(objectMemory isIntegerObject: externalAddressOrOop)

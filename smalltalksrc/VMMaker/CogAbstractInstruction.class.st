@@ -536,6 +536,13 @@ CogAbstractInstruction >> byteReadsZeroExtend [
 ]
 
 { #category : 'accessing' }
+CogAbstractInstruction >> cArg0Register [
+
+	<inline: true>
+	^ self subclassResponsibility 
+]
+
+{ #category : 'accessing' }
 CogAbstractInstruction >> cResultRegister [
 	"Answer the register through which C funcitons return integral results."
 	<inline: true>
@@ -755,6 +762,34 @@ CogAbstractInstruction >> genCaptureCStackPointers: captureFramePointer [
 	cogit RetN: 0.
 ]
 
+{ #category : 'sameThread callout - optimizations' }
+CogAbstractInstruction >> genFFIFallbackCall [
+
+	| skipErrorRoutine errorRoutine |
+
+	skipErrorRoutine := cogit Jump: 0.
+	errorRoutine := cogit Label.
+	cogit CallFullRT: cogit getFallbackInvalidFFICallTrampoline.
+
+	skipErrorRoutine jmpTarget: cogit Label.
+	^ errorRoutine
+]
+
+{ #category : 'sameThread callout - optimizations' }
+CogAbstractInstruction >> genFFISameThreadCall: anExternalFunctionAddress [.
+	
+	"Change to C Stack, pushing LinkRegistry if needed"
+	cogit genSmalltalkToCStackSwitch: true.
+	
+	self prepareStackForFFICall.
+
+	cogit CallFullRT: anExternalFunctionAddress.	
+
+	self genLoadStackPointers.
+	self hasLinkRegister
+		ifTrue: [cogit PopR: LinkReg].
+]
+
 { #category : 'abstract instructions' }
 CogAbstractInstruction >> genJumpFPEqual: jumpTarget [
 	<inline: true>
@@ -834,6 +869,19 @@ CogAbstractInstruction >> genLoadStackPointers [
 	self subclassResponsibility
 ]
 
+{ #category : 'sameThread callout - optimizations' }
+CogAbstractInstruction >> genMarshallDoubleArgumentInReg: reg errorRoutineLabel: errorRoutine withFlags: flags [
+		
+	| mightBeOOp mightBeExternalAddress jumpIfNotFloat |
+	
+	mightBeOOp := (flags bitAnd: FFI_FLAG_POINTERS_MIGHT_BE_OBJECTS) ~= 0.
+	mightBeExternalAddress := (flags bitAnd: FFI_FLAG_POINTERS_MIGHT_BE_EXTERNAL_ADDRESSES) ~= 0. 
+
+	cogit ssPopTopToReg: Extra0Reg.
+	jumpIfNotFloat := objectRepresentation genBoxedOrSmallFloat: Extra0Reg scratchReg: Extra1Reg into: reg.
+	jumpIfNotFloat jmpTarget: errorRoutine 
+]
+
 { #category : 'abi' }
 CogAbstractInstruction >> genMarshallNArgs: numArgs arg: regOrConst0 arg: regOrConst1 arg: regOrConst2 arg: regOrConst3 [
 	"Generate the code to pass up to four arguments in a C run-time call.  Hack: each argument is
@@ -868,6 +916,74 @@ CogAbstractInstruction >> genMarshallNArgs: numArgs floatArg: regOrConst0 floatA
 	^self subclassResponsibility
 ]
 
+{ #category : 'sameThread callout - optimizations' }
+CogAbstractInstruction >> genMarshallPointerArgumentInReg: reg errorRoutineLabel: errorRoutine withFlags: flags [
+		
+	| mightBeOOp mightBeExternalAddress isNotOop isExternalAddress performCallWithOop |
+	
+	mightBeOOp := (flags bitAnd: FFI_FLAG_POINTERS_MIGHT_BE_OBJECTS) ~= 0.
+	mightBeExternalAddress := (flags bitAnd: FFI_FLAG_POINTERS_MIGHT_BE_EXTERNAL_ADDRESSES) ~= 0. 
+
+	cogit ssPopTopToReg: reg.
+
+	"If it is an immediate we just cancel"
+	isNotOop := objectRepresentation genJumpImmediate: reg.
+	isNotOop jmpTarget: errorRoutine.
+
+	"We need to ensure if it is not a forwarder in all cases"	
+	objectRepresentation genEnsureObjInRegNotForwarded: reg scratchReg: Extra0Reg.
+
+	(mightBeExternalAddress and: [ mightBeOOp not ])
+		ifTrue: [ 
+			objectRepresentation genGetCompactClassIndexNonImmOf: reg into: Extra0Reg.
+			cogit CmpCq: objectMemory classExternalAddressIndex R: Extra0Reg.
+			cogit JumpNonZero: errorRoutine.
+			cogit MoveMw: objectMemory baseHeaderSize r: reg R: reg.
+			^ self ].
+
+	(mightBeExternalAddress not and: [ mightBeOOp ])
+		ifTrue: [ 
+			cogit LoadEffectiveAddressMw: objectMemory baseHeaderSize r: reg R: reg.
+			^ self ].
+
+	self deny: (mightBeExternalAddress not and: [ mightBeOOp not]).
+
+	"It might Be OOP or External Address"
+
+	"If it is an external address handle it different"
+	objectRepresentation genGetCompactClassIndexNonImmOf: reg into: Extra0Reg.
+	cogit CmpCq: objectMemory classExternalAddressIndex R: Extra0Reg.
+	isExternalAddress := cogit JumpZero: 0.			
+
+	cogit LoadEffectiveAddressMw: objectMemory baseHeaderSize r: reg R: reg.			
+	performCallWithOop := cogit Jump: 0.
+								
+	isExternalAddress jmpTarget: cogit Label.
+	cogit MoveMw: objectMemory baseHeaderSize r: reg R: reg.
+
+	performCallWithOop jmpTarget: cogit Label.
+
+]
+
+{ #category : 'sameThread callout - optimizations' }
+CogAbstractInstruction >> genMarshallReturnPointer: errorRoutineLabel [
+
+	| jumpFailAlloc |
+
+	self assert: self cResultRegister ~= ReceiverResultReg.
+	self assert: self cResultRegister ~= Extra0Reg.
+
+	jumpFailAlloc := objectRepresentation
+		                 genAllocExternalAddressValue: self cResultRegister 
+		                 into: ReceiverResultReg
+		                 scratchReg: Extra0Reg.
+
+	jumpFailAlloc jmpTarget: errorRoutineLabel.
+	
+	cogit ssPushRegister: ReceiverResultReg.
+
+]
+
 { #category : 'abstract instructions' }
 CogAbstractInstruction >> genMulR: regSource R: regDest [
 	"Generate whatever code necessary to do a bytesPerOop x bytesPerOop multiplication,
@@ -877,12 +993,157 @@ CogAbstractInstruction >> genMulR: regSource R: regDest [
 ]
 
 { #category : 'sameThread callout - optimizations' }
-CogAbstractInstruction >> genOptimizedSameThreadCalloutFor: cif andFunctionAddress: externalFunctionAddress [ 
+CogAbstractInstruction >> genOptimizedSameThreadCalloutDoubleVoidFor: anExternalFunctionAddress withFlags: flags [ 
 	
-	<var: #cif type: #'ffi_cif *'>	
+	| errorRoutine |
+	cogit ssFlushStack.
+
+	errorRoutine := self genFFIFallbackCall.
+
+	self genMarshallDoubleArgumentInReg: DPFPReg0 errorRoutineLabel: errorRoutine withFlags: flags. 
+		
+	self genFFISameThreadCall: anExternalFunctionAddress.
+
+	^ true.
+]
+
+{ #category : 'sameThread callout - optimizations' }
+CogAbstractInstruction >> genOptimizedSameThreadCalloutFor: cif flags: flags andFunctionAddress: externalFunctionAddress [
+
+	<var: #cif type: #'ffi_cif *'>
 	<var: #externalFunctionAddress type: #'void *'>
-	
+
+	(flags bitAnd: FFI_FLAG_USE_OPTIMIZED_VERSION) = 0 
+		ifTrue: [ ^ false ].
+
+	self if: cif returnType: FFI_TYPE_POINTER do: [ ^ self genOptimizedSameThreadCalloutVoidPointerFor: externalFunctionAddress withFlags: flags ].	
+	self if: cif hasArgType: FFI_TYPE_DOUBLE returnType: FFI_TYPE_VOID do: [ ^ self genOptimizedSameThreadCalloutDoubleVoidFor: externalFunctionAddress withFlags: flags ].
+	self if: cif hasArgType: FFI_TYPE_POINTER returnType: FFI_TYPE_VOID do: [ ^ self genOptimizedSameThreadCalloutPointerVoidFor: externalFunctionAddress withFlags: flags ].
+	self if: cif hasArgType: FFI_TYPE_POINTER returnType: FFI_TYPE_POINTER do: [ ^ self genOptimizedSameThreadCalloutPointerPointerFor: externalFunctionAddress withFlags: flags ].
+
+	self if: cif 
+		hasArgType: FFI_TYPE_POINTER
+		and: FFI_TYPE_DOUBLE 
+		and: FFI_TYPE_DOUBLE
+		returnType: FFI_TYPE_VOID do: [ ^ self genOptimizedSameThreadCalloutPointerDoubleDoubleVoidFor: externalFunctionAddress withFlags: flags ].
+
+	self if: cif 
+		hasArgType: FFI_TYPE_POINTER
+		and: FFI_TYPE_DOUBLE 
+		and: FFI_TYPE_DOUBLE
+		and: FFI_TYPE_DOUBLE 
+		returnType: FFI_TYPE_VOID do: [ ^ self genOptimizedSameThreadCalloutPointerDoubleDoubleDoubleVoidFor: externalFunctionAddress withFlags: flags ].
+
+	self if: cif 
+		hasArgType: FFI_TYPE_POINTER
+		and: FFI_TYPE_DOUBLE 
+		and: FFI_TYPE_DOUBLE
+		and: FFI_TYPE_DOUBLE 
+		and: FFI_TYPE_DOUBLE
+		returnType: FFI_TYPE_VOID do: [ ^ self genOptimizedSameThreadCalloutPointerDoubleDoubleDoubleDoubleVoidFor: externalFunctionAddress withFlags: flags ].
+
 	^ false
+]
+
+{ #category : 'sameThread callout - optimizations' }
+CogAbstractInstruction >> genOptimizedSameThreadCalloutPointerDoubleDoubleDoubleDoubleVoidFor: anExternalFunctionAddress withFlags: flags [
+
+	| errorRoutine |
+	cogit ssFlushStack.
+
+	errorRoutine := self genFFIFallbackCall.
+
+	self genMarshallDoubleArgumentInReg: DPFPReg3 errorRoutineLabel: errorRoutine withFlags: flags. 
+	self genMarshallDoubleArgumentInReg: DPFPReg2 errorRoutineLabel: errorRoutine withFlags: flags. 
+	self genMarshallDoubleArgumentInReg: DPFPReg1 errorRoutineLabel: errorRoutine withFlags: flags. 
+	self genMarshallDoubleArgumentInReg: DPFPReg0 errorRoutineLabel: errorRoutine withFlags: flags. 
+	self genMarshallPointerArgumentInReg: self cArg0Register errorRoutineLabel: errorRoutine withFlags: flags. 
+
+	self genFFISameThreadCall: anExternalFunctionAddress.
+
+	^ true
+]
+
+{ #category : 'sameThread callout - optimizations' }
+CogAbstractInstruction >> genOptimizedSameThreadCalloutPointerDoubleDoubleDoubleVoidFor: anExternalFunctionAddress withFlags: flags [
+
+	| errorRoutine |
+	cogit ssFlushStack.
+
+	errorRoutine := self genFFIFallbackCall.
+
+	self genMarshallDoubleArgumentInReg: DPFPReg2 errorRoutineLabel: errorRoutine withFlags: flags. 
+	self genMarshallDoubleArgumentInReg: DPFPReg1 errorRoutineLabel: errorRoutine withFlags: flags. 
+	self genMarshallDoubleArgumentInReg: DPFPReg0 errorRoutineLabel: errorRoutine withFlags: flags. 
+	self genMarshallPointerArgumentInReg: self cArg0Register errorRoutineLabel: errorRoutine withFlags: flags. 
+
+	self genFFISameThreadCall: anExternalFunctionAddress.
+
+	^ true
+]
+
+{ #category : 'sameThread callout - optimizations' }
+CogAbstractInstruction >> genOptimizedSameThreadCalloutPointerDoubleDoubleVoidFor: anExternalFunctionAddress withFlags: flags [
+
+	| errorRoutine |
+	cogit ssFlushStack.
+
+	errorRoutine := self genFFIFallbackCall.
+
+	self genMarshallDoubleArgumentInReg: DPFPReg1 errorRoutineLabel: errorRoutine withFlags: flags. 
+	self genMarshallDoubleArgumentInReg: DPFPReg0 errorRoutineLabel: errorRoutine withFlags: flags. 
+	self genMarshallPointerArgumentInReg: self cArg0Register errorRoutineLabel: errorRoutine withFlags: flags. 
+
+	self genFFISameThreadCall: anExternalFunctionAddress.
+
+	^ true
+]
+
+{ #category : 'sameThread callout - optimizations' }
+CogAbstractInstruction >> genOptimizedSameThreadCalloutPointerPointerFor: anExternalFunctionAddress withFlags: flags [ 
+	
+	| errorRoutine |
+	cogit ssFlushStack.
+
+	errorRoutine := self genFFIFallbackCall.
+
+	self genMarshallPointerArgumentInReg: self cArg0Register errorRoutineLabel: errorRoutine withFlags: flags. 
+		
+	self genFFISameThreadCall: anExternalFunctionAddress.
+	
+	self genMarshallReturnPointer: errorRoutine.
+
+	^ true.
+]
+
+{ #category : 'sameThread callout - optimizations' }
+CogAbstractInstruction >> genOptimizedSameThreadCalloutPointerVoidFor: anExternalFunctionAddress withFlags: flags [ 
+	
+	| errorRoutine |
+	cogit ssFlushStack.
+
+	errorRoutine := self genFFIFallbackCall.
+
+	self genMarshallPointerArgumentInReg: self cArg0Register errorRoutineLabel: errorRoutine withFlags: flags. 
+		
+	self genFFISameThreadCall: anExternalFunctionAddress.
+
+	^ true.
+]
+
+{ #category : 'sameThread callout - optimizations' }
+CogAbstractInstruction >> genOptimizedSameThreadCalloutVoidPointerFor: anExternalFunctionAddress withFlags: flags [
+
+	| errorRoutine |
+	cogit ssFlushStack.
+
+	errorRoutine := self genFFIFallbackCall.
+
+	self genFFISameThreadCall: anExternalFunctionAddress.
+
+	self genMarshallReturnPointer: errorRoutine.
+
+	^ true
 ]
 
 { #category : 'smalltalk calling convention' }
@@ -1087,6 +1348,72 @@ CogAbstractInstruction >> hasVarBaseRegister [
 ]
 
 { #category : 'sameThread callout - optimizations' }
+CogAbstractInstruction >> if: cif 
+hasArgType: arg0Type 
+and: arg1Type
+and: arg2Type
+and: arg3Type
+and: arg4Type
+returnType: returnType do: aBlock [
+
+
+	<inline: #always>
+	<var: #cif type: #'ffi_cif *'>
+
+	cif nargs = 5 ifFalse: [ ^ self ].
+	cif returnType type = returnType ifFalse: [ ^ self ].
+
+	(cif arg_types at: 0) type = arg0Type ifFalse: [ ^ self ].
+	(cif arg_types at: 1) type = arg1Type ifFalse: [ ^ self ].
+	(cif arg_types at: 2) type = arg2Type ifFalse: [ ^ self ].
+	(cif arg_types at: 3) type = arg3Type ifFalse: [ ^ self ].
+	(cif arg_types at: 4) type = arg4Type ifFalse: [ ^ self ].
+	
+	aBlock value.
+]
+
+{ #category : 'sameThread callout - optimizations' }
+CogAbstractInstruction >> if: cif 
+hasArgType: arg0Type 
+and: arg1Type
+and: arg2Type
+and: arg3Type
+returnType: returnType do: aBlock [
+
+
+	<inline: #always>
+	<var: #cif type: #'ffi_cif *'>
+
+	cif nargs = 4 ifFalse: [ ^ self ].
+	cif returnType type = returnType ifFalse: [ ^ self ].
+
+	(cif arg_types at: 0) type = arg0Type ifFalse: [ ^ self ].
+	(cif arg_types at: 1) type = arg1Type ifFalse: [ ^ self ].
+	(cif arg_types at: 2) type = arg2Type ifFalse: [ ^ self ].
+	(cif arg_types at: 3) type = arg3Type ifFalse: [ ^ self ].
+	
+	aBlock value.
+]
+
+{ #category : 'sameThread callout - optimizations' }
+CogAbstractInstruction >> if: cif 
+hasArgType: arg0Type 
+and: arg1Type
+and: arg2Type
+returnType: returnType do: aBlock [
+
+
+	<inline: #always>
+	<var: #cif type: #'ffi_cif *'>
+
+	(cif nargs = 3 and: [
+		 (cif arg_types at: 0) type = arg0Type and: [
+			(cif arg_types at: 1) type = arg1Type and: [
+				(cif arg_types at: 2) type = arg2Type and: [
+					cif returnType type = returnType ] ]]]) ifTrue: [ aBlock value ]
+]
+
+{ #category : 'sameThread callout - optimizations' }
 CogAbstractInstruction >> if: cif hasArgType: arg0Type returnType: returnType do: aBlock [
 
 	<inline: #always>
@@ -1095,6 +1422,15 @@ CogAbstractInstruction >> if: cif hasArgType: arg0Type returnType: returnType do
 	(cif nargs = 1 and: [
 		 (cif arg_types at: 0) type = arg0Type and: [
 			 cif returnType type = returnType ] ]) ifTrue: [ aBlock value ]
+]
+
+{ #category : 'sameThread callout - optimizations' }
+CogAbstractInstruction >> if: cif returnType: returnType do: aBlock [
+	<inline: #always>
+
+	<var: #cif type: #'ffi_cif *'>
+
+	(cif nargs = 0 and: [ cif returnType type = returnType ]) ifTrue: [ aBlock value ]
 ]
 
 { #category : 'generate machine code' }
@@ -1464,6 +1800,12 @@ CogAbstractInstruction >> outputMachineCodeAt: targetAddress [
 	0 to: machineCodeSize - 1 do:
 		[:j|
 		objectMemory byteAt: targetAddress + j put: (machineCode at: j)]
+]
+
+{ #category : 'sameThread callout - optimizations' }
+CogAbstractInstruction >> prepareStackForFFICall [
+		
+	
 ]
 
 { #category : 'calling C function in Smalltalk stack' }

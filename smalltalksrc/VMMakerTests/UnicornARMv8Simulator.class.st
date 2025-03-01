@@ -123,6 +123,12 @@ UnicornARMv8Simulator >> doublePrecisionFloatingPointRegister2 [
 	^ UcARM64Registers d2
 ]
 
+{ #category : 'accessing-registers-abstract' }
+UnicornARMv8Simulator >> doublePrecisionFloatingPointRegister3 [
+
+	^ UcARM64Registers d3
+]
+
 { #category : 'disassembling' }
 UnicornARMv8Simulator >> extractDestinationRegisterFromAssembly: aLLVMInstruction [ 
 	
@@ -492,8 +498,14 @@ UnicornARMv8Simulator >> x20 [
 
 { #category : 'accessing-registers-physical' }
 UnicornARMv8Simulator >> x22 [
-	
+
 	^ self readRegister: UcARM64Registers x22
+]
+
+{ #category : 'accessing-registers-physical' }
+UnicornARMv8Simulator >> x22: anInteger [ 
+	
+	self writeRegister: UcARM64Registers x22 value: anInteger
 ]
 
 { #category : 'accessing-registers-physical' }

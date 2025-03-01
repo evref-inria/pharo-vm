@@ -93,6 +93,12 @@ UnicornRISCVSimulator >> doublePrecisionFloatingPointRegister2 [
 	^ UcRISCVRegisters f2
 ]
 
+{ #category : 'as yet unclassified' }
+UnicornRISCVSimulator >> doublePrecisionFloatingPointRegister3 [
+
+	^ UcRISCVRegisters f3
+]
+
 { #category : 'machine registers' }
 UnicornRISCVSimulator >> f0 [
 

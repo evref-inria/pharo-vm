@@ -845,6 +845,13 @@ CogARMv8Compiler >> byteReadsZeroExtend [
 ]
 
 { #category : 'abi' }
+CogARMv8Compiler >> cArg0Register [
+
+	<inline: true>
+	^R0
+]
+
+{ #category : 'abi' }
 CogARMv8Compiler >> cResultRegister [
 	"Answer the register through which C funcitons return integral results."
 	<inline: true>
@@ -4118,85 +4125,6 @@ CogARMv8Compiler >> genMulR: regSource R: regDest [
 	first := cogit gen: MUL operand: regSource operand: regDest operand: regDest.
 	cogit gen: CMPMULOverflow operand: regDest operand: RISCTempReg.
 	^ first
-]
-
-{ #category : 'sameThread callout - optimizations' }
-CogARMv8Compiler >> genOptimizedSameThreadCalloutFor: cif andFunctionAddress: externalFunctionAddress [ 
-	<var: #cif type: #'ffi_cif *'>	
-	<var: #externalFunctionAddress type: #'void *'>
-	
-	self if: cif hasArgType: FFI_TYPE_POINTER returnType: FFI_TYPE_VOID 
-		do: [ ^ self genOptimizedSameThreadCalloutPointerVoidFor: externalFunctionAddress ].
-
-	^ super genOptimizedSameThreadCalloutFor: cif andFunctionAddress: externalFunctionAddress
-]
-
-{ #category : 'sameThread callout - optimizations' }
-CogARMv8Compiler >> genOptimizedSameThreadCalloutPointerVoidFor: anExternalFunctionAddress [ 
-	
-	| isOop isOtherImmediate performCallWithSmallInteger jumpExternalAddress performCallWithOop skipErrorRoutine errorRoutine jumpIsNil performCallWithNil |
-	cogit ssFlushStack.
-
-	"Generate error routine
-	 ======================"
-	skipErrorRoutine := cogit Jump: 0.
-	errorRoutine := cogit Label.
-	cogit Stop.
-
-	skipErrorRoutine jmpTarget: cogit Label.
-
-	"1. Pop Into First Argument Registry"
-	cogit ssPopTopToReg: CArg0Reg.
-	
-	"2. Check Types: if is an SMI or an OOP handle it, if other immediate error"
-	isOop := objectRepresentation genJumpNotImmediate: CArg0Reg.
-	isOtherImmediate := objectRepresentation genJumpNotSmallInteger: CArg0Reg.
-	isOtherImmediate jmpTarget: errorRoutine.
-	
-	"3. If a SMI, convert it and jump to call" 
-	objectRepresentation genConvertSmallIntegerToIntegerInReg: CArg0Reg.
-	performCallWithSmallInteger := cogit Jump: 0.
-
-	"4. If OOP, ensure is not a forwarder."
-	isOop jmpTarget: cogit Label.
-	objectRepresentation genEnsureObjInRegNotForwarded: CArg0Reg scratchReg: TempReg.
-
-	"If it is nil move 0 to register"	
-	cogit CmpCq: objectMemory nilObject R: CArg0Reg.
-	jumpIsNil := cogit JumpZero: 0.
-
-	"If it is an external address handle it different"
-	objectRepresentation genGetCompactClassIndexNonImmOf: CArg0Reg into: TempReg.
-	cogit CmpCq: objectMemory classExternalAddressIndex R: TempReg.
-	jumpExternalAddress := cogit JumpZero: 0.
-
-	"5. Obtain address of first pointer "
-	cogit LoadEffectiveAddressMw: objectMemory baseHeaderSize r: CArg0Reg R: CArg0Reg.
-	performCallWithOop := cogit Jump: 0.
-
-	"6. Handle Nil"
-	jumpIsNil jmpTarget: cogit Label.
-	cogit MoveCq: 0 R: CArg0Reg.
-	performCallWithNil := cogit Jump: 0.
-
-	"7. Handle External Address"
-	jumpExternalAddress jmpTarget: cogit Label.
-	cogit MoveMw: objectMemory baseHeaderSize r: CArg0Reg R: CArg0Reg.
-
-	performCallWithOop jmpTarget: (performCallWithNil jmpTarget: (performCallWithSmallInteger jmpTarget: cogit Label)).
-
-	"8. Change to C Stack, pushing LinkRegistry if needed"
-	cogit genSmalltalkToCStackSwitch: true.
-
-	"9. Perform Call"
-	cogit CallFullRT: anExternalFunctionAddress.	
-
-	"10. Change to Smalltalk Stack recovering LinkReg"
-	self genLoadStackPointers.
-	self hasLinkRegister
-		ifTrue: [cogit PopR: LinkReg].
-
-	^ true.
 ]
 
 { #category : 'smalltalk calling convention' }
