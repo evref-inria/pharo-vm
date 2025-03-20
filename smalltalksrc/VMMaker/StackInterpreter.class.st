@@ -2988,15 +2988,22 @@ StackInterpreter >> bytecodePrimGreaterThanSistaV1 [
 { #category : 'common selector sends' }
 StackInterpreter >> bytecodePrimIdenticalSistaV1 [
 	"short-jumps"
-	<nextSuperInstructions: #(184 185 186 187 188 189 190 191 192 193 194 195 196 197 198 199)>
-	| rcvr arg |
+
+	<nextSuperInstructions:
+	#( 184 185 186 187 188 189 190 191 192 193 194 195 196 197 198 199 )>
+	| rcvr arg areEqual |
 	rcvr := self stackValue: 1.
 	arg := self stackValue: 0.
-	(objectMemory isOopForwarded: rcvr) ifTrue: [
-		rcvr := self handleSpecialSelectorSendFaultFor: rcvr ].
-	(objectMemory isOopForwarded: arg) ifTrue: [
-		arg := self handleSpecialSelectorSendFaultFor: arg ].
-	^ self booleanCheatSistaV1: rcvr = arg
+
+	areEqual := rcvr = arg.
+
+	areEqual ifFalse: [
+		(objectMemory isOopForwarded: rcvr) ifTrue: [
+			rcvr := self handleSpecialSelectorSendFaultFor: rcvr ].
+
+		(objectMemory isOopForwarded: arg) ifTrue: [
+			arg := self handleSpecialSelectorSendFaultFor: arg ] ].
+	^ self booleanCheatSistaV1: areEqual
 ]
 
 { #category : 'common selector sends' }
