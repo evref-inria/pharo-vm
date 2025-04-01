@@ -478,6 +478,7 @@ StackInterpreter class >> ancilliaryClasses [
 		VMStackPages.
 		LibFFI.
 		VMStackPage.
+		MethodCacheEntry.
 		SpurImageHeaderStruct.
 		ComposedMetadataStruct.
 		"I am putting the abstract superclasses... because I cannot make it work else"
@@ -1985,21 +1986,22 @@ StackInterpreter >> addNewMethodToCache: classObj [
 		[:p | probe := (hash >> p) bitAnd: MethodCacheMask.
 		(methodCache at: probe + MethodCacheSelector) = 0 ifTrue:
 			["Found an empty entry -- use it"
-			methodCache at: probe + MethodCacheSelector put: messageSelector.
-			methodCache at: probe + MethodCacheClass put: (objectMemory classTagForClass: classObj).
-			methodCache at: probe + MethodCacheMethod put: newMethod.
-			methodCache at: probe + MethodCachePrimFunction put: (self cCoerce: primitiveFunctionPointer to: #'sqIntptr_t').
-			lastMethodCacheProbeWrite := probe. "this for primitiveExternalMethod"
+			self fillEntryAt: probe 
+				selector: messageSelector 
+				classTag: (objectMemory classTagForClass: classObj)
+				method: newMethod
+				primitiveFunction: primitiveFunctionPointer.
 			^self]].
 
 	"OK, we failed to find an entry -- install at the first slot..."
 	probe := hash bitAnd: MethodCacheMask.  "first probe"
-	methodCache at: probe + MethodCacheSelector put: messageSelector.
-	methodCache at: probe + MethodCacheClass put: (objectMemory classTagForClass: classObj).
-	methodCache at: probe + MethodCacheMethod put: newMethod.
-	methodCache at: probe + MethodCachePrimFunction put: (self cCoerce: primitiveFunctionPointer to: #'sqIntptr_t').
-	lastMethodCacheProbeWrite := probe. "this for primitiveExternalMethod"
+	self fillEntryAt: probe 
+		selector: messageSelector 
+		classTag: (objectMemory classTagForClass: classObj)
+		method: newMethod
+		primitiveFunction: primitiveFunctionPointer.
 
+1halt.
 	"...and zap the following entries"
 	1 to: CacheProbeMax-1 do:
 		[:p | probe := (hash >> p) bitAnd: MethodCacheMask.
@@ -3608,6 +3610,19 @@ StackInterpreter >> bytecodePrimValueWithArg [
 		primFailCode := 0 ].
 	messageSelector := self specialSelector: 26.
 	self normalSend
+]
+
+{ #category : 'accessing' }
+StackInterpreter >> cacheEntryAt: probe [
+
+	^ self
+		  cCode: [
+		  self cCoerce: methodCache + probe to: #'MethodCacheEntry *' ]
+		  inSmalltalk: [
+			  MethodCacheEntry new
+				  methodCache: methodCache;
+				  offset: probe;
+				  yourself ]
 ]
 
 { #category : 'plugin primitive support' }
