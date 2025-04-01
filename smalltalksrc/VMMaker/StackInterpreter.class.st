@@ -5770,6 +5770,20 @@ StackInterpreter >> fetchStackPointerOf: aContext [
 	^objectMemory integerValueOf: sp
 ]
 
+{ #category : 'accessing' }
+StackInterpreter >> fillEntryAt: probe selector: selector classTag: classTag method: entryMethod primitiveFunction: primitiveFunction [
+
+	<var: #entry type: #'MethodCacheEntry *'>
+	| entry |
+	entry := self cacheEntryAt: probe.
+	entry selector: selector.
+	entry classTag: classTag.
+	entry entryMethod: entryMethod.
+	entry primitiveFunction: primitiveFunction.
+
+	lastMethodCacheProbeWrite := probe "this for primitiveExternalMethod"
+]
+
 { #category : 'debug support' }
 StackInterpreter >> findClassContainingMethod: meth startingAt: classObj [
 	| currClass classDict classDictSize methodArray i |

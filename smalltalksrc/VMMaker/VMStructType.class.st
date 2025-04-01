@@ -329,11 +329,6 @@ VMStructType class >> timeStamp [
 	^ VMClass timeStamp
 ]
 
-{ #category : 'translation' }
-VMStructType class >> typedef [
-	^String streamContents: [:s| self printTypedefOn: s]
-]
-
 { #category : 'debug support' }
 VMStructType >> logError: aMessage [
 	

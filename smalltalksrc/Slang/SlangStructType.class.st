@@ -146,6 +146,14 @@ SlangStructType class >> printTypedefOn: aStream withTranslations: ivnTranslatio
 				type ifNotNil: [
 					type isArray
 						ifTrue: [
+							type size = 2 ifFalse: [ 
+								"The only valid array here is for ex: 
+									<field> -> #(sqInt '[ 10 ]')
+								 and will be translated into
+									sqInt <field> [10];
+								 It makes no sense to have less or more elements.
+								"
+								self error: 'Type declaration of field ''' , ivnC , ''' is wrong' ].
 							aStream tab: 1.
 							aStream nextPutAll: type first.
 							(type first last isSeparator or: [ type first last = $* ])
@@ -246,6 +254,11 @@ SlangStructType class >> structTypeName [
 SlangStructType class >> typeForSelf [
 	"Answer the type to give self if appropriate, or nil if not."
 	^self structTypeName, ' *'
+]
+
+{ #category : 'translation' }
+SlangStructType class >> typedef [
+	^String streamContents: [:s| self printTypedefOn: s]
 ]
 
 { #category : 'translation' }

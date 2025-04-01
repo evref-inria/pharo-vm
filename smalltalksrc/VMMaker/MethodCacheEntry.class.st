@@ -28,20 +28,18 @@ MethodCacheEntry class >> instVarNamesAndTypesForTranslationDo: aBinaryBlock [
 { #category : 'translation' }
 MethodCacheEntry class >> isAccessor: aSelector [
 
-	^ self allInstVarNames includes: aSelector
+	^ self allInstVarNames includes: (aSelector copyWithout: $:)
 ]
 
 { #category : 'asd' }
 MethodCacheEntry >> classTag: aClassTag [
 
-	<doNotGenerate>
 	methodCache at: offset + 2 put: aClassTag
 ]
 
 { #category : 'accessing' }
-MethodCacheEntry >> method: aMethod [
+MethodCacheEntry >> entryMethod: aMethod [
 
-	<doNotGenerate>
 	methodCache at: offset + 3 put: aMethod
 ]
 
@@ -60,7 +58,6 @@ MethodCacheEntry >> offset: anOffset [
 { #category : 'asd' }
 MethodCacheEntry >> primitiveFunction: aPrimitiveFunction [
 
-	<doNotGenerate>
 	methodCache
 		at: offset + 4
 		put: (self cCoerce: aPrimitiveFunction to: #sqIntptr_t)
@@ -69,6 +66,5 @@ MethodCacheEntry >> primitiveFunction: aPrimitiveFunction [
 { #category : 'accessing' }
 MethodCacheEntry >> selector: aSelector [
 
-	<doNotGenerate>
 	methodCache at: offset + 1 put: aSelector
 ]
