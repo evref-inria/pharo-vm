@@ -146,6 +146,13 @@ VMStackBuilder >> preparePage [
 
 { #category : 'build' }
 VMStackBuilder >> pushAllButFirstFrames [
+
+	1 to: frames size -1 do: [ :anIndex | | aFrame |
+		aFrame := frames at: anIndex.
+		"All but the top frame must be suspended at a message send (with the receiver pushed)"
+		self assert: aFrame isSuspended.
+		self assert: aFrame stack isNotEmpty ].
+
 	2 to: frames size do: [ :anIndex | | aFrame |
 			aFrame := frames at: anIndex.
 			

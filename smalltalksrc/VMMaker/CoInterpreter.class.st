@@ -1014,18 +1014,19 @@ CoInterpreter >> ceBaseFrameReturn: returnValue [
 					self setStackPointersFromPage: thePage ] ]
 		ifFalse: [
 			(isAContext and: [
-				 objectMemory isIntegerObject: (objectMemory
-						  fetchPointer: InstructionPointerIndex
-						  ofObject: contextToReturnTo) ]) ifFalse: [
-				contextToReturnFrom := stackPages longAt:
-					                       stackPage baseAddress
-					                       - objectMemory wordSize.
-				self
-					tearDownAndRebuildFrameForCannotReturnBaseFrameReturnFrom:
-					contextToReturnFrom
-					to: contextToReturnTo
-					returnValue: returnValue.
-				^ self externalCannotReturn: returnValue from: contextToReturnFrom ].
+				 objectMemory isIntegerObject: (self contextPC: contextToReturnTo) ])
+				ifFalse: [
+					contextToReturnFrom := stackPages longAt:
+						                       stackPage baseAddress
+						                       - objectMemory wordSize.
+					self
+						tearDownAndRebuildFrameForCannotReturnBaseFrameReturnFrom:
+						contextToReturnFrom
+						to: contextToReturnTo
+						returnValue: returnValue.
+					^ self
+						  externalCannotReturn: returnValue
+						  from: contextToReturnFrom ].
 			thePage := self makeBaseFrameFor: contextToReturnTo.
 			self setStackPointersFromPage: thePage ].
 	self setStackPageAndLimit: thePage.
@@ -2219,14 +2220,21 @@ CoInterpreter >> ensureAllContextsWithMethodHaveBytecodePCs: methodObj [
 { #category : 'frame access' }
 CoInterpreter >> ensureContextHasBytecodePC: aContext [
 	"Make sure the context has a byetcode pc.  Can only be used on single contexts."
+
 	| pc |
 	self assert: (self isMarriedOrWidowedContext: aContext) not.
-	pc := objectMemory fetchPointer: InstructionPointerIndex ofObject: aContext.
-	((objectMemory isIntegerObject: pc)
-	 and: [(pc := objectMemory integerValueOf: pc) < 0]) ifTrue:
-		[pc := self mustMapMachineCodePC: pc context: aContext.
-		 self assert: (self validBCPC: (objectMemory integerValueOf: pc) inMethod: (objectMemory fetchPointer: MethodIndex ofObject: aContext)).
-		 objectMemory storePointerUnchecked: InstructionPointerIndex ofObject: aContext withValue: pc]
+	pc := self contextPC: aContext.
+	((objectMemory isIntegerObject: pc) and: [
+		 (pc := objectMemory integerValueOf: pc) < 0 ]) ifTrue: [
+		pc := self mustMapMachineCodePC: pc context: aContext.
+		self assert: (self
+				 validBCPC: (objectMemory integerValueOf: pc)
+				 inMethod:
+				 (objectMemory fetchPointer: MethodIndex ofObject: aContext)).
+		objectMemory
+			storePointerUnchecked: InstructionPointerIndex
+			ofObject: aContext
+			withValue: pc ]
 ]
 
 { #category : 'frame access' }
@@ -3177,9 +3185,7 @@ CoInterpreter >> instructionPointerAddress [
 CoInterpreter >> instructionPointerForBaseFrameContext: aContext [
 
 	| theIP |
-	theIP := objectMemory
-		         fetchPointer: InstructionPointerIndex
-		         ofObject: aContext.
+	theIP := self contextPC: aContext.
 	self assert: HasBeenReturnedFromMCPC < 0.
 	^ (objectMemory isIntegerObject: theIP)
 		  ifTrue: [ objectMemory integerValueOf: theIP ]
@@ -3284,11 +3290,12 @@ CoInterpreter >> interpreterAllocationReserveBytes [
 CoInterpreter >> is: fieldIndex methodAssignmentToContextWithMachineCodePC: anOop [
 	"If the method is assigned, any machine code pc must be mapped to a bytecode one
 	 before the method is changed."
+
 	<inline: true>
 	| thePC |
-	^fieldIndex = MethodIndex
-	  and: [(thePC := objectMemory fetchPointer: InstructionPointerIndex ofObject: anOop) signedIntFromLong < 0
-	  and: [objectMemory isIntegerObject: thePC]]
+	^ fieldIndex = MethodIndex and: [
+		  (thePC := self contextPC: anOop) signedIntFromLong < 0 and: [
+			  objectMemory isIntegerObject: thePC ] ]
 ]
 
 { #category : 'internal interpreter access' }

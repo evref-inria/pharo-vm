@@ -13,6 +13,19 @@ Class {
 	#tag : 'InterpreterSimulation'
 }
 
+{ #category : 'asserting' }
+StackInterpreterSimulatorLSB >> assertContext [
+
+	self assert: (self isStillMarriedContext:
+			 (self frameContext: (self frameCallerFP: self framePointer)))
+]
+
+{ #category : 'asserting' }
+StackInterpreterSimulatorLSB >> assertContextNew: newFP [
+
+	self assert: (self isStillMarriedContext: (self frameCallerContext: newFP))
+]
+
 { #category : 'memory access' }
 StackInterpreterSimulatorLSB >> halfWordHighInLong32: long32 [
 	"Used by Balloon"
