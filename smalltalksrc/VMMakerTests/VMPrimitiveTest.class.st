@@ -1,6 +1,12 @@
 Class {
 	#name : 'VMPrimitiveTest',
 	#superclass : 'VMBasicPrimitiveTest',
+	#instVars : [
+		'senderObject',
+		'primitiveReceiver',
+		'method',
+		'pc'
+	],
 	#pools : [
 		'VMBasicConstants',
 		'VMBytecodeConstants',
@@ -10,6 +16,28 @@ Class {
 	#package : 'VMMakerTests',
 	#tag : 'InterpreterTests'
 }
+
+{ #category : 'tests - primitiveSenderObject' }
+VMPrimitiveTest >> setUp [ 
+
+	super setUp.
+	
+	senderObject := memory integerObjectOf: 7.
+	primitiveReceiver := memory integerObjectOf: 17.
+	method := methodBuilder newMethod buildMethod.
+	self flag: #TODO. "PC vs IP"
+	pc := method + 16 "The PC should be a pointer to a bytecode inside the method".
+
+	stackBuilder addNewFrame
+		receiver: senderObject;
+		method: method;
+		stack: { memory trueObject };
+		beSuspendedAt: pc.
+	stackBuilder addNewFrame receiver: primitiveReceiver.
+	stackBuilder buildStack.
+
+
+]
 
 { #category : 'tests - primitiveAdd' }
 VMPrimitiveTest >> testPrimitiveAddFailsWithTypeErrorOnFirstOperand [
@@ -3602,6 +3630,142 @@ VMPrimitiveTest >> testPrimitiveQuoWithNoErrorPopsOperands [
 	"The previous lines pop the result of primiviteAdd (1 2) for us to check that 1 and 2 were poped from the Stack by checking that the next value is our marker, for instance 42"
 	
 	self assert: interpreter stackTop equals: (memory integerObjectOf: 42). 
+]
+
+{ #category : 'tests - primitiveSenderObject' }
+VMPrimitiveTest >> testPrimitiveSenderObjectInterpretedFromInterpreted [
+
+	interpreter push: 99999.
+	interpreter push: primitiveReceiver.
+	interpreter primitiveSenderObject.
+
+	self deny: interpreter failed.
+	self assert: interpreter popStack equals: senderObject.
+	self assert: interpreter popStack equals: 99999
+]
+
+{ #category : 'tests - primitiveSenderObject' }
+VMPrimitiveTest >> testPrimitiveSenderObjectInterpretedFromInterpretedFromAnotherPage [
+
+	| newPage |
+	interpreter ensureCallerContext: interpreter framePointer.
+	newPage := interpreter stackPages newStackPage.
+
+	interpreter
+		moveFramesIn: interpreter stackPage
+		through: interpreter framePointer
+		toPage: newPage.
+	interpreter setStackPageAndLimit: newPage.
+	interpreter setStackPointersFromPage: newPage.
+
+	interpreter push: 99999.
+	interpreter push: primitiveReceiver.
+	interpreter primitiveSenderObject.
+
+	self deny: interpreter failed.
+	self assert: interpreter popStack equals: senderObject.
+	self assert: interpreter popStack equals: 99999
+]
+
+{ #category : 'tests - primitiveSenderObject' }
+VMPrimitiveTest >> testPrimitiveSenderObjectInterpretedFromInterpretedWithNoSender [
+
+	interpreter returnFalse.
+
+	interpreter push: 99999.
+	interpreter push: primitiveReceiver.
+	interpreter primitiveSenderObject.
+
+	self assert: interpreter failed.
+	self assert: interpreter popStack equals: primitiveReceiver.
+	self assert: interpreter popStack equals: 99999
+]
+
+{ #category : 'tests - primitiveSenderObject' }
+VMPrimitiveTest >> testPrimitiveSenderObjectInterpretedFromInterpretedWithSingleContext [
+
+	| previousPage newPage |
+	interpreter ensureCallerContext: interpreter framePointer.
+	previousPage := interpreter stackPage.
+	newPage := interpreter stackPages newStackPage.
+
+	interpreter
+		moveFramesIn: previousPage
+		through: interpreter framePointer
+		toPage: newPage.
+	interpreter setStackPageAndLimit: newPage.
+	interpreter setStackPointersFromPage: newPage.
+
+	interpreter divorceFramesIn: previousPage.
+
+	interpreter push: 99999.
+	interpreter push: primitiveReceiver.
+	interpreter primitiveSenderObject.
+
+	self deny: interpreter failed.
+	self assert: interpreter popStack equals: senderObject.
+	self assert: interpreter popStack equals: 99999
+]
+
+{ #category : 'tests - primitiveSenderPC' }
+VMPrimitiveTest >> testPrimitiveSenderPCInterpretedFromInterpreted [
+
+	interpreter push: 99999.
+	interpreter push: primitiveReceiver.
+	interpreter primitiveSenderPC.
+
+	self deny: interpreter failed.
+	self assert: interpreter popStack equals: (memory integerObjectOf: pc).
+	self assert: interpreter popStack equals: 99999
+]
+
+{ #category : 'tests - primitiveSenderPC' }
+VMPrimitiveTest >> testPrimitiveSenderPCInterpretedFromInterpretedFromAnotherPage [
+
+	| newPage |
+	interpreter ensureCallerContext: interpreter framePointer.
+	newPage := interpreter stackPages newStackPage.
+
+	interpreter
+		moveFramesIn: interpreter stackPage
+		through: interpreter framePointer
+		toPage: newPage.
+	interpreter setStackPageAndLimit: newPage.
+	interpreter setStackPointersFromPage: newPage.
+
+	interpreter push: 99999.
+	interpreter push: primitiveReceiver.
+	interpreter primitiveSenderPC.
+
+	self deny: interpreter failed.
+	self assert: interpreter popStack equals: (memory integerObjectOf: pc).
+	self assert: interpreter popStack equals: 99999
+]
+
+{ #category : 'tests - primitiveSenderPC' }
+VMPrimitiveTest >> testPrimitiveSenderPCInterpretedFromInterpretedWithSingleContext [
+
+	| previousPage newPage |
+	interpreter ensureCallerContext: interpreter framePointer.
+	previousPage := interpreter stackPage.
+	newPage := interpreter stackPages newStackPage.
+
+	interpreter
+		moveFramesIn: previousPage
+		through: interpreter framePointer
+		toPage: newPage.
+	interpreter setStackPageAndLimit: newPage.
+	interpreter setStackPointersFromPage: newPage.
+
+	interpreter divorceFramesIn: previousPage.
+
+	interpreter push: 99999.
+	interpreter push: primitiveReceiver.
+	interpreter primitiveSenderPC.
+
+	self deny: interpreter failed.
+	self assert: interpreter popStack equals: (memory integerObjectOf: pc).
+	self assert: interpreter popStack equals: 99999
 ]
 
 { #category : 'tests - primitiveImmutability' }

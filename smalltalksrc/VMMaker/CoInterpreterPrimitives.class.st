@@ -91,26 +91,27 @@ CoInterpreterPrimitives >> primitiveContextXray [
 	 Bit 2 = frame is executing machine code
 	 Bit 3 = has machine code pc (as opposed to nil or a bytecode pc)
 	 Bit 4 = method is currently compiled to machine code"
-	| context pc flags theFP theMethod |
+
 	<var: #theFP type: #'char *'>
+	| context pc flags theFP theMethod |
 	context := self stackTop.
-	pc := objectMemory fetchPointer: InstructionPointerIndex ofObject: context.
+	pc := self contextPC: context.
 	(self isMarriedOrWidowedContext: context)
-		ifTrue:
-			[(self checkIsStillMarriedContext: context currentFP: framePointer)
-				ifTrue: [theFP := self frameOfMarriedContext: context.
-						(self isMachineCodeFrame: theFP)
-							ifTrue: [flags := 7]
-							ifFalse: [flags := 3]]
-				ifFalse: [flags := 1]]
-		ifFalse:
-			[flags := 0].
-	((objectMemory isIntegerObject: pc)
-	 and: [(objectMemory integerValueOf: pc) < 0]) ifTrue:
-		[flags := flags bitOr: 8].
+		ifTrue: [
+			(self checkIsStillMarriedContext: context currentFP: framePointer)
+				ifTrue: [
+					theFP := self frameOfMarriedContext: context.
+					(self isMachineCodeFrame: theFP)
+						ifTrue: [ flags := 7 ]
+						ifFalse: [ flags := 3 ] ]
+				ifFalse: [ flags := 1 ] ]
+		ifFalse: [ flags := 0 ].
+	((objectMemory isIntegerObject: pc) and: [
+		 (objectMemory integerValueOf: pc) < 0 ]) ifTrue: [
+		flags := flags bitOr: 8 ].
 	theMethod := objectMemory fetchPointer: MethodIndex ofObject: context.
-	(self maybeMethodHasCogMethod: theMethod) ifTrue:
-		[flags := flags bitOr: 16].
+	(self maybeMethodHasCogMethod: theMethod) ifTrue: [
+		flags := flags bitOr: 16 ].
 	self pop: 1 thenPush: (objectMemory integerObjectOf: flags)
 ]
 
