@@ -17,3 +17,20 @@ SlangAbstractTestCase >> assertReturnTypeOf: aMethod equalsHarmonized: expectedT
 	self assert: harmonizedTypes size = 1 description: 'There seems to be a type conflict'.
 	self assert: aMethod returnType equals: harmonizedTypes anyOne.
 ]
+
+{ #category : 'helpers' }
+SlangAbstractTestCase >> astTranslate: tast inStream: aWriteStream [ 
+	
+	| cAST prettyPrinter |
+	cAST := tast asCASTIn: ccg.
+	prettyPrinter := CSlangPrettyPrinter new.
+	prettyPrinter writeStream: aWriteStream.
+	cAST acceptVisitor: prettyPrinter.
+]
+
+{ #category : 'helpers' }
+SlangAbstractTestCase >> translate: tast [
+
+	^ String streamContents: [ :str |
+		  self astTranslate: tast inStream: str ]
+]
